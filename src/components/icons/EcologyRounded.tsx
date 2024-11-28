@@ -1,0 +1,14 @@
+
+import { createMultiPathSVG } from './iconsTemplate';
+
+const filledPaths = [
+  
+];
+
+const strokePaths = [
+  "M17 3.5a.5.5 0 0 0-.5-.5H15a3 3 0 0 0-3 3v1.5a.5.5 0 0 0 .5.5H14a3 3 0 0 0 3-3zM3 6.5a.5.5 0 0 1 .5-.5H6a4 4 0 0 1 4 4v2.5a.5.5 0 0 1-.5.5H7a4 4 0 0 1-4-4z",
+  "M11.974 18.966A5 5 0 0 1 16 11h4.524c.263-.001.476.212.476.475V16a5 5 0 0 1-7.965 4.026l-.755.754a.75.75 0 1 1-1.06-1.06zM16 12.5h3.5V16a3.5 3.5 0 0 1-5.387 2.948l2.764-2.764a.75.75 0 1 0-1.061-1.06l-2.764 2.763A3.5 3.5 0 0 1 16 12.5"
+];
+
+const EcologyRounded = createMultiPathSVG({ filledPaths, strokePaths });
+export default EcologyRounded;

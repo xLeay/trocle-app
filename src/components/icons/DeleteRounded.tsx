@@ -1,0 +1,14 @@
+
+import { createMultiPathSVG } from './iconsTemplate';
+
+const filledPaths = [
+  
+];
+
+const strokePaths = [
+  "M8.49 17a.75.75 0 0 0 1.5 0V9a.75.75 0 1 0-1.5 0zM12 17.75a.75.75 0 0 1-.75-.75V9a.75.75 0 0 1 1.5 0v8a.75.75 0 0 1-.75.75M14.01 17a.75.75 0 0 0 1.5 0V9a.75.75 0 0 0-1.5 0z",
+  "M15.75 5v-.25A2.75 2.75 0 0 0 13 2h-2a2.75 2.75 0 0 0-2.75 2.75V5h-4.5a.75.75 0 0 0 0 1.5h1.313Q5.001 6.74 5 7v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7q0-.26-.063-.5h1.313a.75.75 0 0 0 0-1.5zM11 3.5c-.69 0-1.25.56-1.25 1.25V5h4.5v-.25c0-.69-.56-1.25-1.25-1.25zm6 3H7a.5.5 0 0 0-.5.5v12a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V7a.5.5 0 0 0-.5-.5"
+];
+
+const DeleteRounded = createMultiPathSVG({ filledPaths, strokePaths });
+export default DeleteRounded;

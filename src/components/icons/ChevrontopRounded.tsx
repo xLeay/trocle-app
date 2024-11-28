@@ -1,0 +1,13 @@
+
+import { createMultiPathSVG } from './iconsTemplate';
+
+const filledPaths = [
+  
+];
+
+const strokePaths = [
+  "m12.533 7.973-.003-.003a.75.75 0 0 0-1.06 0l-5 5a.75.75 0 1 0 1.06 1.06L12 9.56l4.47 4.47a.75.75 0 0 0 1.06-1.06z"
+];
+
+const ChevrontopRounded = createMultiPathSVG({ filledPaths, strokePaths });
+export default ChevrontopRounded;

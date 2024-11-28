@@ -1,0 +1,13 @@
+
+import { createMultiPathSVG } from './iconsTemplate';
+
+const filledPaths = [
+  
+];
+
+const strokePaths = [
+  "M16.75 6.5a.75.75 0 0 0 0-1.5h-4a.75.75 0 0 0 0 1.5h1.84l1.449 5.408a.8.8 0 0 0-.139.142l-2.775 3.7H8.5a1 1 0 0 0-.112.008 2.501 2.501 0 1 0 0 1.484 1 1 0 0 0 .112.008h4.991l.05-.001a.75.75 0 0 0 .564-.306l2.419-3.225.173.648a2.5 2.5 0 1 0 1.456-.361L16.143 6.5zm.25 10a1 1 0 1 0 2 0 1 1 0 0 0-2 0m-11 1a1 1 0 1 1 0-2 1 1 0 0 1 0 2"
+];
+
+const ScooterRounded = createMultiPathSVG({ filledPaths, strokePaths });
+export default ScooterRounded;

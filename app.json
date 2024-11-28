@@ -1,41 +1,58 @@
 {
-  "expo": {
-    "name": "trocle-app",
-    "slug": "trocle-app",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      }
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
-    },
-    "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
-        }
-      ]
-    ],
-    "experiments": {
-      "typedRoutes": true
+    "expo": {
+        "name": "trocle-app",
+        "slug": "trocle-app",
+        "version": "1.0.0",
+        "orientation": "portrait",
+        "icon": "./assets/icon.png",
+        "userInterfaceStyle": "light",
+        "newArchEnabled": true,
+        "splash": {
+            "image": "./assets/splash.png",
+            "resizeMode": "cover",
+            "backgroundColor": "#14B814"
+        },
+        "ios": {
+            "supportsTablet": true
+        },
+        "android": {
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/icon-android-foreground.png",
+                "backgroundImage": "./assets/icon-android-background.png",
+                "backgroundColor": "#14B814"
+            },
+            "package": "com.xleay.trocleapp"
+        },
+        "web": {
+            "favicon": "./assets/favicon.png"
+        },
+        "extra": {
+            "eas": {
+                "projectId": "b52eb11b-3652-475e-955b-da64b0c69095"
+            }
+        },
+        "owner": "xleay",
+        "plugins": [
+            [
+                "expo-font",
+                {
+                    "fonts": [
+                        "./assets/fonts/Rethink_Sans/RethinkSans-VariableFont_wght.ttf",
+                        "./assets/fonts/Rethink_Sans/RethinkSans-Italic-VariableFont_wght.ttf",
+                        
+                        "./assets/fonts/Rethink_Sans/RethinkSans-Regular.ttf",
+                        "./assets/fonts/Rethink_Sans/RethinkSans-Italic.ttf",
+                        "./assets/fonts/Rethink_Sans/RethinkSans-Medium.ttf",
+                        "./assets/fonts/Rethink_Sans/RethinkSans-MediumItalic.ttf",
+                        "./assets/fonts/Rethink_Sans/RethinkSans-SemiBold.ttf",
+                        "./assets/fonts/Rethink_Sans/RethinkSans-SemiBoldItalic.ttf",
+                        "./assets/fonts/Rethink_Sans/RethinkSans-Bold.ttf",
+                        "./assets/fonts/Rethink_Sans/RethinkSans-BoldItalic.ttf",
+                        "./assets/fonts/Rethink_Sans/RethinkSans-ExtraBold.ttf",
+                        "./assets/fonts/Rethink_Sans/RethinkSans-ExtraBoldItalic.ttf"
+                    ]
+                }
+            ]
+        ]
     }
-  }
 }

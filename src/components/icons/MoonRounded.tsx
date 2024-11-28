@@ -1,0 +1,9 @@
+
+import { createSinglePathSVG } from './iconsTemplate';
+
+const filledPath = `M20 12c0-.341-.435-.478-.69-.252a5 5 0 0 1-7.058-7.057C12.478 4.435 12.342 4 12 4a8 8 0 1 0 8 8`;
+
+const strokePath = `M18.14 14.14A6.5 6.5 0 0 1 9.86 5.86a6.5 6.5 0 1 0 8.279 8.279m.351-1.804a5 5 0 0 1-6.24-7.645C12.479 4.435 12.342 4 12 4a8 8 0 0 0-1.191.088A8.002 8.002 0 0 0 12 20a8 8 0 0 0 8-8c0-.341-.435-.478-.69-.252a5 5 0 0 1-.819.588`;
+
+const MoonRounded = createSinglePathSVG({ filledPath, strokePath });
+export default MoonRounded;

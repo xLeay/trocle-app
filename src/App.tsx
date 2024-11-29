@@ -2,12 +2,16 @@
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
 import AppNavigator from './navigation/AppNavigator';
+import { useTheme } from '@/src/hooks/useTheme';
+
+import { StyleSheet, View } from 'react-native';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
+    const { theme, activeTheme, toggleTheme } = useTheme();
+
     const [loaded, error] = useFonts({
         'RethinkSans-VariableFont_wght': require('@/assets/fonts/Rethink_Sans/RethinkSans-VariableFont_wght.ttf'),
         'RethinkSans-Italic-VariableFont_wght': require('@/assets/fonts/Rethink_Sans/RethinkSans-Italic-VariableFont_wght.ttf'),
@@ -35,6 +39,14 @@ export default function App() {
     }
 
     return (
-        <AppNavigator />
+        <View style={[styles.container, { backgroundColor: activeTheme.colors.surface.secondary }]}>
+            <AppNavigator />
+        </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+});

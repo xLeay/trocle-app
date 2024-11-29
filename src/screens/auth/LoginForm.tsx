@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ActivityIndicator } from 'react-native';
 import useLogin from '@/src/hooks/useLogin';
+import React, { useState } from 'react';
+import { ActivityIndicator, StyleSheet, TextInput, View } from 'react-native';
+
+import Text from '@/src/components/Text';
+
+import Button from '#/Button';
 
 export default function LoginForm() {
     const [email, setEmail] = useState('');
@@ -29,14 +33,14 @@ export default function LoginForm() {
             {loading ? (
                 <ActivityIndicator />
             ) : (
-                <Button title="Se connecter" onPress={handleLogin} />
+                <Button label="Se connecter" variant='primary' size='large' fullWidth={false} onPress={handleLogin} />
             )}
-            {error && <Text>{error}</Text>}
+            {error && <Text variant='body_Large'>{error}</Text>}
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    form: { width: '100%', maxWidth: 400 },
+    form: { width: '100%', maxWidth: 400, borderWidth: 3, borderColor: 'red'  },
     input: { borderWidth: 1, borderColor: '#ccc', padding: 8, marginBottom: 12, borderRadius: 4 },
 });

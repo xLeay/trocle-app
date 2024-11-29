@@ -1,18 +1,29 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import LoginForm from './LoginForm';
+
+import Text from '@/src/components/Text';
+
+import { useTheme } from '@/src/hooks/useTheme';
 
 
 export default function LoginScreen() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Connexion</Text>
-      <LoginForm />
-    </View>
-  );
+
+    const { theme, activeTheme, toggleTheme } = useTheme();
+
+    return (
+        <View style={[styles.container]}>
+            <Text variant='display_Large'>Connexion</Text>
+            <LoginForm />
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 16 },
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 16
+    },
 });

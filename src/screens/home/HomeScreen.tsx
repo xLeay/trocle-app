@@ -15,7 +15,7 @@ export default function HomeScreen() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Bienvenue sur Trocle !</Text>
+            <Text style={styles.title}>Test de PR !</Text>
 
             <Home />
             <Button title="Connexion" onPress={() => navigation.navigate('Auth')} />

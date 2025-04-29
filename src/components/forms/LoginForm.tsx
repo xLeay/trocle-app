@@ -4,7 +4,7 @@ import { ActivityIndicator, StyleSheet, TextInput, View } from 'react-native';
 
 import Text from '@/src/components/Text';
 
-import Button from '#/Button';
+import Button from '@/src/components/controls/Button';
 
 export default function LoginForm() {
     const [email, setEmail] = useState('');

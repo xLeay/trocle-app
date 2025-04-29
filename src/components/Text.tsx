@@ -1,5 +1,5 @@
-import React from 'react';
-import { Text, View, TextStyle, ViewStyle } from 'react-native';
+import React, { useMemo } from 'react';
+import { Text as RNText, View, TextStyle, ViewStyle } from 'react-native';
 import { useTheme } from '@/src/hooks/useTheme';
 
 export type TextVariant =
@@ -19,15 +19,14 @@ export type TextVariant =
 
 interface Props {
     children: React.ReactNode;
-    style?: TextStyle[]; // Style supplémentaire pour le texte
-    containerStyle?: ViewStyle; // Style supplémentaire pour le conteneur
-    type?: 'primary' | 'secondary' | 'placeholder' | 'invert' | 'brand'; // Type de texte pour appliquer des couleurs
-    variant?: TextVariant; // Variante de typographie (ex. "Display Large")
-    onPress?: () => void; // Fonction à appeler lorsqu'on clique sur le texte
+    style?: TextStyle[];
+    containerStyle?: ViewStyle;
+    type?: 'primary' | 'secondary' | 'placeholder' | 'invert' | 'brand';
+    variant?: TextVariant;
+    onPress?: () => void;
 }
 
-
-const TextComponent: React.FC<Props> = ({
+const Text: React.FC<Props> = ({
     children,
     style,
     containerStyle,
@@ -35,29 +34,34 @@ const TextComponent: React.FC<Props> = ({
     variant = 'body_Large',
     onPress,
 }) => {
-    const { theme, activeTheme, toggleTheme } = useTheme();
-    
+    const { activeTheme } = useTheme();
 
-    // Styles spécifiques à la typographie (variant)
-    const typography = activeTheme.typography[variant] || {};
+    // const typography = activeTheme.typography[variant] || {};
+    // const color = activeTheme.colors.text[type];
 
-    // Gestion des couleurs selon le type
-    const color = activeTheme.colors.text[type];
+    // const textStyles: TextStyle[] = [
+    //     typography || {},
+    //     { color },
+    //     ...(style || []),
+    // ];
 
-    // Styles pour le conteneur
-    const textStyles: TextStyle[] = [
-        typography || {},
-        { color },
+    const combinedStyle = useMemo(() => [
+        activeTheme.typography[variant],
+        { color: activeTheme.colors.text[type] },
         ...(style || []),
-    ];
+    ], [activeTheme, type, variant, style]);
 
-    return (
-        <View style={containerStyle}>
-            <Text style={textStyles} onPress={onPress}>
-                {children}
-            </Text>
-        </View>
+    const textElement = (
+        <RNText style={combinedStyle} onPress={onPress}>
+            {children}
+        </RNText>
     );
+
+    if (containerStyle) {
+        return <View style={containerStyle}>{textElement}</View>;
+    }
+
+    return textElement;
 };
 
-export default TextComponent;
+export default Text;

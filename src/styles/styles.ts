@@ -1,32 +1,34 @@
 import { getFontScale, getTextSize } from "./fonts";
 import { color } from "./primitives";
-import { fontSize, lineHeight } from './tokens';
+import { fontSize, lineHeight, spacing, radius } from './tokens';
+
+type Theme = 'light' | 'dark';
 
 export function createThemes() {
-    return {
-        light: {
-            colors: {
-                surface: surface.light,
-                text: text.light,
-                border: border.light,
-                icon: icon.light,
-                component: component.light,
-                gradient: gradient.light
-            },
-            typography: typography
+    // Éléments communs aux deux thèmes
+    const commonThemeProps = {
+        typography,
+        spacing,
+        radius
+    };
+
+    // Fonction pour créer un thème avec les couleurs spécifiques
+    const createTheme = (mode: Theme) => ({
+        colors: {
+            surface: surface[mode],
+            text: text[mode],
+            border: border[mode],
+            icon: icon[mode],
+            component: component[mode],
+            gradient: gradient[mode]
         },
-        dark: {
-            colors: {
-                surface: surface.dark,
-                text: text.dark,
-                border: border.dark,
-                icon: icon.dark,
-                component: component.dark,
-                gradient: gradient.dark
-            },
-            typography: typography
-        }
-    }
+        ...commonThemeProps
+    });
+
+    return {
+        light: createTheme('light'),
+        dark: createTheme('dark')
+    };
 }
 
 const surface = {

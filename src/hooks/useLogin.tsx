@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useAuthStore } from '../state/authStore';
 import { useNavigation } from '@react-navigation/native';
+import { NavigationProp } from '@/src/lib/routes/types';
 
 const useLogin = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const { login } = useAuthStore();
-    const navigation = useNavigation();
+    const navigation = useNavigation<NavigationProp>();
 
     const loginUser = async (email: string, password: string) => {
         setLoading(true);

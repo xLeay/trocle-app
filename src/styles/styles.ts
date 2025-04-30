@@ -218,12 +218,28 @@ const component = {
 
 const gradient = {
     light: {
-        primaryGradient: `linear-gradient(180deg, ${surface.light.brand} 0%, ${surface.light.brandSecondary} 100%)`,
-        tertiaryGradient: `linear-gradient(180deg, ${surface.light.accent} 0%, ${surface.light.accentSecondary} 100%)`,
+        // primaryGradient: `linear-gradient(180deg, ${surface.light.brand} 0%, ${surface.light.brandSecondary} 100%)`,
+        // tertiaryGradient: `linear-gradient(180deg, ${surface.light.accent} 0%, ${surface.light.accentSecondary} 100%)`,
+        primaryGradient: {
+            colors: [surface.light.brandSecondary, surface.light.brand],
+            positions: [0, 1],
+        },
+        tertiaryGradient: {
+            colors: [surface.light.accentSecondary, surface.light.accent],
+            positions: [0, 1],
+        },
     },
     dark: {
-        primaryGradient: `linear-gradient(180deg, ${surface.dark.brand} 0%, ${surface.dark.brandSecondary} 100%)`,
-        tertiaryGradient: `linear-gradient(180deg, ${surface.dark.accent} 0%, ${surface.dark.accentSecondary} 100%)`,
+        // primaryGradient: `linear-gradient(180deg, ${surface.dark.brand} 0%, ${surface.dark.brandSecondary} 100%)`,
+        // tertiaryGradient: `linear-gradient(180deg, ${surface.dark.accent} 0%, ${surface.dark.accentSecondary} 100%)`,
+        primaryGradient: {
+            colors: [surface.dark.brandSecondary, surface.dark.brand],
+            positions: [0, 1],
+        },
+        tertiaryGradient: {
+            colors: [surface.dark.accentSecondary, surface.dark.accent],
+            positions: [0, 1],
+        },
     }
 }
 

@@ -1,5 +1,5 @@
 import React, { forwardRef, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import Animated, {
     interpolateColor,
     useAnimatedStyle,

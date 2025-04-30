@@ -12,7 +12,7 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 
 // [[[[[[[[[]]]]]]]]]
 // Icones
-import { Circle, Home, Search, ArrowLeft, ArrowRight } from '#/icons';
+import { Circle, Home, Search, Arrowleft, Arrowright } from '#/icons';
 // [[[[[[[[[]]]]]]]]]
 
 export default function LoginScreen() {

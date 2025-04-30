@@ -11,7 +11,7 @@ import Checkbox from '#/controls/Checkbox';
 import Radio from '#/controls/Radio';
 
 // Icônes
-import { Circle, ChevronRight } from '#/icons';
+import { Circle, Chevronright } from '#/icons';
 
 export type RightVariant =
     | 'empty'
@@ -63,7 +63,7 @@ const TableRight: React.FC<TableRightProps> = ({
                             {rightText}
                         </Text>
                         {chevron && (
-                            <ChevronRight size={24} color={iconColor} />
+                            <Chevronright size={24} color={iconColor} />
                         )}
                     </Flex>
                 )

@@ -19,11 +19,14 @@ import Avatar from '#/display/Avatar';
 import TableLeft from '#/_partial/TableLeft';
 import TableRight from '#/_partial/TableRight';
 import Table from '#/display/Table';
+import TabBar from '#/_partial/TabBar';
+import NavigationBar from '#/bars/NavigationBar';
+import ButtonTroc from '#/controls/ButtonTroc';
 
 
 // [[[[[[[[[]]]]]]]]]
 // Icones
-import { Circle, Home, Search, ArrowLeft, ArrowRight } from '#/icons';
+import { Circle, Home, Search, Arrowleft, Arrowright, Moon, Sun, Troc, Compass, Plus, Bubble } from '#/icons';
 // [[[[[[[[[]]]]]]]]]
 
 
@@ -50,7 +53,23 @@ export default function Index() {
                 onPress: () => alert('Icône !'),
             },
         ],
-    });  
+    });
+
+    // Config de la navigation bar
+    // const navBarList={[
+    //     { icon: <Home /> },
+    //     { icon: <Home /> },
+    //     { icon: <Home /> },
+    //     { icon: <Home /> },
+    //     { avatar: { customImage: require('@/assets/icon.png'), focused: false } },
+    // ]}
+    const navBarList = [
+        { icon: <Troc filled /> },
+        { icon: <Compass /> },
+        { icon: <Plus /> },
+        { icon: <Bubble /> },
+        { avatar: { customImage: require('@/assets/icon.png'), focused: false } },
+    ];
 
     const [switch1Checked, setSwitch1Checked] = useState(false);
     const [switch2Checked, setSwitch2Checked] = useState(false);
@@ -72,9 +91,34 @@ export default function Index() {
                 }}
             />
 
-            <Text variant='display_Small'>le thème est : {theme}</Text>
+            <Flex direction='row' gap={16}>
+                <Text variant='title_Large'>le thème est : {theme}</Text>
+                <Button
+                    onPress={toggleTheme}
+                    // icon={<Moon filled />}
+                    icon={theme === 'light' ? <Sun /> : <Moon filled />}
+                    iconPosition="left"
+                    variant="outlined"
+                    size="large"
+                />
+            </Flex>
 
-            <Flex>
+            <NavigationBar navBarList={navBarList} />
+
+            <Flex gap={16}>
+                <Flex direction='row' gap={32} border>
+                    <ButtonTroc type='pass' color='mono' />
+                    <ButtonTroc type='like' color='mono' />
+                    <ButtonTroc type='reroll' color='mono' />
+                </Flex>
+                <Flex direction='row' gap={32}>
+                    <ButtonTroc type='pass' color='default' />
+                    <ButtonTroc type='like' color='default' />
+                    <ButtonTroc type='reroll' color='default' />
+                </Flex>
+            </Flex>
+
+            {/* <Flex>
                 <Table
                     leftProps={{
                         variant: 'icon',
@@ -257,7 +301,7 @@ export default function Index() {
                     <Button label="Supprimer" variant="outlined" icon={<ArrowRight />} iconPosition='right' />
                     <Button label="Supprimer" disabled variant="outlined" icon={<ArrowRight />} iconPosition='right' fullWidth={true} />
                 </Flex>
-            </Flex>
+            </Flex> */}
         </Flex>
     );
 }

@@ -18,7 +18,7 @@ import Button from '#/controls/Button';
 
 // [[[[[[[[[]]]]]]]]]
 // Icones
-import { ArrowLeft, Search, Home } from '#/icons';
+import { Arrowleft, Search, Home } from '#/icons';
 // [[[[[[[[[]]]]]]]]]
 
 import useTopAppBar from '@/src/hooks/useTopAppBar';
@@ -76,28 +76,20 @@ export default function RootLayout() {
                             headerStyle: {
                                 backgroundColor: activeTheme.colors.surface.secondary,
                             },
-                            header: () => 
-                            <TopAppBar
-                                left={left}
-                                center={center}
-                                right={right}
-                            />,
+                            headerShown: false,
+                            // header: () =>
+                            //     <TopAppBar
+                            //         left={left}
+                            //         center={center}
+                            //         right={right}
+                            //     />,
                         }
                         }
-                    />
-                    {/* <Stack.Screen
-                    name="auth/login"
-                    options={{
-                        title: 'Connexion',
-                    }}
-                />
-                <Stack.Screen
-                    name="index"
-                    options={{
-                        title: 'Index',
-                    }}
-                /> */}
-                    {/* </Stack> */}
+                    >
+                        <Stack.Screen
+                            name="(drawer)"
+                        />
+                    </Stack>
                 </SafeAreaView>
             </SafeAreaProvider>
         </React.Fragment >

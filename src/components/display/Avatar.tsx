@@ -5,7 +5,7 @@ import { useTheme } from '@/src/hooks/useTheme';
 
 type AvatarSize = 'enormous' | 'veryLarge' | 'large' | 'medium' | 'small' | 'tiny';
 
-interface AvatarProps {
+export interface AvatarProps {
     customImage?: ImageSourcePropType; // undefined => image par défaut
     squared?: boolean;
     focused?: boolean;

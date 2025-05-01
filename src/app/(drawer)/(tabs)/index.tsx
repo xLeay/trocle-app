@@ -1,13 +1,17 @@
 import { View, Text, StyleSheet } from 'react-native';
 
-import NavigationBar from '#/bars/NavigationBar';
+import Avatar from '#/display/Avatar';
+import Button from '#/controls/Button';
 
+import { useRouter } from 'expo-router';
 
 import { Circle, Home, Search, Arrowleft, Arrowright, Moon, Sun, Troc, Compass, Plus, Bubble } from '#/icons';
 
 
 
 export default function Tab() {
+
+    const router = useRouter();
 
     const navBarList = [
         { icon: <Troc filled /> },
@@ -20,7 +24,11 @@ export default function Tab() {
     return (
         <View style={styles.container}>
             <Text>Tab Index</Text>
-            <NavigationBar navBarList={navBarList} />
+            <Avatar size="medium" />
+
+            <Button label="Lien vers l'index de fou" variant="primary" size="small" onPress={() => {
+                router.push('/home');
+            }} />
         </View>
     );
 }

@@ -1,4 +1,4 @@
-
+import React from 'react';
 import { useTheme } from '@/src/hooks/useTheme';
 import { useAuthStore } from '@/src/state/authStore';
 import { useFonts } from 'expo-font';
@@ -10,26 +10,17 @@ import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import TopAppBar from '@/src/components/display/TopAppBar/TopAppBar';
 import * as NavigationBar from 'expo-navigation-bar';
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet } from 'react-native';
 
-// Composants
-import Button from '#/controls/Button';
-
-// [[[[[[[[[]]]]]]]]]
-// Icones
-import { Arrowleft, Search, Home } from '#/icons';
-// [[[[[[[[[]]]]]]]]]
 
 import useTopAppBar from '@/src/hooks/useTopAppBar';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-    const { theme, activeTheme, toggleTheme } = useTheme();
+    const { theme, activeTheme } = useTheme();
     const router = useRouter();
 
-    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+    // const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
     const [loaded, error] = useFonts({
         'RethinkSans-VariableFont_wght': require('@/assets/fonts/Rethink_Sans/RethinkSans-VariableFont_wght.ttf'),
@@ -54,9 +45,17 @@ export default function RootLayout() {
     }, [loaded, error]);
 
     useEffect(() => {
-        NavigationBar.setBackgroundColorAsync(activeTheme.colors.surface.secondary);
-        NavigationBar.setButtonStyleAsync(theme === 'dark' ? 'light' : 'dark');
-    }, [theme]);
+        const applyNavigationBarStyle = async () => {
+            try {
+                await NavigationBar.setBackgroundColorAsync(activeTheme.colors.surface.secondary);
+                await NavigationBar.setButtonStyleAsync(theme === 'dark' ? 'light' : 'dark');
+            } catch (e) {
+                console.warn("Erreur lors du changement de style de la barre de navigation :", e);
+            }
+        };
+
+        applyNavigationBarStyle();
+    }, [theme, activeTheme.colors.surface.secondary]);
 
 
     // Config de la top app bar
@@ -77,12 +76,13 @@ export default function RootLayout() {
                                 backgroundColor: activeTheme.colors.surface.secondary,
                             },
                             headerShown: false,
-                            // header: () =>
-                            //     <TopAppBar
-                            //         left={left}
-                            //         center={center}
-                            //         right={right}
-                            //     />,
+                            header: () => (
+                                <TopAppBar
+                                    left={left}
+                                    center={center}
+                                    right={right}
+                                />
+                            ),
                         }
                         }
                     >
@@ -95,9 +95,3 @@ export default function RootLayout() {
         </React.Fragment >
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1
-    },
-});

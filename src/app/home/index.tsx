@@ -20,7 +20,6 @@ import TableLeft from '#/_partial/TableLeft';
 import TableRight from '#/_partial/TableRight';
 import Table from '#/display/Table';
 import TabBar from '#/_partial/TabBar';
-import NavigationBar from '#/bars/NavigationBar';
 import ButtonTroc from '#/controls/ButtonTroc';
 
 
@@ -81,6 +80,7 @@ export default function Index() {
         <Flex scroll gap={15} direction='column' style={[styles.container, { backgroundColor: activeTheme.colors.surface.primary }]}>
             <Stack.Screen
                 options={{
+                    headerShown: true,
                     header: () => (
                         <TopAppBar
                             left={left}
@@ -102,8 +102,6 @@ export default function Index() {
                     size="large"
                 />
             </Flex>
-
-            <NavigationBar navBarList={navBarList} />
 
             <Flex gap={16}>
                 <Flex direction='row' gap={32} border>
@@ -297,9 +295,9 @@ export default function Index() {
                     <Button icon={<Home />} variant="secondary" size="small" />
                     <Button icon={<Home />} variant="secondary" size="large" />
                     <Button icon={<Home size={36} />} variant="primary" size="FAB" />
-                    <Button label="Suivant" variant="tertiary" icon={<ArrowLeft />} />
-                    <Button label="Supprimer" variant="outlined" icon={<ArrowRight />} iconPosition='right' />
-                    <Button label="Supprimer" disabled variant="outlined" icon={<ArrowRight />} iconPosition='right' fullWidth={true} />
+                    <Button label="Suivant" variant="tertiary" icon={<Arrowleft />} />
+                    <Button label="Supprimer" variant="outlined" icon={<Arrowright />} iconPosition='right' />
+                    <Button label="Supprimer" disabled variant="outlined" icon={<Arrowright />} iconPosition='right' fullWidth={true} />
                 </Flex>
             </Flex> */}
         </Flex>

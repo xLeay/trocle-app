@@ -12,7 +12,7 @@ import ProgressBar from "#/display/ProgressBar";
 import Table from "#/display/Table";
 
 // Icônes
-import { Circle, ArrowLeft } from "#/icons";
+import { Circle, Arrowleft } from "#/icons";
 import { TrocleLogoFull } from "#/logos";
 
 
@@ -39,7 +39,7 @@ const topAppBarConfigs = {
     _center: {
         // Nécessite : canGoBack: boolean, onBack: function
         left: ({ canGoBack, onBack }: TopAppBarProps) => canGoBack ? (
-            <Button icon={<ArrowLeft />} variant="ghost" size="small" onPress={onBack} />
+            <Button icon={<Arrowleft />} variant="ghost" size="small" onPress={onBack} />
         ) : <View />,
         // Nécessite : label: string
         center: ({ label = "Titre" }: TopAppBarProps) => <Text variant="title_Medium">{label}</Text>,
@@ -60,7 +60,7 @@ const topAppBarConfigs = {
     _withProgressBar: {
         // Nécessite : canGoBack: boolean, onBack: function
         left: ({ canGoBack, onBack }: TopAppBarProps) => canGoBack ? (
-            <Button icon={<ArrowLeft />} variant="ghost" size="small" onPress={onBack} />
+            <Button icon={<Arrowleft />} variant="ghost" size="small" onPress={onBack} />
         ) : <View />,
         // Nécessite : progress: number, progressBarType: primary | mono
         center: ({ progress, progressBarType }: TopAppBarProps) => (
@@ -75,7 +75,7 @@ const topAppBarConfigs = {
         left: ({ canGoBack, onBack, tableLeft, tableRight }: TopAppBarProps) => (
             <Flex direction="row" gap={4} style={{ flex: 1 }}>
                 {canGoBack ? (
-                    <Button icon={<ArrowLeft />} variant="ghost" size="small" onPress={onBack} />
+                    <Button icon={<Arrowleft />} variant="ghost" size="small" onPress={onBack} />
                 ) : <View style={{ width: 32 }} />}
                 <Table leftProps={tableLeft} rightProps={tableRight} style={{ flex: 1 }} />
             </Flex>
@@ -89,7 +89,7 @@ const topAppBarConfigs = {
         left: ({ canGoBack, onBack, label }: TopAppBarProps) => (
             <Flex direction="row" gap={16} style={{ flex: 1 }}>
                 {canGoBack ? (
-                    <Button icon={<ArrowLeft />} variant="ghost" size="small" onPress={onBack} />
+                    <Button icon={<Arrowleft />} variant="ghost" size="small" onPress={onBack} />
                 ) : <View style={{ width: 32 }} />}
                 <Text variant="title_Medium">{label}</Text>
             </Flex>
@@ -118,7 +118,7 @@ const topAppBarConfigs = {
             <Flex gap={8} border borderColor="blue" style={{ flex: 1, paddingBottom: 24 }}>
                 <Flex direction="row" border borderColor="black" justifyContent="space-between" style={{ width: '100%'}}>
                     {!canGoBack ? (
-                        <Button icon={<ArrowLeft />} variant="ghost" size="small" onPress={onBack} />
+                        <Button icon={<Arrowleft />} variant="ghost" size="small" onPress={onBack} />
                     ) : <View style={{ width: 32 }} />}
 
                     <Flex direction="row" border borderColor="red" gap={8}>
@@ -148,7 +148,7 @@ const topAppBarConfigs = {
             <Flex gap={32} style={{ flex: 1, paddingBottom: 28 }}>
                 <Flex direction="row" justifyContent="space-between" style={{ width: '100%'}}>
                     {!canGoBack ? (
-                        <Button icon={<ArrowLeft />} variant="ghost" size="small" onPress={onBack} />
+                        <Button icon={<Arrowleft />} variant="ghost" size="small" onPress={onBack} />
                     ) : <View style={{ width: 32 }} />}
 
                     <Flex direction="row" gap={8}>

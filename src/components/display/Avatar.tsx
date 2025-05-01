@@ -1,16 +1,17 @@
 import React from 'react';
-import { View, StyleSheet, ViewStyle, ImageSourcePropType } from 'react-native';
+import { View, StyleSheet, ViewStyle, ImageSourcePropType, Pressable, Text } from 'react-native';
 import { Image } from 'expo-image';
 import { useTheme } from '@/src/hooks/useTheme';
+import Animated, {
+    interpolateColor,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
+} from 'react-native-reanimated';
+
+import defaultImage from '@/assets/avatar.png';
 
 type AvatarSize = 'enormous' | 'veryLarge' | 'large' | 'medium' | 'small' | 'tiny';
-
-export interface AvatarProps {
-    customImage?: ImageSourcePropType; // undefined => image par défaut
-    squared?: boolean;
-    focused?: boolean;
-    size?: AvatarSize;
-}
 
 // Taille en pixels pour chaque taille d'avatar
 const sizeMapping: Record<AvatarSize, number> = {
@@ -21,17 +22,43 @@ const sizeMapping: Record<AvatarSize, number> = {
     small: 32,
     tiny: 24,
 };
-
-import defaultImage from '@/assets/avatar.png';
+export interface AvatarProps {
+    customImage?: ImageSourcePropType; // undefined => image par défaut
+    squared?: boolean;
+    focused?: boolean;
+    size?: AvatarSize;
+    onPress?: () => void;
+    touchable?: boolean;
+}
 
 const Avatar: React.FC<AvatarProps> = ({
     customImage,
     squared = false,
     focused = false,
     size = 'medium',
+    onPress,
+    touchable = true,
 }) => {
 
     const { activeTheme } = useTheme();
+
+    const pressedValue = useSharedValue(0);
+    const handlePressIn = () => { pressedValue.value = withTiming(1, { duration: 100 }) };
+    const handlePressOut = () => { pressedValue.value = withTiming(0, { duration: 100 }) };
+
+    const animatedStyle = useAnimatedStyle(() => {
+        return {
+            backgroundColor: interpolateColor(
+                pressedValue.value,
+                [0, 1],
+                [
+                    'transparent',
+                    activeTheme.colors.surface.transparent
+                ]
+            ),
+        };
+    });
+
     const dimension = sizeMapping[size];
 
     const containerStyle: ViewStyle = {
@@ -41,16 +68,42 @@ const Avatar: React.FC<AvatarProps> = ({
         overflow: 'hidden',
         borderWidth: focused ? 2 : 0,
         borderColor: focused ? activeTheme.colors.surface.contrast : 'transparent',
+
+    };
+
+    const getViewImageComponents = (animatedView: boolean = false) => {
+        return (
+            <View style={{ flex: 1 }}>
+                <Image
+                    style={styles.image}
+                    source={customImage || defaultImage}
+                    contentFit="cover"
+                    transition={500}
+                />
+                {animatedView && (
+                    <Animated.View
+                        pointerEvents="none"
+                        style={[StyleSheet.absoluteFillObject, animatedStyle]}
+                    />
+                )}
+            </View>
+        );
     };
 
     return (
         <View style={containerStyle}>
-            <Image
-                style={styles.image}
-                source={customImage || defaultImage}
-                contentFit="cover"
-                transition={500}
-            />
+            {touchable ? (
+                <Pressable
+                    onPress={onPress}
+                    onPressIn={handlePressIn}
+                    onPressOut={handlePressOut}
+                    style={{ flex: 1 }}
+                >
+                    {getViewImageComponents(true)}
+                </Pressable>
+            ) : (
+                getViewImageComponents()
+            )}
         </View>
     );
 };

@@ -1,5 +1,8 @@
 import { View, Text, StyleSheet } from 'react-native';
 
+import Button from '#/controls/Button';
+import { router } from 'expo-router';
+
 export default function Tab() {
     return (
         <View style={styles.container}>

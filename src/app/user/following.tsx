@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function Tab() {
+export default function Stack() {
     return (
         <View style={styles.container}>
-            <Text>Profil depuis le drawer</Text>
+            <Text>Mes Abonnements</Text>
         </View>
     );
 }

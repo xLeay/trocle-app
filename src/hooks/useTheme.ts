@@ -1,9 +1,14 @@
 import { useThemeStore } from '@/src/state/themeStore';
 import { themes } from '@/src/styles/themes';
+import { useEffect, useState } from 'react';
 
 export const useTheme = () => {
-    const { theme, toggleTheme } = useThemeStore(); // Récupère l'état depuis Zustand
-    const activeTheme = themes[theme]; // Trouve le thème actif en fonction de l'état
+    const { theme, toggleTheme, version } = useThemeStore();
+    const [activeTheme, setActiveTheme] = useState(themes[theme]);
 
-    return { theme, toggleTheme, activeTheme };
+    useEffect(() => {
+        setActiveTheme(themes[theme]);
+    }, [theme, version]);
+
+    return { theme, toggleTheme, activeTheme, version };
 };

@@ -11,7 +11,7 @@ import Flex from '#/Flex';
 
 // Icones
 import { Search } from '#/icons';
-import { CloseCircle } from '#/icons';
+import { Closecircle } from '#/icons';
 
 
 interface SearchBarProps {
@@ -91,7 +91,7 @@ const SearchBar = ({
 
                     {state === 'filled' && (
                         <Pressable onPress={handleCrossPress}>
-                            <CloseCircle color={activeTheme.colors.surface.field} />
+                            <Closecircle color={activeTheme.colors.surface.field} />
                         </Pressable>
                     )}
                 </Flex>

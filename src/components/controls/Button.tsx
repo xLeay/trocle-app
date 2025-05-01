@@ -19,6 +19,7 @@ export type IconPosition = 'left' | 'right' | 'only';
 
 interface ButtonProps {
     onPress?: () => void;
+    onLongPress?: () => void;
     label?: string;
     icon?: React.ReactNode;
     iconPosition?: IconPosition;
@@ -30,6 +31,7 @@ interface ButtonProps {
 
 const Button = forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>(({
     onPress,
+    onLongPress,
     label, // aucun label par défaut étant donné la présence potentielle d'un bouton icône
     icon,
     iconPosition = 'left',
@@ -168,6 +170,7 @@ const Button = forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>(({
                 ref={ref}
                 style={baseButtonStyles}
                 onPress={onPress}
+                onLongPress={onLongPress}
                 onPressIn={handlePressIn}
                 onPressOut={handlePressOut}
                 disabled={disabled}

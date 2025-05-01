@@ -1,8 +1,8 @@
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
 import { Drawer } from 'expo-router/drawer';
 import { DrawerContentScrollView, DrawerItem, DrawerItemList } from '@react-navigation/drawer';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { router } from 'expo-router';
+import { router, Link } from 'expo-router';
 
 import { useTheme } from '@/src/hooks/useTheme';
 
@@ -10,107 +10,199 @@ import Text from '#/Text';
 import Flex from '#/Flex';
 import Avatar from '#/display/Avatar';
 import Table from '#/display/Table';
+import Divider from '#/display/Divider';
+import Fade from '#/miscellaneous/Fade';
 
-import { Profile, Subscription, Heart, Star0, Troc, History, Assistance, Settings } from '#/icons';
-
+import { Profile, Subscription, Heart, Star0, Troc, History, Assistance, Settings, Sun, Moon } from '#/icons';
 
 const CustomDrawer = (props: any) => {
+    const { theme, activeTheme, toggleTheme } = useTheme();
     return (
-        <DrawerContentScrollView {...props} style={[styles.drawerContent, {}]}>
+        <DrawerContentScrollView
+            {...props}
+            contentContainerStyle={[styles.drawerContentContainer, {}]}
+            style={[styles.drawerContent, { backgroundColor: activeTheme.colors.surface.secondary }]}
+        >
 
-            <Flex direction='row' border>
-                <Text>Trocle</Text>
-                <Avatar size="medium" customImage={require('@/assets/icon.png')} />
-            </Flex>
+            <Flex gap={32} style={{ flex: 1 }}>
+                {/* Section */}
+                <Flex gap={16} style={{ flex: 1, width: '100%', paddingBottom: 16 }}>
+                    {/* Top */}
+                    <Flex gap={4} style={{ width: '100%', paddingTop: 16, paddingHorizontal: 16 }}>
+                        <Flex gap={4} alignItems='flex-start' style={{ width: '100%', paddingHorizontal: 16 }}>
+                            <Avatar size="medium" customImage={require('@/assets/icon.png')} onPress={() => {
+                                router.push('profile');
+                            }} />
+                            <Flex>
+                                <Text variant='title_Small'>xLeay</Text>
+                            </Flex>
+                            <Flex direction='row' gap={8}>
+                                <Link href='/user/followers'>
+                                    <Flex gap={4} direction='row'>
+                                        <Text variant='label_Large'>12</Text>
+                                        <Text variant='body_Medium' type='secondary'>Abonnés</Text>
+                                    </Flex>
+                                </Link>
 
-            {/* TODO : Ajouter toutes les tables */}
-            <Flex border>
-                <Table
-                    style={styles.table}
-                    leftProps={{
-                        variant: 'icon',
-                        leftText: 'Mon profil',
-                        icon: <Profile />,
-                    }}
-                    rightProps={{
-                        variant: 'empty',
-                    }}
-                    onPress={() => {
-                        router.push('/profile');
-                    }}
-                />
+                                <Flex style={{ width: 3, height: 3, backgroundColor: activeTheme.colors.text.secondary, borderRadius: 3 }} />
+
+                                <Link href='/user/following'>
+                                    <Flex gap={4} direction='row'>
+                                        <Text variant='label_Large'>18</Text>
+                                        <Text variant='body_Medium' type='secondary'>Abonnements</Text>
+                                    </Flex>
+                                </Link>
+                            </Flex>
+                        </Flex>
+                        <Divider padding style={{ marginTop: 16 }} />
+                    </Flex>
+
+
+                    <Flex style={{ width: '100%', flex: 1, position: 'relative' }}>
+                        {/* Scrollable */}
+                        <Flex scroll gap={8} style={{ width: '100%', flex: 1, position: 'relative' }}>
+                            <Flex style={[styles.tableContainer]}>
+                                <Table
+                                    leftProps={{
+                                        variant: 'icon',
+                                        leftText: 'Mon profil',
+                                        icon: <Profile />,
+                                    }}
+                                    rightProps={{
+                                        variant: 'empty',
+                                    }}
+                                    onPress={() => {
+                                        router.push('profile');
+                                    }}
+                                />
+                                <Table
+                                    leftProps={{
+                                        variant: 'icon',
+                                        leftText: 'Premium',
+                                        icon: <Subscription />,
+                                    }}
+                                    rightProps={{
+                                        variant: 'empty',
+                                    }}
+                                    onPress={() => {
+                                        router.push('premium');
+                                    }}
+                                />
+                                <Table
+                                    leftProps={{
+                                        variant: 'icon',
+                                        leftText: 'Favoris',
+                                        icon: <Heart />,
+                                    }}
+                                    rightProps={{
+                                        variant: 'empty',
+                                    }}
+                                    onPress={() => {
+                                        router.push('favorites');
+                                    }}
+                                />
+                                <Table
+                                    leftProps={{
+                                        variant: 'icon',
+                                        leftText: 'Évaluations',
+                                        icon: <Star0 />,
+                                    }}
+                                    rightProps={{
+                                        variant: 'empty',
+                                    }}
+                                    onPress={() => {
+                                        router.push('evaluations');
+                                    }}
+                                />
+                                <Table
+                                    leftProps={{
+                                        variant: 'icon',
+                                        leftText: 'Mes trocs',
+                                        icon: <Troc />,
+                                    }}
+                                    rightProps={{
+                                        variant: 'text',
+                                        active: true,
+                                        rightText: '14 nov.',
+                                        chevron: false,
+                                    }}
+                                    onPress={() => {
+                                        router.push('trocs');
+                                    }}
+                                />
+                                <Table
+                                    leftProps={{
+                                        variant: 'icon',
+                                        leftText: 'Historique',
+                                        icon: <History />,
+                                    }}
+                                    rightProps={{
+                                        variant: 'empty',
+                                    }}
+                                    onPress={() => {
+                                        router.push('history');
+                                    }}
+                                />
+                            </Flex>
+
+                            <Divider padding />
+
+                            <Flex style={[styles.tableContainer]}>
+                                <Table
+                                    leftProps={{
+                                        variant: 'icon',
+                                        leftText: 'Centre d\'assistance',
+                                        icon: <Assistance />,
+                                    }}
+                                    rightProps={{
+                                        variant: 'empty',
+                                    }}
+                                    onPress={() => {
+                                        router.push('help_center');
+                                    }}
+                                />
+                                <Table
+                                    leftProps={{
+                                        variant: 'icon',
+                                        leftText: 'Paramètres',
+                                        icon: <Settings />,
+                                    }}
+                                    rightProps={{
+                                        variant: 'empty',
+                                    }}
+                                    onPress={() => {
+                                        router.push('settings');
+                                    }}
+                                />
+                            </Flex>
+                        </Flex>
+                        <Fade side="bottom" />
+                    </Flex>
+                </Flex>
+
+                <Flex style={{ paddingVertical: 16, width: '100%' }}>
+                    <Flex style={[styles.tableContainer]}>
+                        <Table
+                            leftProps={{
+                                variant: 'icon',
+                                leftText: theme === 'light' ? 'Mode clair' : 'Mode sombre',
+                                icon: theme === 'light' ? <Sun /> : <Moon filled />,
+                            }}
+                            rightProps={{
+                                variant: 'empty',
+                            }}
+                            onPress={() => {
+                                toggleTheme();
+                            }}
+                        />
+                    </Flex>
+                </Flex>
             </Flex>
-            <DrawerItem
-                label={() => <Text variant="body_Large" type='primary'>Mon profil</Text>}
-                icon={() => <Profile />}
-                onPress={() => {
-                    router.push('/profile');
-                }}
-                style={[styles.drawerItem, {}]}
-            />
-            <DrawerItem
-                label={() => <Text variant="body_Large" type='primary'>Premium</Text>}
-                icon={() => <Subscription />}
-                onPress={() => {
-                    router.push('/premium');
-                }}
-                style={[styles.drawerItem, {}]}
-            />
-            <DrawerItem
-                label={() => <Text variant="body_Large" type='primary'>Favoris</Text>}
-                icon={() => <Heart />}
-                onPress={() => {
-                    router.push('/favorites');
-                }}
-                style={[styles.drawerItem, {}]}
-            />
-            <DrawerItem
-                label={() => <Text variant="body_Large" type='primary'>Évaluations</Text>}
-                icon={() => <Star0 />}
-                onPress={() => {
-                    router.push('/evaluations');
-                }}
-                style={[styles.drawerItem, {}]}
-            />
-            <DrawerItem
-                label={() => <Text variant="body_Large" type='primary'>Mes trocs</Text>}
-                icon={() => <Troc />}
-                onPress={() => {
-                    router.push('/trocs');
-                }}
-                style={[styles.drawerItem, {}]}
-            />
-            <DrawerItem
-                label={() => <Text variant="body_Large" type='primary'>Historique</Text>}
-                icon={() => <History />}
-                onPress={() => {
-                    router.push('/history');
-                }}
-                style={[styles.drawerItem, {}]}
-            />
-            <DrawerItem
-                label={() => <Text variant="body_Large" type='primary'>Centre d'assistance</Text>}
-                icon={() => <Assistance />}
-                onPress={() => {
-                    router.push('/help_center');
-                }}
-                style={[styles.drawerItem, {}]}
-            />
-            <DrawerItem
-                label={() => <Text variant="body_Large" type='primary'>Paramètres</Text>}
-                icon={() => <Settings />}
-                onPress={() => {
-                    router.push('/settings');
-                }}
-                style={[styles.drawerItem, {}]}
-            />
         </DrawerContentScrollView>
     );
 };
 
 export default function Layout() {
-    const { activeTheme } = useTheme();
-
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <Drawer
@@ -118,7 +210,7 @@ export default function Layout() {
                 screenOptions={{
                     headerShown: false,
                     drawerStyle: {
-                        backgroundColor: activeTheme.colors.surface.secondary,
+                        backgroundColor: 'transparent',
                         width: '85%',
                     },
                     drawerPosition: 'right',
@@ -136,17 +228,24 @@ const styles = StyleSheet.create({
     drawer: {
 
     },
-    drawerContent: {
-        padding: 0,
-        margin: 0,
+    drawerContentContainer: {
+        flex: 1,
+        // backgroundColor: 'rgba(8, 82, 112, 0.1)',
 
-        borderWidth: 1,
-        borderColor: 'black',
+        paddingTop: 0,
+        paddingBottom: 0,
+        paddingInlineStart: 0,
+        paddingInlineEnd: 0,
+    },
+    drawerContent: {
+        // borderWidth: 2,
+        // borderColor: 'green',
     },
     drawerItem: {
         backgroundColor: 'tomato',
     },
-    table: {
-
+    tableContainer: {
+        width: '100%',
+        paddingInline: 16,
     },
 });

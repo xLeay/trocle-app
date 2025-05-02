@@ -1,11 +1,15 @@
 import React from 'react';
+import { Platform } from 'react-native';
 import { useTheme } from '@/src/hooks/useTheme';
 import { useAuthStore } from '@/src/state/authStore';
 import { useFonts } from 'expo-font';
 import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+// TODO: Remove this when the React Native Safe Area Context is working and import the SafeAreaView from react-native-safe-area-context
+import CustomSafeAreaView from '#/CustomSafeAreaView';
 
 import TopAppBar from '@/src/components/display/TopAppBar/TopAppBar';
 import * as NavigationBar from 'expo-navigation-bar';
@@ -17,7 +21,7 @@ import useTopAppBar from '@/src/hooks/useTopAppBar';
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-    const { theme, activeTheme } = useTheme();
+    const { theme, activeTheme, version } = useTheme();
     const router = useRouter();
 
     // const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -55,7 +59,7 @@ export default function RootLayout() {
         };
 
         applyNavigationBarStyle();
-    }, [theme, activeTheme.colors.surface.secondary]);
+    }, [theme, activeTheme.colors.surface.secondary, version]);
 
 
     // Config de la top app bar
@@ -68,7 +72,7 @@ export default function RootLayout() {
     return (
         <React.Fragment>
             <SafeAreaProvider>
-                <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: activeTheme.colors.surface.secondary }}>
+                <CustomSafeAreaView style={{ flex: 1, backgroundColor: activeTheme.colors.surface.secondary }}>
                     <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
                     <Stack
                         screenOptions={{
@@ -90,7 +94,7 @@ export default function RootLayout() {
                             name="(drawer)"
                         />
                     </Stack>
-                </SafeAreaView>
+                </CustomSafeAreaView>
             </SafeAreaProvider>
         </React.Fragment >
     );

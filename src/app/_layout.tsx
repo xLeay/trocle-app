@@ -68,6 +68,24 @@ export default function RootLayout() {
         label: '_Layout',
     });
 
+
+    // Nécessite : canGoBack: boolean, onBack: function, label: string
+    function HomeHeader() {
+        const { left, center, right } = useTopAppBar("_small", {
+            canGoBack: false,
+            onBack: () => console.log('Retour'),
+            label: "Accueil",
+        });
+
+        return (
+            <TopAppBar
+                left={left}
+                center={center}
+                right={right}
+            />
+        );
+    }
+
     if (!loaded && !error) { return null; }
     return (
         <React.Fragment>
@@ -80,18 +98,33 @@ export default function RootLayout() {
                                 backgroundColor: activeTheme.colors.surface.secondary,
                             },
                             headerShown: false,
-                            header: () => (
-                                <TopAppBar
-                                    left={left}
-                                    center={center}
-                                    right={right}
-                                />
-                            ),
+                            // header: () => (
+                            //     <TopAppBar
+                            //         left={left}
+                            //         center={center}
+                            //         right={right}
+                            //     />
+                            // ),
                         }
                         }
                     >
                         <Stack.Screen
                             name="(drawer)"
+                        />
+                        <Stack.Screen
+                            name="auth/login"
+                        />
+                        <Stack.Screen
+                            name="home/home"
+                            options={{
+                                title: "Accueil",
+                            }}
+                        />
+                        <Stack.Screen
+                            name="modal/creation"
+                            options={{
+                                headerShown: true,
+                            }}
                         />
                     </Stack>
                 </CustomSafeAreaView>

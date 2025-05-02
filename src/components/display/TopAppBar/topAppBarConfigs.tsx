@@ -85,30 +85,35 @@ const topAppBarConfigs = {
     },
 
     _small: {
-        // Nécessite : canGoBack: boolean, onBack: function, label: string
-        left: ({ canGoBack, onBack, label }: TopAppBarProps) => (
+        // Nécessite : canGoBack: boolean, onBack: function, label: string, iconName: string
+        left: ({ canGoBack, onBack, label, iconName }: TopAppBarProps) => (
             <Flex direction="row" gap={16} style={{ flex: 1 }}>
                 {canGoBack ? (
-                    <Button icon={<Arrowleft />} variant="ghost" size="small" onPress={onBack} />
+                    <Button icon={iconName ? React.createElement(iconName) : <Arrowleft />} variant="ghost" size="small" onPress={onBack} />
                 ) : <View style={{ width: 32 }} />}
                 <Text variant="title_Medium">{label}</Text>
             </Flex>
         ),
         center: null,
         // Nécessite : rightArea: {iconName?: nomIcone; onPress: function}[]
-        right: ({ rightArea }: TopAppBarProps) => (
-            <Flex direction="row" gap={8}>
-                {rightArea?.map((action, idx) => (
-                    <Button
-                        key={idx}
-                        icon={action.iconName ? React.createElement(action.iconName) : <Circle />}
-                        variant="ghost"
-                        size="small"
-                        onPress={action.onPress}
-                    />
-                ))}
-            </Flex>
-        ),
+        right: ({ rightArea }: TopAppBarProps) => {
+            if (!rightArea || rightArea.length === 0) {
+                return null;
+            }
+            return (
+                <Flex direction="row" gap={8}>
+                    {rightArea.map((action, idx) => (
+                        <Button
+                            key={idx}
+                            icon={action.iconName ? React.createElement(action.iconName) : <Circle />}
+                            variant="ghost"
+                            size="small"
+                            onPress={action.onPress}
+                        />
+                    ))}
+                </Flex>
+            );
+        },
     },
 
     _medium: {

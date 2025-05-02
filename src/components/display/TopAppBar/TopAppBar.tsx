@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
         height: 1,
     },
     isNotNull: {
-        paddingHorizontal: 8,
+        paddingHorizontal: 16,
         flex: 1,
     },
     isNull: {

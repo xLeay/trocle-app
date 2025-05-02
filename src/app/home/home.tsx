@@ -55,13 +55,6 @@ export default function Index() {
     });
 
     // Config de la navigation bar
-    // const navBarList={[
-    //     { icon: <Home /> },
-    //     { icon: <Home /> },
-    //     { icon: <Home /> },
-    //     { icon: <Home /> },
-    //     { avatar: { customImage: require('@/assets/icon.png'), focused: false } },
-    // ]}
     const navBarList = [
         { icon: <Troc filled /> },
         { icon: <Compass /> },
@@ -81,13 +74,13 @@ export default function Index() {
             <Stack.Screen
                 options={{
                     headerShown: true,
-                    header: () => (
-                        <TopAppBar
-                            left={left}
-                            center={center}
-                            right={right}
-                        />
-                    ),
+                    // header: () => (
+                    //     <TopAppBar
+                    //         left={left}
+                    //         center={center}
+                    //         right={right}
+                    //     />
+                    // ),
                 }}
             />
 

@@ -72,7 +72,7 @@ const CustomDrawer = (props: any) => {
                                         variant: 'empty',
                                     }}
                                     onPress={() => {
-                                        router.push('profile');
+                                        router.push('user/profile');
                                     }}
                                 />
                                 <Table
@@ -206,7 +206,7 @@ export default function Layout() {
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <Drawer
-                defaultStatus="open"
+                defaultStatus="closed"
                 screenOptions={{
                     headerShown: false,
                     drawerStyle: {
@@ -218,7 +218,6 @@ export default function Layout() {
 
                 }}
                 drawerContent={(props) => <CustomDrawer {...props} />}
-
             />
         </GestureHandlerRootView>
     );

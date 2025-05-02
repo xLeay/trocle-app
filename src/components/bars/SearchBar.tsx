@@ -64,7 +64,7 @@ const SearchBar = ({
         : activeTheme.colors.text.placeholder;
 
     return (
-        <Flex gap={0} style={[styles.container]}>
+        <Flex direction='row' gap={0} style={[styles.container]}>
             <Pressable style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}
                 onPress={() => {
                     if (inputRef.current) {
@@ -73,8 +73,8 @@ const SearchBar = ({
                     setIsFocused(true);
                 }}
             >
-                <Flex style={[styles.inputContainer, { backgroundColor: activeTheme.colors.component.searchBar.background }]}>
-                    <Flex gap={8} style={[styles.left]}>
+                <Flex direction='row' style={[styles.inputContainer, { backgroundColor: activeTheme.colors.component.searchBar.background }]}>
+                    <Flex direction='row' gap={8} style={[styles.left]}>
                         <Search color={searchColor} />
                         <TextInput
                             ref={inputRef}

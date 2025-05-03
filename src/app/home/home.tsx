@@ -74,13 +74,13 @@ export default function Index() {
             <Stack.Screen
                 options={{
                     headerShown: true,
-                    // header: () => (
-                    //     <TopAppBar
-                    //         left={left}
-                    //         center={center}
-                    //         right={right}
-                    //     />
-                    // ),
+                    header: () => (
+                        <TopAppBar
+                            left={left}
+                            center={center}
+                            right={right}
+                        />
+                    ),
                 }}
             />
 

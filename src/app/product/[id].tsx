@@ -1,14 +1,13 @@
 import { View, StyleSheet } from 'react-native';
 import { Stack, router } from 'expo-router';
-import { Link } from 'expo-router';
 
 import useTopAppBar from '@/src/hooks/useTopAppBar';
 import Text from '#/Text';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
-import { Close } from '#/icons';
+import { Arrowleft } from '#/icons';
 
-export default function Modal() {
+export default function Product() {
 
     // Config de la top app bar
     const topAppBarConfig = "_small";
@@ -16,10 +15,10 @@ export default function Modal() {
     const onBack = () => { canGoBack && router.back() };
 
     const { left, center, right } = useTopAppBar(topAppBarConfig, {
-        iconName: Close,
+        iconName: Arrowleft,
         canGoBack,
         onBack,
-        label: 'Poste ton article',
+        label: 'Paramètres',
     });
 
     return (
@@ -35,8 +34,7 @@ export default function Modal() {
                     ),
                 }}
             />
-            <Text>Modal Index</Text>
-            {canGoBack && <Link href="../"><Text>Dismiss modal</Text></Link>}
+            <Text>Product</Text>
         </View>
     );
 }

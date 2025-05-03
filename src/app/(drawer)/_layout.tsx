@@ -31,12 +31,12 @@ const CustomDrawer = (props: any) => {
                     <Flex gap={4} style={{ width: '100%', paddingTop: 16, paddingHorizontal: 16 }}>
                         <Flex gap={4} alignItems='flex-start' style={{ width: '100%', paddingHorizontal: 16 }}>
                             <Avatar size="medium" customImage={require('@/assets/icon.png')} onPress={() => {
-                                router.push('profile');
+                                router.push('user/profile');
                             }} />
                             <Flex>
                                 <Text variant='title_Small'>xLeay</Text>
                             </Flex>
-                            <Flex direction='row' gap={8}>
+                            <Flex direction='row' alignItems='center' gap={8}>
                                 <Link href='/user/followers'>
                                     <Flex gap={4} direction='row'>
                                         <Text variant='label_Large'>12</Text>
@@ -85,7 +85,7 @@ const CustomDrawer = (props: any) => {
                                         variant: 'empty',
                                     }}
                                     onPress={() => {
-                                        router.push('premium');
+                                        router.push('shop/premium');
                                     }}
                                 />
                                 <Table
@@ -171,7 +171,7 @@ const CustomDrawer = (props: any) => {
                                         variant: 'empty',
                                     }}
                                     onPress={() => {
-                                        router.push('settings');
+                                        router.push('settings/settings');
                                     }}
                                 />
                             </Flex>

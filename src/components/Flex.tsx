@@ -21,13 +21,13 @@ const Flex = forwardRef<any, Props>(({
     gap = 0,
     direction = 'column',
     justifyContent = 'flex-start',
-    alignItems = 'center',
+    alignItems = 'flex-start',
     border = false,
     borderColor = '#000',
     borderWidth = 1,
     scroll = false,
     scrollProps = {},
-    overflow = 'hidden',
+    overflow = 'visible',
     children,
     ...props
 }, ref) => {

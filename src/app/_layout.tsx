@@ -115,6 +115,24 @@ export default function RootLayout() {
                             name="auth/login"
                         />
                         <Stack.Screen
+                            name="user/profile"
+                            options={{
+                                headerShown: true,
+                            }}
+                        />
+                        <Stack.Screen
+                            name="user/followers"
+                            options={{
+                                headerShown: true,
+                            }}
+                        />
+                        <Stack.Screen
+                            name="user/following"
+                            options={{
+                                headerShown: true,
+                            }}
+                        />
+                        <Stack.Screen
                             name="home/home"
                             options={{
                                 title: "Accueil",
@@ -122,6 +140,54 @@ export default function RootLayout() {
                         />
                         <Stack.Screen
                             name="modal/creation"
+                            options={{
+                                headerShown: true,
+                            }}
+                        />
+                        <Stack.Screen
+                            name="shop/premium"
+                            options={{
+                                headerShown: true,
+                            }}
+                        />
+                        <Stack.Screen
+                            name="favorites"
+                            options={{
+                                headerShown: true,
+                            }}
+                        />
+                        <Stack.Screen
+                            name="evaluations"
+                            options={{
+                                headerShown: true,
+                            }}
+                        />
+                        <Stack.Screen
+                            name="trocs"
+                            options={{
+                                headerShown: true,
+                            }}
+                        />
+                        <Stack.Screen
+                            name="history"
+                            options={{
+                                headerShown: true,
+                            }}
+                        />
+                        <Stack.Screen
+                            name="help_center"
+                            options={{
+                                headerShown: true,
+                            }}
+                        />
+                        <Stack.Screen
+                            name="settings/settings"
+                            options={{
+                                headerShown: true,
+                            }}
+                        />
+                        <Stack.Screen
+                            name="product/[id]"
                             options={{
                                 headerShown: true,
                             }}

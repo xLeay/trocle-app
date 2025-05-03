@@ -73,8 +73,8 @@ const SearchBar = ({
                     setIsFocused(true);
                 }}
             >
-                <Flex direction='row' style={[styles.inputContainer, { backgroundColor: activeTheme.colors.component.searchBar.background }]}>
-                    <Flex direction='row' gap={8} style={[styles.left]}>
+                <Flex direction='row' alignItems='center' style={[styles.inputContainer, { backgroundColor: activeTheme.colors.component.searchBar.background }]}>
+                    <Flex direction='row' alignItems='center' gap={8} style={[styles.left]}>
                         <Search color={searchColor} />
                         <TextInput
                             ref={inputRef}

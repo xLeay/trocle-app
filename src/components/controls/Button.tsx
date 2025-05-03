@@ -1,5 +1,5 @@
 import React, { forwardRef, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, View, ViewStyle, StyleSheet } from 'react-native';
 import Animated, {
     interpolateColor,
     useAnimatedStyle,
@@ -8,12 +8,28 @@ import Animated, {
     withTiming,
 } from 'react-native-reanimated';
 
+import { LinearGradient } from 'expo-linear-gradient';
+
 import { useTheme } from '@/src/hooks/useTheme';
 import { styles } from '@/src/styles/button.styles';
 
 import Text from '#/Text';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'outlined' | 'ghost';
+interface IconProps {
+    color?: string;
+    fill?: string;
+}
+
+export type ButtonVariant =
+    | 'primary'
+    | 'secondary'
+    | 'tertiary'
+    | 'outlined'
+    | 'ghost'
+    | 'transparent'
+    | 'gradient'
+    ;
+
 export type ButtonSize = 'small' | 'large' | 'FAB';
 export type IconPosition = 'left' | 'right' | 'only';
 
@@ -95,6 +111,9 @@ const Button = forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>(({
                 ] : variant === 'ghost' ? [
                     'transparent',
                     'transparent'
+                ] : variant === 'transparent' ? [
+                    activeTheme.colors.surface.transparent,
+                    activeTheme.colors.surface.transparentContrast
                 ] : [
                     activeTheme.colors.component.button.disabled,
                     activeTheme.colors.component.button.disabled
@@ -107,7 +126,7 @@ const Button = forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>(({
         ? activeTheme.colors.surface.field
         : variant === 'primary'
             ? 'white'
-            : variant === 'secondary'
+            : variant === 'secondary' || variant === 'transparent'
                 ? activeTheme.colors.text.invert
                 : variant === 'ghost'
                     ? activeTheme.colors.component.button.ghost
@@ -163,6 +182,11 @@ const Button = forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>(({
         iconPosition === 'left' ? styles.iconLeft : styles.iconRight,
     ];
 
+    const gradientColors = variant === 'gradient' ? [
+        activeTheme.colors.gradient.primaryGradient.colors[0],
+        activeTheme.colors.gradient.primaryGradient.colors[1]
+    ] : [];
+
 
     return (
         <Animated.View style={[styles.animatedView, animatedStyle, variantButtonStyles]}>
@@ -176,20 +200,26 @@ const Button = forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>(({
                 disabled={disabled}
                 {...rest}
             >
+                {variant === 'gradient' && (
+                    <LinearGradient
+                        colors={[gradientColors[0], gradientColors[1]]}
+                        style={[StyleSheet.absoluteFill, variantButtonStyles, { zIndex: -1 }]}
+                    />
+                )}
                 <View style={contentStyles}>
                     {hasIcon && iconPosition && (
                         <View style={[hasLabel && styles.iconLeft]}>
                             {React.isValidElement(icon)
                                 ? React.cloneElement(icon as React.ReactElement<any>, {
-                                    color: icon.props.color ?? iconColor,
-                                    fill: icon.props.fill ?? iconColor,
+                                    color: (icon.props as IconProps).color ?? iconColor,
+                                    fill: (icon.props as IconProps).fill ?? iconColor,
                                 })
                                 : icon}
                         </View>
                     )}
 
                     {hasLabel && !isIconOnly && (
-                        <Text variant="button_Large" style={[styles.text, { color: textColor }]}>
+                        <Text variant="button_Large" containerStyle={[styles.text]} style={{ color: textColor }}>
                             {label}
                         </Text>
                     )}

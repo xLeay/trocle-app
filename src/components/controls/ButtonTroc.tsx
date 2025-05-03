@@ -10,7 +10,7 @@ import Animated, {
 
 import { useTheme } from '@/src/hooks/useTheme';
 
-import { Close, Heart, Refresh } from '#/icons';
+import { Close, Heart, Refresh, Troclike, Trocpass, Trocreroll } from '#/icons';
 
 export type ButtonType = 'pass' | 'like' | 'reroll';
 export type ButtonColor = 'mono' | 'default';
@@ -135,11 +135,11 @@ const ButtonTroc = forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>
             >
                 <View style={[styles.content]}>
                     {type === 'pass' ? (
-                        <Close size={40} {...getIconProps()} />
+                        <Trocpass size={24} {...getIconProps()} />
                     ) : type === 'like' ? (
-                        <Heart size={40} filled {...getIconProps()} />
+                        <Troclike size={24} {...getIconProps()} />
                     ) : (
-                        <Refresh size={24} color={iconColor} />
+                        <Trocreroll size={18} color={iconColor} />
                     )}
                 </View>
             </Pressable>

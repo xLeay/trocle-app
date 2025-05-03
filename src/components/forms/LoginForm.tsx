@@ -1,4 +1,3 @@
-import useLogin from '@/src/hooks/useLogin';
 import React, { useState } from 'react';
 import { ActivityIndicator, StyleSheet, TextInput, View } from 'react-native';
 
@@ -9,11 +8,7 @@ import Button from '@/src/components/controls/Button';
 export default function LoginForm() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { loginUser, loading, error } = useLogin();
 
-    const handleLogin = () => {
-        loginUser(email, password);
-    };
 
     return (
         <View style={styles.form}>
@@ -30,12 +25,7 @@ export default function LoginForm() {
                 onChangeText={setPassword}
                 style={styles.input}
             />
-            {loading ? (
-                <ActivityIndicator />
-            ) : (
-                <Button label="Se connecter" variant='primary' size='large' fullWidth={false} onPress={handleLogin} />
-            )}
-            {error && <Text variant='body_Large'>{error}</Text>}
+            <Button label="Se connecter" variant='primary' size='large' fullWidth={false} />
         </View>
     );
 }

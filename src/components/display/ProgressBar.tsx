@@ -7,6 +7,7 @@ interface ProgressBarProps {
     type?: 'primary' | 'mono';
     height?: number;
     style?: ViewStyle;
+    isActive?: boolean;
 }
 
 const ProgressBar = ({
@@ -14,6 +15,7 @@ const ProgressBar = ({
     type = 'primary',
     height = 4,
     style,
+    isActive = false,
 }: ProgressBarProps) => {
     const { activeTheme } = useTheme();
     const animatedWidth = useRef(new Animated.Value(0)).current;
@@ -21,7 +23,7 @@ const ProgressBar = ({
     useEffect(() => {
         Animated.timing(animatedWidth, {
             toValue: progress,
-            duration: 300,
+            duration: 50,
             useNativeDriver: false,
         }).start();
     }, [progress]);
@@ -53,7 +55,7 @@ export default ProgressBar;
 
 const styles = StyleSheet.create({
     outerBar: {
-        width: 225,
+        width: '100%',
         borderRadius: 50,
         overflow: 'hidden',
     },

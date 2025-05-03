@@ -16,28 +16,6 @@ import { Preferences } from '#/icons';
 
 export default function TabLayout() {
     const { activeTheme } = useTheme();
-    const router = useRouter();
-
-    // Config de la top app bar
-    // const topAppBarConfig = "_small";
-    // const canGoBack = router.canGoBack();
-    // const onBack = () => { canGoBack && router.back() };
-
-    // const { left, center, right } = useTopAppBar(topAppBarConfig, {
-    //     canGoBack,
-    //     onBack,
-    //     label: 'Titre',
-    //     rightArea: [
-    //         {
-    //             iconName: Search,
-    //             onPress: () => alert('Recherche !'),
-    //         },
-    //         {
-    //             iconName: Circle,
-    //             onPress: () => alert('Icône !'),
-    //         },
-    //     ],
-    // });
 
     function HomeHeader() {
         const { left, center, right } = useTopAppBar("_application", {
@@ -51,45 +29,6 @@ export default function TabLayout() {
                 center={center}
                 right={right}
             />
-        );
-    }
-
-    function DiscoverHeader() {
-        const [search, setSearch] = useState('');
-        const { left, center, right } = useTopAppBar("_search", {
-            search: search,
-            setSearch: setSearch,
-            placeHolder: "Recherche",
-        });
-
-        return (
-            <TopAppBar
-                style={{ flex: 1 }}
-                left={left}
-                center={center}
-                right={right}
-            />
-        );
-    }
-
-    function MessagesHeader() {
-        const [search, setSearch] = useState('');
-        const { left, center, right } = useTopAppBar("_search", {
-            search: search,
-            setSearch: setSearch,
-            placeHolder: "Recherche",
-        });
-
-        return (
-            <Flex direction="row" style={{ backgroundColor: activeTheme.colors.surface.secondary }}>
-                <TopAppBar
-                    style={{ flex: 1 }}
-                    left={left}
-                    center={center}
-                    right={right}
-                />
-                <Button icon={<Notification />} variant="ghost" size="small" onPress={() => console.log('Rechercher')} />
-            </Flex>
         );
     }
 
@@ -113,7 +52,6 @@ export default function TabLayout() {
                     justifyContent: 'center',
                     marginBottom: 0,
                 },
-                // headerShown: false,
             }}
         >
             <Tabs.Screen
@@ -129,7 +67,6 @@ export default function TabLayout() {
                 options={{
                     title: 'Discover',
                     tabBarIcon: ({ color, focused }) => <Compass filled={focused} size={36} color={color} />,
-                    header: () => <DiscoverHeader />,
                 }}
             />
             <Tabs.Screen
@@ -147,7 +84,6 @@ export default function TabLayout() {
                 options={{
                     title: 'Messages',
                     tabBarIcon: ({ color, focused }) => <Bubble filled={focused} size={36} color={color} />,
-                    header: () => <MessagesHeader />,
                 }}
             />
             <Tabs.Screen

@@ -34,7 +34,7 @@ export const styles = StyleSheet.create({
     },
     text: {
         marginHorizontal: 8,
-
+        
         // borderWidth: 1,
         // borderColor: 'purple',
     },

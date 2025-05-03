@@ -29,7 +29,6 @@ export default function Profile() {
         <View style={styles.container}>
             <Stack.Screen
                 options={{
-                    title: "Profildd",
                     headerShown: true,
                     header: () => (
                         <TopAppBar

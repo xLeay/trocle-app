@@ -19,8 +19,8 @@ export type TextVariant =
 
 interface Props {
     children: React.ReactNode;
-    style?: TextStyle[];
-    containerStyle?: ViewStyle;
+    style?: TextStyle;
+    containerStyle?: ViewStyle[];
     type?: 'primary' | 'secondary' | 'placeholder' | 'invert' | 'brand';
     variant?: TextVariant;
     onPress?: () => void;
@@ -48,7 +48,7 @@ const Text: React.FC<Props> = ({
     const combinedStyle = useMemo(() => [
         activeTheme.typography[variant],
         { color: activeTheme.colors.text[type] },
-        ...(style || []),
+        style,
     ], [activeTheme, type, variant, style]);
 
     const textElement = (

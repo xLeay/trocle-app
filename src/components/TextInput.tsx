@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import { TextInput as RNTextInput, TextInputProps, TextStyle, View, ViewStyle, StyleSheet } from 'react-native';
-import { useTheme } from '@/src/hooks/useTheme';
+import { useTheme } from '@/src/lib/hooks/useTheme';
 import { TextVariant } from './Text';
 
 type Props = React.ComponentProps<typeof RNTextInput> & {

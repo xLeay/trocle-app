@@ -6,8 +6,8 @@ import Text from '#/Text';
 import Button from '#/controls/Button';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
-import { useTheme } from '@/src/hooks/useTheme';
-import useTopAppBar from '@/src/hooks/useTopAppBar';
+import { useTheme } from '@/src/lib/hooks/useTheme';
+import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 
 // [[[[[[[[[]]]]]]]]]

@@ -1,12 +1,13 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { useTheme } from '@/src/hooks/useTheme';
+import { useTheme } from '@/src/lib/hooks/useTheme';
 import { useAuthStore } from '@/src/state/authStore';
 import { useFonts } from 'expo-font';
 import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // TODO: Remove this when the React Native Safe Area Context is working and import the SafeAreaView from react-native-safe-area-context
 import CustomSafeAreaView from '#/CustomSafeAreaView';
@@ -16,7 +17,7 @@ import * as NavigationBar from 'expo-navigation-bar';
 import { StatusBar } from 'expo-status-bar';
 
 
-import useTopAppBar from '@/src/hooks/useTopAppBar';
+import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -69,130 +70,118 @@ export default function RootLayout() {
     });
 
 
-    // Nécessite : canGoBack: boolean, onBack: function, label: string
-    function HomeHeader() {
-        const { left, center, right } = useTopAppBar("_small", {
-            canGoBack: false,
-            onBack: () => console.log('Retour'),
-            label: "Accueil",
-        });
-
-        return (
-            <TopAppBar
-                left={left}
-                center={center}
-                right={right}
-            />
-        );
-    }
+    // Client React Query
+    const queryClient = new QueryClient();
 
     if (!loaded && !error) { return null; }
     return (
         <React.Fragment>
             <SafeAreaProvider>
                 <CustomSafeAreaView style={{ flex: 1, backgroundColor: activeTheme.colors.surface.secondary }}>
-                    <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
-                    <Stack
-                        screenOptions={{
-                            headerStyle: {
-                                backgroundColor: activeTheme.colors.surface.secondary,
-                            },
-                            headerShown: false,
-                            // header: () => (
-                            //     <TopAppBar
-                            //         left={left}
-                            //         center={center}
-                            //         right={right}
-                            //     />
-                            // ),
-                        }
-                        }
-                    >
-                        <Stack.Screen
-                            name="(drawer)"
-                        />
-                        <Stack.Screen
-                            name="auth/login"
-                        />
-                        <Stack.Screen
-                            name="user/profile"
-                            options={{
-                                headerShown: true,
-                            }}
-                        />
-                        <Stack.Screen
-                            name="user/followers"
-                            options={{
-                                headerShown: true,
-                            }}
-                        />
-                        <Stack.Screen
-                            name="user/following"
-                            options={{
-                                headerShown: true,
-                            }}
-                        />
-                        <Stack.Screen
-                            name="home/home"
-                            options={{
-                                title: "Accueil",
-                            }}
-                        />
-                        <Stack.Screen
-                            name="modal/creation"
-                            options={{
-                                headerShown: true,
-                            }}
-                        />
-                        <Stack.Screen
-                            name="shop/premium"
-                            options={{
-                                headerShown: true,
-                            }}
-                        />
-                        <Stack.Screen
-                            name="favorites"
-                            options={{
-                                headerShown: true,
-                            }}
-                        />
-                        <Stack.Screen
-                            name="evaluations"
-                            options={{
-                                headerShown: true,
-                            }}
-                        />
-                        <Stack.Screen
-                            name="trocs"
-                            options={{
-                                headerShown: true,
-                            }}
-                        />
-                        <Stack.Screen
-                            name="history"
-                            options={{
-                                headerShown: true,
-                            }}
-                        />
-                        <Stack.Screen
-                            name="help_center"
-                            options={{
-                                headerShown: true,
-                            }}
-                        />
-                        <Stack.Screen
-                            name="settings/settings"
-                            options={{
-                                headerShown: true,
-                            }}
-                        />
-                        <Stack.Screen
-                            name="product/[id]"
-                            options={{
-                                headerShown: true,
-                            }}
-                        />
-                    </Stack>
+                    <QueryClientProvider client={queryClient}>
+                        <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
+                        <Stack
+                            screenOptions={{
+                                headerStyle: {
+                                    backgroundColor: activeTheme.colors.surface.secondary,
+                                },
+                                headerShown: false,
+                                // header: () => (
+                                //     <TopAppBar
+                                //         left={left}
+                                //         center={center}
+                                //         right={right}
+                                //     />
+                                // ),
+                            }
+                            }
+                        >
+                            <Stack.Screen
+                                name="(drawer)"
+                            />
+                            <Stack.Screen
+                                name="auth/login"
+                            />
+                            <Stack.Screen
+                                name="user/profile"
+                                options={{
+                                    headerShown: true,
+                                }}
+                            />
+                            <Stack.Screen
+                                name="user/followers"
+                                options={{
+                                    headerShown: true,
+                                }}
+                            />
+                            <Stack.Screen
+                                name="user/following"
+                                options={{
+                                    headerShown: true,
+                                }}
+                            />
+                            <Stack.Screen
+                                name="home/home"
+                                options={{
+                                    title: "Accueil",
+                                }}
+                            />
+                            <Stack.Screen
+                                name="modal/creation"
+                                options={{
+                                    headerShown: true,
+                                }}
+                            />
+                            <Stack.Screen
+                                name="shop/premium"
+                                options={{
+                                    headerShown: true,
+                                }}
+                            />
+                            <Stack.Screen
+                                name="favorites"
+                                options={{
+                                    headerShown: true,
+                                }}
+                            />
+                            <Stack.Screen
+                                name="evaluations"
+                                options={{
+                                    headerShown: true,
+                                }}
+                            />
+                            <Stack.Screen
+                                name="trocs"
+                                options={{
+                                    headerShown: true,
+                                }}
+                            />
+                            <Stack.Screen
+                                name="history"
+                                options={{
+                                    headerShown: true,
+                                }}
+                            />
+                            <Stack.Screen
+                                name="help_center"
+                                options={{
+                                    headerShown: true,
+                                }}
+                            />
+                            <Stack.Screen
+                                name="settings/settings"
+                                options={{
+                                    headerShown: true,
+                                }}
+                            />
+                            <Stack.Screen
+                                name="product/[id]"
+                                options={{
+                                    headerShown: true,
+                                }}
+                            />
+                        </Stack>
+                    </QueryClientProvider>
                 </CustomSafeAreaView>
             </SafeAreaProvider>
         </React.Fragment >

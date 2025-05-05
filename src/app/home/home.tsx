@@ -1,4 +1,4 @@
-import { useTheme } from '@/src/hooks/useTheme';
+import { useTheme } from '@/src/lib/hooks/useTheme';
 import { Stack, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -6,7 +6,7 @@ import { StyleSheet, View } from 'react-native';
 import { Image } from 'expo-image';
 
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
-import useTopAppBar from '@/src/hooks/useTopAppBar';
+import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
 // Composants
 import Button from '#/controls/Button';

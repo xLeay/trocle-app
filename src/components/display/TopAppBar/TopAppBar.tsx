@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import { useTheme } from '@/src/hooks/useTheme';
+import { useTheme } from '@/src/lib/hooks/useTheme';
 
 // Composants
 import Flex from '#/Flex';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { useTheme } from '@/src/hooks/useTheme';
+import { useTheme } from '@/src/lib/hooks/useTheme';
 
 import AvatarProps from '#/display/Avatar';
 

@@ -1,6 +1,6 @@
 import * as React from "react"
 import Svg, { SvgProps, Path } from "react-native-svg"
-import { useTheme } from '@/src/hooks/useTheme';
+import { useTheme } from '@/src/lib/hooks/useTheme';
 
 type TrocleLogoFullVariant = 'enormous' | 'very_large' | 'large' | 'medium';
 

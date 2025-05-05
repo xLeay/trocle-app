@@ -7,7 +7,7 @@ import Animated, {
     withTiming,
 } from 'react-native-reanimated';
 
-import { useTheme } from '@/src/hooks/useTheme';
+import { useTheme } from '@/src/lib/hooks/useTheme';
 
 // Composants
 import Flex from '#/Flex';

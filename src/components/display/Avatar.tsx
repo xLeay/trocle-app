@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ViewStyle, ImageSourcePropType, Pressable, Text } from 'react-native';
 import { Image } from 'expo-image';
-import { useTheme } from '@/src/hooks/useTheme';
+import { useTheme } from '@/src/lib/hooks/useTheme';
 import Animated, {
     interpolateColor,
     useAnimatedStyle,

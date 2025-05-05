@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import { useTheme } from '@/src/hooks/useTheme';
+import { useTheme } from '@/src/lib/hooks/useTheme';
 
 interface DividerProps {
     type?: 'thin' | 'thick';
@@ -12,7 +12,6 @@ const Divider = ({
     type = 'thin',
     padding = false,
     style,
-
 }: DividerProps) => {
     const { activeTheme } = useTheme();
 

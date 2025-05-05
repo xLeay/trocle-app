@@ -10,7 +10,7 @@ import Animated, {
 
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { useTheme } from '@/src/hooks/useTheme';
+import { useTheme } from '@/src/lib/hooks/useTheme';
 import { styles } from '@/src/styles/button.styles';
 
 import Text from '#/Text';
@@ -126,7 +126,7 @@ const Button = forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>(({
         ? activeTheme.colors.surface.field
         : variant === 'primary'
             ? 'white'
-            : variant === 'secondary' || variant === 'transparent'
+            : variant === 'secondary' || variant === 'transparent' || variant === 'gradient'
                 ? activeTheme.colors.text.invert
                 : variant === 'ghost'
                     ? activeTheme.colors.component.button.ghost

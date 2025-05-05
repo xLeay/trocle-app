@@ -1,6 +1,6 @@
 import React, { useMemo, useRef } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
-import { useTheme } from '@/src/hooks/useTheme';
+import { useTheme } from '@/src/lib/hooks/useTheme';
 import { TextInput as RNTextInput } from 'react-native';
 
 // Composants

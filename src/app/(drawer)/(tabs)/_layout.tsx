@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Pressable } from 'react-native';
 import { Link, Tabs, useRouter } from 'expo-router';
-import { useTheme } from '@/src/hooks/useTheme';
+import { useTheme } from '@/src/lib/hooks/useTheme';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { useDrawerStatus } from '@react-navigation/drawer';
 
@@ -11,7 +11,7 @@ import { Troc, Compass, Plus, Bubble, Arrowleft, Notification } from '#/icons';
 import Flex from '#/Flex';
 import Button from '#/controls/Button';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
-import useTopAppBar from '@/src/hooks/useTopAppBar';
+import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 import { Preferences } from '#/icons';
 
 export default function TabLayout() {

@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet } from 'react-native';
-import { useTheme } from '@/src/hooks/useTheme';
+import { useTheme } from '@/src/lib/hooks/useTheme';
 
 import { ImageBackground } from 'expo-image';
 
@@ -29,7 +29,7 @@ export default function Tab() {
     const intervalRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
     const DURATION = 5000; // temps par photo
-    const PROGRESS_STEP = 100; // fréquence de mise à jour (ms)
+    const PROGRESS_STEP = 300; // fréquence de mise à jour (ms)
 
     const startProgress = () => {
         clearInterval(intervalRef.current);

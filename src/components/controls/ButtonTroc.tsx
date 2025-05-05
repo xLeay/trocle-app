@@ -8,7 +8,7 @@ import Animated, {
     withTiming,
 } from 'react-native-reanimated';
 
-import { useTheme } from '@/src/hooks/useTheme';
+import { useTheme } from '@/src/lib/hooks/useTheme';
 
 import { Close, Heart, Refresh, Troclike, Trocpass, Trocreroll } from '#/icons';
 

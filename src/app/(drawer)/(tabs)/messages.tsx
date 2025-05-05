@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Stack } from 'expo-router';
 
-import useTopAppBar from '@/src/hooks/useTopAppBar';
-import { useTheme } from '@/src/hooks/useTheme';
+import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
+import { useTheme } from '@/src/lib/hooks/useTheme';
 
 import Button from '#/controls/Button';
 import Flex from '#/Flex';

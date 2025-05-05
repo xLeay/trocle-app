@@ -10,7 +10,7 @@ import Animated, {
     Easing,
 } from 'react-native-reanimated';
 
-import { useTheme } from '@/src/hooks/useTheme';
+import { useTheme } from '@/src/lib/hooks/useTheme';
 
 interface SwitchProps {
     checked?: boolean;

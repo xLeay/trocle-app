@@ -1,7 +1,7 @@
 import React, { act } from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
 
-import { useTheme } from '@/src/hooks/useTheme';
+import { useTheme } from '@/src/lib/hooks/useTheme';
 
 import Text from '#/Text';
 

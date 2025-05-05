@@ -4,7 +4,7 @@ import { Drawer } from 'expo-router/drawer';
 import { DrawerContentScrollView, DrawerItem, DrawerItemList } from '@react-navigation/drawer';
 import { router, Link } from 'expo-router';
 
-import { useTheme } from '@/src/hooks/useTheme';
+import { useTheme } from '@/src/lib/hooks/useTheme';
 
 import Text from '#/Text';
 import Flex from '#/Flex';

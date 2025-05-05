@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { Stack } from 'expo-router';
 import { router } from 'expo-router';
-import useTopAppBar from '@/src/hooks/useTopAppBar';
+import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 import { Share } from '#/icons';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 

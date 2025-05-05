@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { Text as RNText, View, TextStyle, ViewStyle } from 'react-native';
-import { useTheme } from '@/src/hooks/useTheme';
+import { Text as RNText, View, TextStyle, ViewStyle, TextProps as RNTextProps } from 'react-native';
+import { useTheme } from '@/src/lib/hooks/useTheme';
 
 export type TextVariant =
     | 'display_Large'
@@ -17,10 +17,10 @@ export type TextVariant =
     | 'label_Small'
     | 'button_Large';
 
-interface Props {
+interface Props extends RNTextProps {
     children: React.ReactNode;
     style?: TextStyle;
-    containerStyle?: ViewStyle[];
+    containerStyle?: ViewStyle;
     type?: 'primary' | 'secondary' | 'placeholder' | 'invert' | 'brand';
     variant?: TextVariant;
     onPress?: () => void;
@@ -33,17 +33,9 @@ const Text: React.FC<Props> = ({
     type = 'primary',
     variant = 'body_Large',
     onPress,
+    ...rest
 }) => {
     const { activeTheme } = useTheme();
-
-    // const typography = activeTheme.typography[variant] || {};
-    // const color = activeTheme.colors.text[type];
-
-    // const textStyles: TextStyle[] = [
-    //     typography || {},
-    //     { color },
-    //     ...(style || []),
-    // ];
 
     const combinedStyle = useMemo(() => [
         activeTheme.typography[variant],
@@ -52,7 +44,7 @@ const Text: React.FC<Props> = ({
     ], [activeTheme, type, variant, style]);
 
     const textElement = (
-        <RNText style={combinedStyle} onPress={onPress}>
+        <RNText style={combinedStyle} onPress={onPress} {...rest}>
             {children}
         </RNText>
     );

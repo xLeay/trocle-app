@@ -23,7 +23,7 @@ export default function Tab() {
     });
 
     return (
-        <View style={[styles.container, { backgroundColor: activeTheme.colors.surface.primary }]}>
+        <View style={[styles.container, { backgroundColor: activeTheme.colors.surface.secondary }]}>
             <Stack.Screen
                 options={{
                     title: 'Discover',

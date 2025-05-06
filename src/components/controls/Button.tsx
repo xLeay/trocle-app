@@ -219,7 +219,7 @@ const Button = forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>(({
                     )}
 
                     {hasLabel && !isIconOnly && (
-                        <Text variant="button_Large" containerStyle={[styles.text]} style={{ color: textColor }}>
+                        <Text variant="button_Large" containerStyle={styles.text} style={{ color: textColor }}>
                             {label}
                         </Text>
                     )}

@@ -3,8 +3,9 @@ import { View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
-import { useFeed, assembleFeed, FeedItem } from '@/src/queries/useFeed';
-import { Product } from '@/src/types';
+import { useFeed } from '@/src/queries/useFeed';
+import { assembleFeed } from '@/src/queries/useFeedAlgorithm'
+import { Product, User, FeedItem, DEFAULT_PATTERN } from '@/src/types/feed';
 
 import ProductBlock from './ProductBlock';
 import AdSection from './AdSection';
@@ -22,8 +23,22 @@ export default function Feed() {
     const { activeTheme } = useTheme();
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error } = useFeed();
 
-    const products: Product[] = data?.pages.flatMap(page => page.products) ?? [];
-    const feedData = assembleFeed(products);
+    // Extraction des données nécessaires
+    // const allProducts = data?.pages.flatMap(page => page.products) ?? [];
+    // const allUsers = data?.pages.flatMap(page => page.users) ?? [];
+    // const allUserProducts = data?.pages.flatMap(page => page.userProducts) ?? [];
+
+    const feedData = React.useMemo(() => {
+        if (!data) return [];
+        
+        return assembleFeed(
+            data.pages.flatMap(p => p.products),
+            data.pages.flatMap(p => p.users),
+            data.pages.flatMap(p => p.userProducts),
+            DEFAULT_PATTERN
+        );
+    }, [data]);
+
 
     const [likedPosts, setLikedPosts] = useState<{ [id: string]: boolean }>({});
     const toggleLike = (id: string) => {
@@ -67,7 +82,9 @@ export default function Feed() {
                         <Flex direction='row' alignItems='center' gap={activeTheme.spacing._100} style={{ marginLeft: activeTheme.spacing._200 }}>
                             <Text variant='title_Large'>Troclers à suivre</Text>
                         </Flex>
-                        <SuggestedUsersBlock />
+                        <SuggestedUsersBlock
+                            users={item.data ?? []}
+                        />
                     </Flex>
                 );
             case 'suggested_user_products':
@@ -76,7 +93,12 @@ export default function Feed() {
                         <Flex direction='row' alignItems='center' gap={activeTheme.spacing._100} style={{ marginLeft: activeTheme.spacing._200 }}>
                             <Text variant='title_Large'>Tu pourrais être intéressé</Text>
                         </Flex>
-                        <SuggestedUserProductsBlock />
+                        <SuggestedUserProductsBlock
+                            user={item.data.user}
+                            products={item.data.products ?? []}
+                            liked={likedPosts}
+                            onToggleLike={toggleLike}
+                        />
                     </Flex>
                 );
             default:
@@ -84,13 +106,25 @@ export default function Feed() {
         }
     };
 
-    if (isLoading) return <Text>Chargement…</Text>;
+    if (isLoading || !data) return <Text>Chargement…</Text>;
     if (error) return <Text>Erreur : {error.message}</Text>;
+    if (!feedData.length) return <Text>Aucun élément pour l'instant</Text>;
     return (
         <FlashList
             data={feedData}
             renderItem={renderItem}
-            keyExtractor={(item, index) => `${item.type}-${index}`}
+            keyExtractor={(item, index) => {
+                switch (item.type) {
+                    case 'product_group':
+                        return `product-${item.data?.[0]?.id ?? index}`;
+                    case 'suggested_users':
+                        return `users-${item.data?.[0]?.id ?? index}`;
+                    case 'suggested_user_products':
+                        return `user-products-${item.data?.user?.id ?? index}`;
+                    default:
+                        return item.id ?? `ad-${index}`;
+                }
+            }}
             estimatedItemSize={400}
             onEndReached={() => {
                 if (hasNextPage && !isFetchingNextPage) {

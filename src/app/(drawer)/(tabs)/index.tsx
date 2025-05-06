@@ -72,7 +72,7 @@ export default function Tab() {
 
 
     return (
-        <Flex style={[styles.container, { backgroundColor: activeTheme.colors.surface.primary, paddingHorizontal: activeTheme.spacing._400 }]}>
+        <Flex style={[styles.container, { backgroundColor: activeTheme.colors.surface.secondary, paddingHorizontal: activeTheme.spacing._400 }]}>
             <Flex
                 overflow='hidden'
                 style={{ flex: 1, width: '100%', borderRadius: activeTheme.radius.modal, }}>

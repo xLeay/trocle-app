@@ -23,7 +23,7 @@ const sizeMapping: Record<AvatarSize, number> = {
     tiny: 24,
 };
 export interface AvatarProps {
-    customImage?: ImageSourcePropType; // undefined => image par défaut
+    customImage?: ImageSourcePropType | string; // undefined => image par défaut
     squared?: boolean;
     focused?: boolean;
     size?: AvatarSize;

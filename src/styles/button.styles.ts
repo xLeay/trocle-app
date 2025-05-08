@@ -13,6 +13,7 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         paddingHorizontal: 8,
+        // width: '100%',
 
         // borderWidth: 1,
         // borderColor: 'blue',
@@ -22,6 +23,9 @@ export const styles = StyleSheet.create({
     },
     content: {
         flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        // flex: 1,
 
         // borderWidth: 2,
         // borderColor: 'green',
@@ -34,7 +38,7 @@ export const styles = StyleSheet.create({
     },
     text: {
         marginHorizontal: 8,
-        
+
         // borderWidth: 1,
         // borderColor: 'purple',
     },

@@ -12,6 +12,7 @@ import Text from '#/Text';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 import Button from '#/controls/Button';
 import Feed from '#/feed/Feed';
+import Test from '#/feed/Test';
 
 export default function Tab() {
     const { activeTheme } = useTheme();
@@ -30,7 +31,8 @@ export default function Tab() {
                     header: () => <TopAppBar left={left} center={center} right={right} />,
                 }}
             />
-            <Feed />
+            {/* <Feed /> */}
+            <Test />
         </View>
     );
 }

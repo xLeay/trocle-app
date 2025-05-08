@@ -1,5 +1,5 @@
 import React, { forwardRef, useState } from 'react';
-import { Pressable, View, ViewStyle, StyleSheet } from 'react-native';
+import { Pressable, View, ViewStyle, StyleSheet, ActivityIndicator } from 'react-native';
 import Animated, {
     interpolateColor,
     useAnimatedStyle,
@@ -40,6 +40,7 @@ interface ButtonProps {
     icon?: React.ReactNode;
     iconPosition?: IconPosition;
     disabled?: boolean;
+    loading?: boolean;
     variant?: ButtonVariant;
     size?: ButtonSize;
     fullWidth?: boolean;
@@ -52,6 +53,7 @@ const Button = forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>(({
     icon,
     iconPosition = 'left',
     disabled = false,
+    loading = false,
     variant = 'secondary',
     size = 'small',
     fullWidth = false,
@@ -173,12 +175,11 @@ const Button = forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>(({
             borderWidth: 1,
             borderColor: activeTheme.colors.component.button.outlined,
         },
-
-        fullWidth && styles.fullWidth,
     ];
 
     const contentStyles = [
         styles.content,
+        fullWidth && styles.fullWidth,
         iconPosition === 'left' ? styles.iconLeft : styles.iconRight,
     ];
 
@@ -206,8 +207,12 @@ const Button = forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>(({
                         style={[StyleSheet.absoluteFill, variantButtonStyles, { zIndex: -1 }]}
                     />
                 )}
+
                 <View style={contentStyles}>
-                    {hasIcon && iconPosition && (
+                    {loading && (
+                        <ActivityIndicator size="small" color={textColor} />
+                    )}
+                    {!loading && hasIcon && iconPosition && (
                         <View style={[hasLabel && styles.iconLeft]}>
                             {React.isValidElement(icon)
                                 ? React.cloneElement(icon as React.ReactElement<any>, {

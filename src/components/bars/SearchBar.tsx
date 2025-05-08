@@ -4,7 +4,6 @@ import { useTheme } from '@/src/lib/hooks/useTheme';
 import { TextInput as RNTextInput } from 'react-native';
 
 // Composants
-import Text from '#/Text';
 import TextInput from '#/TextInput';
 import Button from '#/controls/Button';
 import Flex from '#/Flex';

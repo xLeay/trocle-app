@@ -6,6 +6,8 @@ interface ProgressBarProps {
     progress: number; // de 0 à 1
     type?: 'primary' | 'mono';
     height?: number;
+    innerColor?: string;
+    outerColor?: string;
     style?: ViewStyle;
     isActive?: boolean;
 }
@@ -14,6 +16,8 @@ const ProgressBar = ({
     progress = 0,
     type = 'primary',
     height = 4,
+    innerColor,
+    outerColor,
     style,
     isActive = false,
 }: ProgressBarProps) => {
@@ -33,16 +37,16 @@ const ProgressBar = ({
         outputRange: ['0%', '100%'],
     });
 
-    const outerColor = type === 'mono' ? activeTheme.colors.border.primary35 : activeTheme.colors.surface.divider;
-    const innerColor = type === 'mono' ? activeTheme.colors.surface.primary : activeTheme.colors.surface.brand;
+    const outerColorx = outerColor ?? type === 'mono' ? activeTheme.colors.border.primary35 : activeTheme.colors.surface.divider;
+    const innerColorx = innerColor ?? type === 'mono' ? activeTheme.colors.surface.primary : activeTheme.colors.surface.brand;
     
     return (
-        <View style={[styles.outerBar, { height, borderRadius: height / 2, backgroundColor: outerColor }, style]}>
+        <View style={[styles.outerBar, { height, borderRadius: height / 2, backgroundColor: outerColorx }, style]}>
             <Animated.View
                 style={[styles.innerBar,
                 {
                     height,
-                    backgroundColor: innerColor,
+                    backgroundColor: innerColorx,
                     width: widthInterpolated,
                 },
                 ]}

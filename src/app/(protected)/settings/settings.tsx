@@ -4,6 +4,9 @@ import { Stack, router } from 'expo-router';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 import Text from '#/Text';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
+import Button from '#/controls/Button';
+import { useAuthStore } from '@/src/state/authStore';
+import Flex from '#/Flex';
 
 import { Arrowleft } from '#/icons';
 
@@ -21,6 +24,8 @@ export default function Settings() {
         label: 'Paramètres',
     });
 
+    const { signOut, loading } = useAuthStore()
+
     return (
         <View style={styles.container}>
             <Stack.Screen
@@ -35,6 +40,16 @@ export default function Settings() {
                 }}
             />
             <Text>Paramètres</Text>
+
+            <Button
+                label="Déconnexion"
+                onPress={() => { signOut() }}
+                disabled={loading}
+                loading={loading}
+                size='large'
+                variant='tertiary'
+            />
+
         </View>
     );
 }

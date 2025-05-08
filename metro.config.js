@@ -15,5 +15,8 @@ module.exports = (() => {
     sourceExts: [...resolver.sourceExts, "svg"],
   };
 
+  // ⬇️ temporary workaround for the “stream” / Node core‑module error
+  config.resolver.unstable_enablePackageExports = false;
+
   return config;
 })();

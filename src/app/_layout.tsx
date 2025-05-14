@@ -6,6 +6,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 // TODO: Remove this when the React Native Safe Area Context is working and import the SafeAreaView from react-native-safe-area-context
 import CustomSafeAreaView from '#/CustomSafeAreaView';
@@ -13,11 +14,14 @@ import CustomSafeAreaView from '#/CustomSafeAreaView';
 import * as NavigationBar from 'expo-navigation-bar';
 import { StatusBar } from 'expo-status-bar';
 
+import Snackbar from '#/display/Snackbar';
+
+
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-    const { theme, activeTheme, version } = useTheme();
+    const { theme, activeTheme, version, initialized } = useTheme();
     const router = useRouter();
 
     // const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -61,28 +65,32 @@ export default function RootLayout() {
     const queryClient = new QueryClient();
 
     if (!loaded && !error) { return null; }
+    if (!initialized) { return null; }
     return (
         <React.Fragment>
             <SafeAreaProvider>
                 <CustomSafeAreaView style={{ flex: 1, backgroundColor: activeTheme.colors.surface.secondary }}>
-                    <QueryClientProvider client={queryClient}>
-                        <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
-                        <Stack>
-                            <Stack.Screen
-                                name='(protected)'
-                                options={{
-                                    headerShown: false,
-                                    animation: 'none'
-                                }}
-                            />
-                            <Stack.Screen
-                                name="(auth)"
-                                options={{
-                                    headerShown: false,
-                                }}
-                            />
-                        </Stack>
-                    </QueryClientProvider>
+                    <GestureHandlerRootView style={{ flex: 1 }}>
+                        <QueryClientProvider client={queryClient}>
+                            <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
+                            <Stack>
+                                <Stack.Screen
+                                    name='(protected)'
+                                    options={{
+                                        headerShown: false,
+                                        animation: 'none'
+                                    }}
+                                />
+                                <Stack.Screen
+                                    name="(auth)"
+                                    options={{
+                                        headerShown: false,
+                                    }}
+                                />
+                            </Stack>
+                            <Snackbar />
+                        </QueryClientProvider>
+                    </GestureHandlerRootView>
                 </CustomSafeAreaView>
             </SafeAreaProvider>
         </React.Fragment >

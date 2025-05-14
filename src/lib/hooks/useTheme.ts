@@ -3,12 +3,18 @@ import { themes } from '@/src/styles/themes';
 import { useEffect, useState } from 'react';
 
 export const useTheme = () => {
-    const { theme, toggleTheme, version } = useThemeStore();
+    const { theme, toggleTheme, version, initialized, loadTheme } = useThemeStore();
     const [activeTheme, setActiveTheme] = useState(themes[theme]);
 
     useEffect(() => {
-        setActiveTheme(themes[theme]);
-    }, [theme, version]);
+        if (!initialized) {
+            loadTheme()
+        }
+    }, [initialized])
 
-    return { theme, toggleTheme, activeTheme, version };
+    useEffect(() => {
+        setActiveTheme(themes[theme])
+    }, [theme, version])
+
+    return { theme, toggleTheme, activeTheme, version, initialized };
 };

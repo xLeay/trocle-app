@@ -31,6 +31,7 @@ interface TextFieldProps extends RNTextInputProps {
     hasError?: boolean;
     label?: string;
     legend?: string;
+    autoCapitalize?: RNTextInputProps['autoCapitalize'];
 }
 
 const TextField = ({
@@ -43,6 +44,7 @@ const TextField = ({
     hasError = false,
     label,
     legend,
+    autoCapitalize,
 }: TextFieldProps) => {
     const { activeTheme } = useTheme();
     const inputRef = useRef<RNTextInput>(null);
@@ -101,7 +103,7 @@ const TextField = ({
     return (
         <Flex gap={activeTheme.spacing._100}>
             {label && (
-                <Text variant='title_Small'>{label}</Text>
+                <Text variant='title_Small' style={{ color: hasError ? activeTheme.colors.surface.danger : '' }}>{label}</Text>
             )}
 
             <Flex direction='row'
@@ -142,6 +144,7 @@ const TextField = ({
                             editable={!disabled}
                             type={textType}
                             secureTextEntry={type === 'password' && !isPasswordVisible}
+                            autoCapitalize={autoCapitalize}
                         />
                         {type === 'dropdown' && (
                             <Chevronbottom />
@@ -156,7 +159,7 @@ const TextField = ({
             </Flex>
 
             {legend && (
-                <Text variant='body_Medium' type='placeholder'>{legend}</Text>
+                <Text variant='body_Medium' type='placeholder' style={{ color: hasError ? activeTheme.colors.surface.danger : '' }}>{legend}</Text>
             )}
         </Flex>
     );

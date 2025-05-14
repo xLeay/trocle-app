@@ -17,8 +17,11 @@ import TopAppBar from '#/display/TopAppBar/TopAppBar';
 import { Circle, Home, Search, Arrowleft, Arrowright } from '#/icons';
 // [[[[[[[[[]]]]]]]]]
 
+import { useSnackbarStore } from '@/src/state/snackbarStore';
+
 export default function SignInScreen() {
     const { activeTheme } = useTheme();
+    const { addSnackbar } = useSnackbarStore();
 
     // Config de la top app bar
     const topAppBarConfig = "_small";
@@ -36,6 +39,18 @@ export default function SignInScreen() {
 
     const { signIn, loading, session } = useAuthStore()
 
+    function getErrorMessage(err: any) {
+        if (!err) return;
+        switch (err.code) {
+            case 'validation_failed':
+                return 'L\'email ne respecte pas le format requis.'
+            case 'invalid_credentials':
+                return 'Les identifiants sont incorrects.'
+            default:
+                return 'Une erreur est survenue.'
+        }
+    }
+
     useEffect(() => {
         if (session) {
             router.replace('/')
@@ -43,9 +58,21 @@ export default function SignInScreen() {
     }, [session])
 
     async function handleSignIn() {
-        await signIn(email.trim(), password.trim())
+        const { error } = await signIn(email.trim(), password.trim())
+        if (error) {
+            addSnackbar({
+                message: getErrorMessage(error) || 'Une erreur est survenue.',
+                type: 'error',
+                position: 'bottom',
+            })
+        } else {
+            addSnackbar({
+                message: 'Connexion reussie.',
+                type: 'success',
+                position: 'bottom',
+            })
+        }
     }
-
 
     return (
         <Flex

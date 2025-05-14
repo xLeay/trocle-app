@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { router, Stack } from 'expo-router';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 import { useAuthStore } from '@/src/state/authStore';
+import { useSnackbarStore } from '@/src/state/snackbarStore';
+import { useDebounce } from '@/src/lib/hooks/useDebounce';
 
 import Text from '#/Text';
 import Flex from '#/Flex';
@@ -12,15 +14,14 @@ import TextField from '#/controls/TextField';
 import Button from '#/controls/Button';
 import Card from '#/Card';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
-import ProgressBar from '#/display/ProgressBar';
 
-// [[[[[[[[[]]]]]]]]]
-// Icones
 import { Donecircle } from '#/icons';
-// [[[[[[[[[]]]]]]]]]
+
+import { useCheckEmailExists } from '@/src/lib/api/user';
 
 export default function SignUpScreen() {
     const { activeTheme } = useTheme();
+    const { addSnackbar } = useSnackbarStore();
 
     // Config de la top app bar
     const topAppBarConfig = "_small";
@@ -36,7 +37,21 @@ export default function SignUpScreen() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
+    const debouncedEmail = useDebounce(email, 500)
+    const { data: checkEmailExists, isLoading: checkEmailExistsLoading } = useCheckEmailExists(debouncedEmail)
+
     const { signUp, loading, session } = useAuthStore()
+
+    function getErrorMessage(err: any) {
+        if (!err) return;
+        console.log(err);
+        switch (err.code) {
+            case 'validation_failed':
+                return 'L\'email ne respecte pas le format requis.'
+            default:
+                return 'Une erreur est survenue.'
+        }
+    }
 
     useEffect(() => {
         if (session) {
@@ -45,9 +60,21 @@ export default function SignUpScreen() {
     }, [session])
 
     async function handleSignUp() {
-        await signUp(email.trim(), password.trim())
+        const { error } = await signUp(email.trim(), password.trim())
+        if (error) {
+            addSnackbar({
+                message: getErrorMessage(error) || 'Une erreur est survenue.',
+                type: 'error',
+                position: 'bottom',
+            })
+        } else {
+            addSnackbar({
+                message: 'Inscription reussie.',
+                type: 'success',
+                position: 'bottom',
+            })
+        }
     }
-
 
     function validateEmail(email: string) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -98,7 +125,8 @@ export default function SignUpScreen() {
                         value={email}
                         onChangeText={(text) => setEmail(text)}
                         autoCapitalize={'none'}
-                        hasError={!emailValid && email.length > 0}
+                        hasError={!emailValid && email.length > 0 || (emailValid && checkEmailExists?.id)}
+                        legend={emailValid && checkEmailExists?.id ? 'Cet email est deja utilisé.' : ''}
                     />
                     <TextField
                         placeholder={'Mot de passe'}

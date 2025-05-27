@@ -1,18 +1,19 @@
-import { useEffect, useState } from 'react';
-import { Pressable } from 'react-native';
-import { Link, Tabs, useRouter } from 'expo-router';
 import { useTheme } from '@/src/lib/hooks/useTheme';
-import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { useDrawerStatus } from '@react-navigation/drawer';
+import { DrawerActions, useNavigation } from '@react-navigation/native';
+import { Link, Tabs } from 'expo-router';
+import React, { useState } from 'react';
+import { Pressable } from 'react-native';
 
 import Avatar from '#/display/Avatar';
 
-import { Troc, Compass, Plus, Bubble, Arrowleft, Notification } from '#/icons';
-import Flex from '#/Flex';
-import Button from '#/controls/Button';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
+import { Bubble, Compass, Plus, Preferences, Troc } from '#/icons';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
-import { Preferences } from '#/icons';
+
+
+
+const TAB_BAR_HEIGHT = 56;
 
 export default function TabLayout() {
     const { activeTheme } = useTheme();
@@ -39,7 +40,7 @@ export default function TabLayout() {
                 tabBarActiveTintColor: activeTheme.colors.icon.primary,
                 tabBarInactiveTintColor: activeTheme.colors.icon.primary,
                 tabBarStyle: {
-                    height: 48,
+                    height: TAB_BAR_HEIGHT,
                     borderTopWidth: 1,
                     borderColor: activeTheme.colors.surface.divider,
                     backgroundColor: activeTheme.colors.surface.secondary,
@@ -47,10 +48,10 @@ export default function TabLayout() {
                 },
                 tabBarShowLabel: false,
                 tabBarIconStyle: {
-                    flex: 1,
+                    height: TAB_BAR_HEIGHT - 10, // 10 pour compenser le padding de 5 natif
                     alignItems: 'center',
                     justifyContent: 'center',
-                    marginBottom: 0,
+                    width: '100%'
                 },
             }}
         >
@@ -60,6 +61,15 @@ export default function TabLayout() {
                     title: 'Home',
                     tabBarIcon: ({ color, focused }) => <Troc filled={focused} size={36} color={color} />,
                     header: () => <HomeHeader />,
+                    tabBarButton: ({ children, onPress, style }) => (
+                        <Pressable
+                            onPress={onPress}
+                            style={style}
+                            android_ripple={null}
+                        >
+                            {children}
+                        </Pressable>
+                    ),
                 }}
             />
             <Tabs.Screen
@@ -67,13 +77,26 @@ export default function TabLayout() {
                 options={{
                     title: 'Discover',
                     tabBarIcon: ({ color, focused }) => <Compass filled={focused} size={36} color={color} />,
+                    tabBarButton: ({ children, onPress, style }) => (
+                        <Pressable
+                            onPress={onPress}
+                            style={style}
+                            android_ripple={null}
+                        >
+                            {children}
+                        </Pressable>
+                    ),
                 }}
             />
             <Tabs.Screen
                 name="add"
                 options={{
                     tabBarButton: () => <Link href="/modal/creation" asChild>
-                        <Pressable style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <Pressable style={{
+                            height: TAB_BAR_HEIGHT,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}>
                             <Plus size={36} color={activeTheme.colors.icon.primary} />
                         </Pressable>
                     </Link>,
@@ -84,6 +107,15 @@ export default function TabLayout() {
                 options={{
                     title: 'Messages',
                     tabBarIcon: ({ color, focused }) => <Bubble filled={focused} size={36} color={color} />,
+                    tabBarButton: ({ children, onPress, style }) => (
+                        <Pressable
+                            onPress={onPress}
+                            style={style}
+                            android_ripple={null}
+                        >
+                            {children}
+                        </Pressable>
+                    ),
                 }}
             />
             <Tabs.Screen
@@ -107,7 +139,7 @@ export default function TabLayout() {
                                     setIsAvatarPressed(true);
                                 }}
                                 style={{
-                                    flex: 1,
+                                    height: TAB_BAR_HEIGHT,
                                     justifyContent: 'center',
                                     alignItems: 'center',
                                 }}

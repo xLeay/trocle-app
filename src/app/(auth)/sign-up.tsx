@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { router, Stack } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
 
+import { useDebounce } from '@/src/lib/hooks/useDebounce';
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 import { useAuthStore } from '@/src/state/authStore';
 import { useSnackbarStore } from '@/src/state/snackbarStore';
-import { useDebounce } from '@/src/lib/hooks/useDebounce';
 
-import Text from '#/Text';
-import Flex from '#/Flex';
-import TextField from '#/controls/TextField';
-import Button from '#/controls/Button';
 import Card from '#/Card';
+import Flex from '#/Flex';
+import Text from '#/Text';
+import Button from '#/controls/Button';
+import TextField from '#/controls/TextField';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
 import { Donecircle } from '#/icons';
 
-import { useCheckEmailExists } from '@/src/lib/api/user';
+import { useCheckEmailExists } from '@/src/queries/useUserQueries';
 
 export default function SignUpScreen() {
     const { activeTheme } = useTheme();

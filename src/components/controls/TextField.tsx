@@ -1,17 +1,14 @@
-import React, { useRef } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
 import { useTheme } from '@/src/lib/hooks/useTheme';
-import { TextInput as RNTextInput } from 'react-native';
-import { TextInputProps as RNTextInputProps } from 'react-native'
+import React, { useRef } from 'react';
+import { Pressable, TextInput as RNTextInput, TextInputProps as RNTextInputProps, StyleSheet } from 'react-native';
 
 // Composants
-import TextInput from '#/TextInput';
-import Button from '#/controls/Button';
 import Flex from '#/Flex';
 import Text from '#/Text';
+import TextInput from '#/TextInput';
 
 // Icones
-import { Chevronbottom, Circle, Closecircle, Eye, Eyeslash } from '#/icons';
+import { Chevronbottom, Eye, Eyeslash } from '#/icons';
 
 interface IconProps {
     color?: string;
@@ -32,6 +29,9 @@ interface TextFieldProps extends RNTextInputProps {
     label?: string;
     legend?: string;
     autoCapitalize?: RNTextInputProps['autoCapitalize'];
+    maxLength?: number;
+    numberOfLines?: number;
+    multiline?: boolean;
 }
 
 const TextField = ({
@@ -45,6 +45,9 @@ const TextField = ({
     label,
     legend,
     autoCapitalize,
+    maxLength,
+    numberOfLines,
+    multiline,
 }: TextFieldProps) => {
     const { activeTheme } = useTheme();
     const inputRef = useRef<RNTextInput>(null);
@@ -101,7 +104,7 @@ const TextField = ({
 
     const textType = disabled ? 'placeholder' : 'primary';
     return (
-        <Flex gap={activeTheme.spacing._100}>
+        <Flex gap={activeTheme.spacing._100} style={{ width: '100%' }}>
             {label && (
                 <Text variant='title_Small' style={{ color: hasError ? activeTheme.colors.surface.danger : '' }}>{label}</Text>
             )}
@@ -113,6 +116,7 @@ const TextField = ({
                     paddingHorizontal: activeTheme.spacing._200,
                     borderRadius: activeTheme.radius.default,
                     backgroundColor: activeTheme.colors.surface.primary,
+                    width: '100%'
                 }]}
             >
                 <Pressable style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}
@@ -145,6 +149,10 @@ const TextField = ({
                             type={textType}
                             secureTextEntry={type === 'password' && !isPasswordVisible}
                             autoCapitalize={autoCapitalize}
+                            maxLength={maxLength}
+                            numberOfLines={numberOfLines}
+                            multiline={multiline}
+                            underlineColorAndroid={'transparent'}
                         />
                         {type === 'dropdown' && (
                             <Chevronbottom />
@@ -169,7 +177,7 @@ export default TextField;
 
 const styles = StyleSheet.create({
     container: {
-        height: 48,
+        minHeight: 48,
     },
     input: {
         // borderWidth: 0.5,

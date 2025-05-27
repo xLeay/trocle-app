@@ -45,6 +45,7 @@ const Radio: React.FC<RadioProps> = ({ checked, disabled = false, onValueChange 
                             height: 8,
                             borderRadius: 8 / 2,
                             backgroundColor: checked ? 'white' : 'transparent',
+                            borderWidth: 0,
                         },
                     ]}
                 />

@@ -1,19 +1,5 @@
-import { ImageSourcePropType } from 'react-native';
-
-export interface Product {
-    id: string;
-    title: string;
-    images: string[];
-}
-
-export interface User {
-    id: string;
-    username: string;
-    profilePicture: ImageSourcePropType | string;
-    reviewsAmount: number;
-    rating: number;
-    image: string;
-}
+import { Product } from './product';
+import { User } from './user';
 
 export type InterleavePatternItem = 
     | number 

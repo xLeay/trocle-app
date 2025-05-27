@@ -1,17 +1,11 @@
-import React, { useState, useRef } from 'react';
-import { View, StyleSheet } from 'react-native';
 import { Stack } from 'expo-router';
-import { Image } from 'expo-image';
-import { FlashList } from '@shopify/flash-list';
+import React, { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
-import Flex from '#/Flex';
-import Text from '#/Text';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
-import Button from '#/controls/Button';
-import Feed from '#/feed/Feed';
 import Test from '#/feed/Test';
 
 export default function Tab() {

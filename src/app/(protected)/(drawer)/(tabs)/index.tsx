@@ -1,15 +1,14 @@
-import { Pressable, StyleSheet } from 'react-native';
 import { useTheme } from '@/src/lib/hooks/useTheme';
+import { Pressable, StyleSheet } from 'react-native';
 
 import { ImageBackground } from 'expo-image';
 
-import Text from '#/Text';
 import Flex from '#/Flex';
-import Button from '#/controls/Button';
+import Text from '#/Text';
 import ButtonTroc from '#/controls/ButtonTroc';
 import ProgressBar from '#/display/ProgressBar';
 
-import { Location, State1, State2, State3, State4, Trocoin, Certification, Troclike, Trocpass, Trocreroll } from '#/icons';
+import { Certification, Location, State3, Trocoin } from '#/icons';
 import { useEffect, useRef, useState } from 'react';
 
 export default function Tab() {

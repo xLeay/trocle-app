@@ -1,22 +1,18 @@
-import React from 'react';
 import { useTheme } from '@/src/lib/hooks/useTheme';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React, { useEffect } from 'react';
+import { SystemBars } from 'react-native-edge-to-edge';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 // TODO: Remove this when the React Native Safe Area Context is working and import the SafeAreaView from react-native-safe-area-context
-import CustomSafeAreaView from '#/CustomSafeAreaView';
-
-import * as NavigationBar from 'expo-navigation-bar';
-import { StatusBar } from 'expo-status-bar';
+// import CustomSafeAreaView from '#/CustomSafeAreaView';
 
 import Snackbar from '#/display/Snackbar';
-
-
 
 SplashScreen.preventAutoHideAsync();
 
@@ -48,19 +44,6 @@ export default function RootLayout() {
         }
     }, [loaded, error]);
 
-    useEffect(() => {
-        const applyNavigationBarStyle = async () => {
-            try {
-                await NavigationBar.setBackgroundColorAsync(activeTheme.colors.surface.secondary);
-                await NavigationBar.setButtonStyleAsync(theme === 'dark' ? 'light' : 'dark');
-            } catch (e) {
-                console.warn("Erreur lors du changement de style de la barre de navigation :", e);
-            }
-        };
-
-        applyNavigationBarStyle();
-    }, [theme, activeTheme.colors.surface.secondary, version]);
-
     // Client React Query
     const queryClient = new QueryClient();
 
@@ -69,29 +52,31 @@ export default function RootLayout() {
     return (
         <React.Fragment>
             <SafeAreaProvider>
-                <CustomSafeAreaView style={{ flex: 1, backgroundColor: activeTheme.colors.surface.secondary }}>
+                <SafeAreaView style={{ flex: 1, backgroundColor: activeTheme.colors.surface.secondary }}>
                     <GestureHandlerRootView style={{ flex: 1 }}>
-                        <QueryClientProvider client={queryClient}>
-                            <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
-                            <Stack>
-                                <Stack.Screen
-                                    name='(protected)'
-                                    options={{
-                                        headerShown: false,
-                                        animation: 'none'
-                                    }}
-                                />
-                                <Stack.Screen
-                                    name="(auth)"
-                                    options={{
-                                        headerShown: false,
-                                    }}
-                                />
-                            </Stack>
-                            <Snackbar />
-                        </QueryClientProvider>
+                        <BottomSheetModalProvider>
+                            <QueryClientProvider client={queryClient}>
+                                <SystemBars style={theme === 'dark' ? 'light' : 'dark'} />
+                                <Stack>
+                                    <Stack.Screen
+                                        name='(protected)'
+                                        options={{
+                                            headerShown: false,
+                                            animation: 'none'
+                                        }}
+                                    />
+                                    <Stack.Screen
+                                        name="(auth)"
+                                        options={{
+                                            headerShown: false,
+                                        }}
+                                    />
+                                </Stack>
+                                <Snackbar />
+                            </QueryClientProvider>
+                        </BottomSheetModalProvider>
                     </GestureHandlerRootView>
-                </CustomSafeAreaView>
+                </SafeAreaView>
             </SafeAreaProvider>
         </React.Fragment >
     );

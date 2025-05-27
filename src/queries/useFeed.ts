@@ -164,12 +164,13 @@
 
 
 
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { getProducts, getUsers } from '@/src/lib/api/feed';
+import { getProducts, getUsers } from '@/src/lib/api/feedMixing';
 import {
-    Product, User, PageData,
-    InterleavePatternItem, DEFAULT_PATTERN
+    DEFAULT_PATTERN,
+    PageData,
 } from '@/src/types/feed';
+import { User } from '@/src/types/user';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { assembleFeed } from './useFeedAlgorithm';
 
 const PRODUCTS_PER_PAGE = 8;

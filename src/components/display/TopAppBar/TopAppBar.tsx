@@ -1,6 +1,6 @@
+import { useTheme } from '@/src/lib/hooks/useTheme';
 import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import { useTheme } from '@/src/lib/hooks/useTheme';
 
 // Composants
 import Flex from '#/Flex';
@@ -58,8 +58,9 @@ export default TopAppBar;
 const styles = StyleSheet.create({
     container: {
         minHeight: 60,
+        paddingHorizontal: 16,
 
-        // borderColor: '#000',
+        // borderColor: 'red',
         // borderWidth: 1,
     },
     placeholder: {
@@ -67,7 +68,6 @@ const styles = StyleSheet.create({
         height: 1,
     },
     isNotNull: {
-        paddingHorizontal: 16,
         flex: 1,
     },
     isNull: {

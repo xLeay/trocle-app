@@ -10,6 +10,8 @@ import Button from '#/controls/Button';
 import Table from '#/display/Table';
 import { TableRightProps } from '#/_partial/TableRight';
 
+import { Arrowleft, Close } from '#/icons';
+
 type Item = {
     id: number | string;
     name: string;
@@ -26,7 +28,7 @@ type ModularBottomSheetProps = {
     onSelect: (item: Item) => void;
     renderRight?: (item: Item, selected: boolean, rightText: string) => TableRightProps;
     getChildren?: (item: Item, allData: Item[]) => Item[];
-    title?: string;
+    initialTitle?: string;
     selectedId?: number | string | null;
     snapPoints?: string[];
     enableDynamicSizing?: boolean;
@@ -45,7 +47,7 @@ const ModularBottomSheet = forwardRef<BottomSheetModal, ModularBottomSheetProps>
     onSelect,
     renderRight,
     getChildren,
-    title,
+    initialTitle,
     selectedId,
     snapPoints = ['50%'],
     enableDynamicSizing = true,
@@ -65,8 +67,20 @@ const ModularBottomSheet = forwardRef<BottomSheetModal, ModularBottomSheetProps>
 
     const currentData = stack[stack.length - 1];
 
+    const localTitle = useMemo(() => {
+        return path.length > 0
+            ? path[path.length - 1]?.name
+            : initialTitle || '';
+    }, [path, initialTitle]);
+
+    const localIcon = useMemo(() => {
+        return stack.length > 1 ? <Arrowleft /> : icon ?? <Close />;
+    }, [stack, icon]);
+
     useEffect(() => {
-        onStackChange?.(stack, path);
+        requestAnimationFrame(() => {
+            onStackChange?.(stack, path);
+        });
     }, [stack, path]);
 
     const handleItemPress = useCallback(
@@ -130,18 +144,16 @@ const ModularBottomSheet = forwardRef<BottomSheetModal, ModularBottomSheetProps>
                     <Flex />
                 </>
             )}
-            {topVariant === 'empty' && (
-                <Flex />
-            )}
+            {topVariant === 'empty' && (<Flex />)}
             {topVariant === 'icon' && (
                 <Flex style={{ width: '100%', flexDirection: iconPosition === 'left' ? 'row' : 'row-reverse' }}>
-                    <Button icon={icon} variant='ghost' size='small' onPress={stack.length > 1 ? handleBack : onClose} />
+                    <Button icon={localIcon} variant='ghost' size='small' onPress={stack.length > 1 ? handleBack : onClose} />
                 </Flex>
             )}
             {topVariant === 'text + icon' && (
                 <Flex alignItems='center' justifyContent='space-between' style={{ width: '100%', flexDirection: iconPosition === 'left' ? 'row' : 'row-reverse' }}>
-                    <Button icon={icon} variant='ghost' size='small' onPress={stack.length > 1 ? handleBack : onClose} />
-                    <Text variant='title_Large' type='primary'>{title}</Text>
+                    <Button icon={localIcon} variant='ghost' size='small' onPress={stack.length > 1 ? handleBack : onClose} />
+                    <Text variant='title_Large' type='primary'>{localTitle}</Text>
                 </Flex>
             )}
         </Flex>
@@ -157,8 +169,8 @@ const ModularBottomSheet = forwardRef<BottomSheetModal, ModularBottomSheetProps>
         return map;
     };
 
-    const selectedItem = allData?.find((el) => el.id === selectedId);
-    const ancestorsMap = selectedItem ? getAncestorsMap(selectedItem, allData ?? data) : {};
+    const selectedItem = useMemo(() => allData?.find((el) => el.id === selectedId), [allData, selectedId]);
+    const ancestorsMap = useMemo(() => selectedItem ? getAncestorsMap(selectedItem, allData ?? data) : {}, [selectedItem, allData, data]);
 
     return (
         <BottomSheetModal

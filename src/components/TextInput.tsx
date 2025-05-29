@@ -36,6 +36,7 @@ const ThemedTextInput = forwardRef<RNTextInput, Props>(({
                 style={[inputStyles]}
                 placeholderTextColor={activeTheme.colors.text.placeholder}
                 cursorColor={color}
+
                 {...props}
             />
         </View>

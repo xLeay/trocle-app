@@ -15,7 +15,7 @@ interface IconProps {
     fill?: string;
 }
 
-export type TextFieldType = 'text' | 'icon' | 'dropdown' | 'password';
+export type TextFieldType = 'text' | 'icon' | 'dropdown' | 'password' | 'number' | 'action';
 export type TextFieldState = 'default' | 'focused' | 'filled' | 'error';
 
 interface TextFieldProps extends RNTextInputProps {
@@ -25,6 +25,7 @@ interface TextFieldProps extends RNTextInputProps {
     disabled?: boolean;
     type?: TextFieldType;
     icon?: React.ReactNode;
+    action?: () => void;
     hasError?: boolean;
     label?: string;
     legend?: string;
@@ -32,6 +33,7 @@ interface TextFieldProps extends RNTextInputProps {
     maxLength?: number;
     numberOfLines?: number;
     multiline?: boolean;
+    keyboardType?: RNTextInputProps['keyboardType'];
 }
 
 const TextField = ({
@@ -41,13 +43,15 @@ const TextField = ({
     disabled = false,
     type = 'text',
     icon,
+    action,
     hasError = false,
     label,
     legend,
     autoCapitalize,
     maxLength,
-    numberOfLines,
-    multiline,
+    numberOfLines = 1,
+    multiline = false,
+    keyboardType = 'default',
 }: TextFieldProps) => {
     const { activeTheme } = useTheme();
     const inputRef = useRef<RNTextInput>(null);
@@ -153,6 +157,7 @@ const TextField = ({
                             numberOfLines={numberOfLines}
                             multiline={multiline}
                             underlineColorAndroid={'transparent'}
+                            keyboardType={keyboardType}
                         />
                         {type === 'dropdown' && (
                             <Chevronbottom />
@@ -160,6 +165,16 @@ const TextField = ({
                         {type === 'password' && (
                             <Pressable onPress={handlePasswordVisibility}>
                                 {isPasswordVisible ? <Eye color={iconColor} /> : <Eyeslash color={iconColor} />}
+                            </Pressable>
+                        )}
+                        {type === 'action' && icon && action && (
+                            <Pressable onPress={action}>
+                                {React.isValidElement(icon)
+                                    ? React.cloneElement(icon as React.ReactElement<any>, {
+                                        color: (icon.props as IconProps).color ?? iconColor,
+                                        fill: (icon.props as IconProps).fill ?? iconColor,
+                                    })
+                                    : icon}
                             </Pressable>
                         )}
                     </Flex>

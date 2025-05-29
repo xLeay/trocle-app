@@ -1,5 +1,5 @@
-import { Stack } from 'expo-router';
 import React, { useState } from 'react';
+import { Stack } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';

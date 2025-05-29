@@ -155,4 +155,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default TableRight;
+export default React.memo(TableRight);

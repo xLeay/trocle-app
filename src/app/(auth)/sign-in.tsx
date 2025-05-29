@@ -102,6 +102,7 @@ export default function SignInScreen() {
                         value={email}
                         onChangeText={(text) => setEmail(text)}
                         autoCapitalize={'none'}
+                        keyboardType={'email-address'}
                     />
                     <TextField
                         placeholder={'Mot de passe'}

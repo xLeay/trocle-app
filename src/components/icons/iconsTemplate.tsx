@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import Svg, { Path, Defs, LinearGradient, Stop } from 'react-native-svg';
 
 interface GradientProps {
@@ -31,7 +31,7 @@ export function createSinglePathSVG({
         style,
     }) => {
         const path = filled ? filledPath : strokePath;
-        const gradientId = `gradient-${Math.random().toString(36).slice(2, 9)}`;
+        const gradientId = useMemo(() => `gradient-${Math.random().toString(36).slice(2, 9)}`, []);
 
         return (
             <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={style}>
@@ -62,7 +62,7 @@ export function createSinglePathSVG({
         );
     };
 
-    return SinglePathSVG;
+    return React.memo(SinglePathSVG);
 }
 
 // Fonction pour les icônes avec plusieurs paths (multiple paths)
@@ -81,7 +81,7 @@ export function createMultiPathSVG({
         style,
     }) => {
         const paths = filled ? filledPaths : strokePaths;
-        const gradientId = `gradient-${Math.random().toString(36).slice(2, 9)}`; // ID unique pour le gradient
+        const gradientId = useMemo(() => `gradient-${Math.random().toString(36).slice(2, 9)}`, []);
 
         return (
             <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={style}>
@@ -115,5 +115,5 @@ export function createMultiPathSVG({
         );
     };
 
-    return MultiPathSVG;
+    return React.memo(MultiPathSVG);
 }

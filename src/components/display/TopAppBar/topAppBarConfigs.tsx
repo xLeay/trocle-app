@@ -121,7 +121,7 @@ const topAppBarConfigs = {
         // Nécessite : canGoBack: boolean, onBack: function, label: string, rightArea: {iconName?: nomIcone; onPress: function}[]
         center: ({ canGoBack, onBack, label, rightArea }: TopAppBarProps) => (
             <Flex gap={8} border borderColor="blue" style={{ flex: 1, paddingBottom: 24 }}>
-                <Flex direction="row" border borderColor="black" justifyContent="space-between" style={{ width: '100%'}}>
+                <Flex direction="row" border borderColor="black" justifyContent="space-between" style={{ width: '100%' }}>
                     {!canGoBack ? (
                         <Button icon={<Arrowleft />} variant="ghost" size="small" onPress={onBack} />
                     ) : <View style={{ width: 32 }} />}
@@ -151,7 +151,7 @@ const topAppBarConfigs = {
         // Nécessite : canGoBack: boolean, onBack: function, label: string, rightArea: {iconName?: nomIcone; onPress: function}[]
         center: ({ canGoBack, onBack, label, rightArea }: TopAppBarProps) => (
             <Flex gap={32} style={{ flex: 1, paddingBottom: 28 }}>
-                <Flex direction="row" justifyContent="space-between" style={{ width: '100%'}}>
+                <Flex direction="row" justifyContent="space-between" style={{ width: '100%' }}>
                     {!canGoBack ? (
                         <Button icon={<Arrowleft />} variant="ghost" size="small" onPress={onBack} />
                     ) : <View style={{ width: 32 }} />}

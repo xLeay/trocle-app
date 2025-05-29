@@ -2,7 +2,7 @@ import { useTheme } from '@/src/lib/hooks/useTheme';
 import { useDrawerStatus } from '@react-navigation/drawer';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { Link, Tabs } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Pressable } from 'react-native';
 
 import Avatar from '#/display/Avatar';
@@ -12,26 +12,80 @@ import { Bubble, Compass, Plus, Preferences, Troc } from '#/icons';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
 
+const avatarImage = require('@/assets/icon.png');
 
 const TAB_BAR_HEIGHT = 56;
 
-export default function TabLayout() {
+
+const CreationTabButton = () => {
     const { activeTheme } = useTheme();
 
-    function HomeHeader() {
-        const { left, center, right } = useTopAppBar("_application", {
-            onPress: () => console.log('Preferences'),
-            iconName: Preferences,
-        });
+    return (
+        <Link href="/modal/creation" asChild>
+            <Pressable style={{
+                height: TAB_BAR_HEIGHT,
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}>
+                <Plus size={36} color={activeTheme.colors.icon.primary} />
+            </Pressable>
+        </Link>
+    );
+};
 
-        return (
-            <TopAppBar
-                left={left}
-                center={center}
-                right={right}
+const AvatarTabButton = () => {
+    const navigation = useNavigation();
+    const drawerStatus = useDrawerStatus();
+    const isDrawerOpen = drawerStatus === 'open';
+    const [isAvatarPressed, setIsAvatarPressed] = useState(false);
+
+    useEffect(() => {
+        if (!isDrawerOpen && isAvatarPressed) {
+            setIsAvatarPressed(false);
+        }
+    }, [isDrawerOpen, isAvatarPressed]);
+
+    const handlePress = () => {
+        navigation.dispatch(DrawerActions.openDrawer());
+        setIsAvatarPressed(true);
+    };
+
+    return (
+        <Pressable
+            onPress={handlePress}
+            style={{
+                height: TAB_BAR_HEIGHT,
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
+        >
+            <Avatar
+                size="tiny"
+                focused={isAvatarPressed}
+                touchable={false}
+                customImage={avatarImage}
             />
-        );
-    }
+        </Pressable>
+    );
+};
+
+const HomeHeader = () => {
+    const { left, center, right } = useTopAppBar("_application", {
+        onPress: () => console.log('Preferences'),
+        iconName: Preferences,
+    });
+
+    return (
+        <TopAppBar
+            left={left}
+            center={center}
+            right={right}
+        />
+    );
+}
+
+export default function TabLayout() {
+    const { activeTheme } = useTheme();
 
     return (
         <Tabs
@@ -91,15 +145,7 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="add"
                 options={{
-                    tabBarButton: () => <Link href="/modal/creation" asChild>
-                        <Pressable style={{
-                            height: TAB_BAR_HEIGHT,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}>
-                            <Plus size={36} color={activeTheme.colors.icon.primary} />
-                        </Pressable>
-                    </Link>,
+                    tabBarButton: () => <CreationTabButton />
                 }}
             />
             <Tabs.Screen
@@ -122,37 +168,7 @@ export default function TabLayout() {
                 name="avatarTab"
                 options={{
                     title: 'AvatarTab',
-                    tabBarButton: () => {
-                        const navigation = useNavigation();
-                        const drawerStatus = useDrawerStatus();
-                        const isDrawerOpen = drawerStatus === 'open';
-                        const [isAvatarPressed, setIsAvatarPressed] = useState(false);
-
-                        if (!isDrawerOpen && isAvatarPressed) {
-                            setIsAvatarPressed(false);
-                        }
-
-                        return (
-                            <Pressable
-                                onPress={() => {
-                                    navigation.dispatch(DrawerActions.openDrawer());
-                                    setIsAvatarPressed(true);
-                                }}
-                                style={{
-                                    height: TAB_BAR_HEIGHT,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                }}
-                            >
-                                <Avatar
-                                    size="tiny"
-                                    focused={isAvatarPressed}
-                                    touchable={false}
-                                    customImage={require('@/assets/icon.png')}
-                                />
-                            </Pressable>
-                        );
-                    },
+                    tabBarButton: () => <AvatarTabButton />
                 }}
             />
         </Tabs>

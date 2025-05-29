@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 
@@ -18,7 +18,7 @@ import Radio from '#/controls/Radio';
 import ModularBottomSheet from '#/display/ModularBottomSheet';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 
-import { Close, Arrowleft } from '#/icons';
+import { Close, Arrowleft, Mylocation, Photo } from '#/icons';
 
 
 
@@ -90,6 +90,7 @@ const productStates = [
 export default function CreationModal() {
 
     const { activeTheme } = useTheme();
+    const router = useRouter();
 
     // Config de la top app bar
     const topAppBarConfig = "_small";
@@ -121,6 +122,10 @@ export default function CreationModal() {
     const [productStateStack, setProductStateStack] = useState<any[][]>([productStates]);
     const [productStatePath, setProductStatePath] = useState<any[]>([]);
 
+    // Section 3
+    const [estimatedPrice, setEstimatedPrice] = useState('');
+    const [location, setLocation] = useState('');
+
 
     const getChildren = (item: any, allData: any[]) =>
         allData.filter((cat: any) => cat.parentId === item.id);
@@ -138,6 +143,7 @@ export default function CreationModal() {
                     ),
                 }}
             />
+
             {/* Content */}
             <Flex scroll border gap={activeTheme.spacing._400} style={{ paddingTop: activeTheme.spacing._200, width: '100%', flex: 1 }}>
                 {/* Section */}
@@ -210,9 +216,75 @@ export default function CreationModal() {
 
                 {/* Divider */}
                 <Divider type='thick' />
+
+                {/* Section */}
+                <Flex gap={activeTheme.spacing._200} style={{ paddingHorizontal: activeTheme.spacing._200, width: '100%' }}>
+                    <TextField
+                        placeholder={'22'}
+                        value={estimatedPrice}
+                        onChangeText={(price) => setEstimatedPrice(price)}
+                        label={'Estimation en Trocoins *'}
+                        keyboardType={'numeric'}
+                    />
+
+                    <Text variant='body_Small' type='brand' textDecorationLine='underline' onPress={() => {
+                        console.log('Aide à l\'estimation');
+                    }}>Aide à l'estimation</Text>
+
+                    <Divider type='thin' />
+
+                    <Flex gap={activeTheme.spacing._50} style={{ width: '100%' }}>
+                        <TextField
+                            type='action'
+                            action={() => {
+                                console.log('mettre la localisation');
+                            }}
+                            icon={<Mylocation />}
+                            placeholder={'Paris, France'}
+                            value={location}
+                            onChangeText={(text) => setLocation(text)}
+                            label={'Localisation de l\'article *'}
+                        />
+                    </Flex>
+                </Flex>
+
+                {/* Divider */}
+                <Divider type='thick' />
+
+                {/* Section */}
+                <Flex gap={activeTheme.spacing._200} style={{ paddingHorizontal: activeTheme.spacing._200, width: '100%' }}>
+
+                    {/* Textes */}
+                    <Flex gap={activeTheme.spacing._100}>
+                        <Text variant='title_Large' type='primary'>Ajoute des photos à ton article</Text>
+                        <Text variant='body_Small' type='secondary'>Tu peux ajouter jusqu’à 10 photos. N’hésite pas, cela permet de mettre en valeur tes articles et augmenter ton nombre d’échanges.</Text>
+                    </Flex>
+
+                    <Flex>
+                        <Button label='Ajouter photo' variant='secondary' size='large' icon={<Photo />} />
+                    </Flex>
+                </Flex>
+
+                {/* Divider */}
+                <Divider type='thick' />
+
+                {/* Section */}
+                <Flex gap={activeTheme.spacing._200} style={{ paddingHorizontal: activeTheme.spacing._200, width: '100%' }}>
+                    <Text variant='body_Large' type='secondary'>En postant mon article, j’accepte les <Text variant='title_Small' type='secondary' onPress={() => router.push('/terms-and-conditions')} style={{ textDecorationLine: 'underline' }}>conditions générales d’utilisations</Text> de Trocle.</Text>
+                </Flex>
+
+                <Flex style={{ height: activeTheme.spacing._400 }} />
             </Flex>
 
 
+
+
+
+
+
+
+
+            {/* Sheet de sélection de catégorie */}
             <ModularBottomSheet
                 ref={categorySheetRef}
                 data={categories.filter((cat) => cat.parentId == null)}
@@ -243,12 +315,7 @@ export default function CreationModal() {
                 snapPoints={['50%']}
                 enableDynamicSizing={false}
                 topVariant='text + icon'
-                title={
-                    categoryPath.length > 0
-                        ? categoryPath[categoryPath.length - 1]?.name
-                        : 'Catégorie'
-                }
-                icon={categoryStack.length > 1 ? <Arrowleft /> : <Close />}
+                initialTitle='Catégorie'
                 iconPosition='right'
                 showButtons
                 buttons={[
@@ -269,6 +336,7 @@ export default function CreationModal() {
                 }}
             />
 
+            {/* Sheet de sélection d'état de l'article */}
             <ModularBottomSheet
                 ref={productStateSheetRef}
                 data={productStates}
@@ -284,11 +352,12 @@ export default function CreationModal() {
                 })}
                 snapPoints={[]}
                 topVariant='text + icon'
-                title="État de l'article"
+                initialTitle="État de l'article"
                 icon={productStateStack.length > 1 ? <Arrowleft /> : <Close />}
                 iconPosition='right'
                 selectedId={selectedProductState?.id}
             />
+
         </Flex>
     );
 }

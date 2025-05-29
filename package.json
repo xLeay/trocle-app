@@ -22,6 +22,7 @@
     "expo-dev-client": "~5.1.8",
     "expo-font": "~13.3.0",
     "expo-image": "~2.1.7",
+    "expo-image-picker": "~16.1.4",
     "expo-linear-gradient": "~14.1.4",
     "expo-linking": "~7.1.5",
     "expo-navigation-bar": "~4.2.4",
@@ -34,6 +35,7 @@
     "react-native-edge-to-edge": "^1.6.0",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-get-random-values": "^1.11.0",
+    "react-native-keyboard-controller": "^1.17.3",
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.10.0",
@@ -42,7 +44,12 @@
     "react-native-url-polyfill": "^2.0.0",
     "react-native-web": "^0.20.0",
     "trocle-app": "file:",
-    "zustand": "^5.0.3"
+    "zustand": "^5.0.3",
+    "expo-camera": "~16.1.6",
+    "expo-location": "~18.1.5",
+    "expo-file-system": "~18.1.10",
+    "expo-media-library": "~17.1.6",
+    "expo-haptics": "~14.1.4"
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",

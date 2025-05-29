@@ -1,13 +1,14 @@
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
-import { Stack, useRouter } from 'expo-router';
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect } from 'react';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { KeyboardProvider } from "react-native-keyboard-controller";
 
 // TODO: Remove this when the React Native Safe Area Context is working and import the SafeAreaView from react-native-safe-area-context
 // import CustomSafeAreaView from '#/CustomSafeAreaView';
@@ -16,11 +17,11 @@ import Snackbar from '#/display/Snackbar';
 
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
-    const { theme, activeTheme, version, initialized } = useTheme();
-    const router = useRouter();
+// Client React Query
+const queryClient = new QueryClient();
 
-    // const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+export default function RootLayout() {
+    const { theme, activeTheme, initialized } = useTheme();
 
     const [loaded, error] = useFonts({
         'RethinkSans-VariableFont_wght': require('@/assets/fonts/Rethink_Sans/RethinkSans-VariableFont_wght.ttf'),
@@ -44,9 +45,6 @@ export default function RootLayout() {
         }
     }, [loaded, error]);
 
-    // Client React Query
-    const queryClient = new QueryClient();
-
     if (!loaded && !error) { return null; }
     if (!initialized) { return null; }
     return (
@@ -54,27 +52,29 @@ export default function RootLayout() {
             <SafeAreaProvider>
                 <SafeAreaView style={{ flex: 1, backgroundColor: activeTheme.colors.surface.secondary }}>
                     <GestureHandlerRootView style={{ flex: 1 }}>
-                        <BottomSheetModalProvider>
-                            <QueryClientProvider client={queryClient}>
-                                <SystemBars style={theme === 'dark' ? 'light' : 'dark'} />
-                                <Stack>
-                                    <Stack.Screen
-                                        name='(protected)'
-                                        options={{
-                                            headerShown: false,
-                                            animation: 'none'
-                                        }}
-                                    />
-                                    <Stack.Screen
-                                        name="(auth)"
-                                        options={{
-                                            headerShown: false,
-                                        }}
-                                    />
-                                </Stack>
-                                <Snackbar />
-                            </QueryClientProvider>
-                        </BottomSheetModalProvider>
+                        <KeyboardProvider>
+                            <BottomSheetModalProvider>
+                                <QueryClientProvider client={queryClient}>
+                                    <SystemBars style={theme === 'dark' ? 'light' : 'dark'} />
+                                    <Stack>
+                                        <Stack.Screen
+                                            name='(protected)'
+                                            options={{
+                                                headerShown: false,
+                                                animation: 'none'
+                                            }}
+                                        />
+                                        <Stack.Screen
+                                            name="(auth)"
+                                            options={{
+                                                headerShown: false,
+                                            }}
+                                        />
+                                    </Stack>
+                                    <Snackbar />
+                                </QueryClientProvider>
+                            </BottomSheetModalProvider>
+                        </KeyboardProvider>
                     </GestureHandlerRootView>
                 </SafeAreaView>
             </SafeAreaProvider>

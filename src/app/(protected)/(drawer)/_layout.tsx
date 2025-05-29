@@ -1,3 +1,4 @@
+import React from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
 import { Drawer } from 'expo-router/drawer';
@@ -15,8 +16,11 @@ import Fade from '#/miscellaneous/Fade';
 
 import { Profile, Subscription, Heart, Star0, Troc, History, Assistance, Settings, Sun, Moon } from '#/icons';
 
-const CustomDrawer = (props: any) => {
+const avatarImage = require('@/assets/icon.png');
+
+const CustomDrawer = React.memo((props: any) => {
     const { theme, activeTheme, toggleTheme } = useTheme();
+
     return (
         <DrawerContentScrollView
             {...props}
@@ -30,7 +34,7 @@ const CustomDrawer = (props: any) => {
                     {/* Top */}
                     <Flex gap={4} style={{ width: '100%', paddingTop: 16, paddingHorizontal: 16 }}>
                         <Flex gap={4} alignItems='flex-start' style={{ width: '100%', paddingHorizontal: 16 }}>
-                            <Avatar size="medium" customImage={require('@/assets/icon.png')} onPress={() => {
+                            <Avatar size="medium" customImage={avatarImage} onPress={() => {
                                 router.push('user/profile');
                             }} />
                             <Flex>
@@ -62,118 +66,110 @@ const CustomDrawer = (props: any) => {
                         {/* Scrollable */}
                         <Flex scroll gap={8} style={{ width: '100%', flex: 1, position: 'relative' }}>
                             <Flex style={[styles.tableContainer]}>
-                                <Table
-                                    leftProps={{
-                                        variant: 'icon',
-                                        leftText: 'Mon profil',
-                                        icon: <Profile />,
-                                    }}
-                                    rightProps={{
-                                        variant: 'empty',
-                                    }}
-                                    onPress={() => {
-                                        router.push('user/profile');
-                                    }}
-                                />
-                                <Table
-                                    leftProps={{
-                                        variant: 'icon',
-                                        leftText: 'Premium',
-                                        icon: <Subscription />,
-                                    }}
-                                    rightProps={{
-                                        variant: 'empty',
-                                    }}
-                                    onPress={() => {
-                                        router.push('shop/premium');
-                                    }}
-                                />
-                                <Table
-                                    leftProps={{
-                                        variant: 'icon',
-                                        leftText: 'Favoris',
-                                        icon: <Heart />,
-                                    }}
-                                    rightProps={{
-                                        variant: 'empty',
-                                    }}
-                                    onPress={() => {
-                                        router.push('favorites');
-                                    }}
-                                />
-                                <Table
-                                    leftProps={{
-                                        variant: 'icon',
-                                        leftText: 'Évaluations',
-                                        icon: <Star0 />,
-                                    }}
-                                    rightProps={{
-                                        variant: 'empty',
-                                    }}
-                                    onPress={() => {
-                                        router.push('evaluations');
-                                    }}
-                                />
-                                <Table
-                                    leftProps={{
-                                        variant: 'icon',
-                                        leftText: 'Mes trocs',
-                                        icon: <Troc />,
-                                    }}
-                                    rightProps={{
-                                        variant: 'text',
-                                        active: true,
-                                        rightText: '14 nov.',
-                                        chevron: false,
-                                    }}
-                                    onPress={() => {
-                                        router.push('trocs');
-                                    }}
-                                />
-                                <Table
-                                    leftProps={{
-                                        variant: 'icon',
-                                        leftText: 'Historique',
-                                        icon: <History />,
-                                    }}
-                                    rightProps={{
-                                        variant: 'empty',
-                                    }}
-                                    onPress={() => {
-                                        router.push('history');
-                                    }}
-                                />
+                                <Link href='user/profile' asChild>
+                                    <Table
+                                        leftProps={{
+                                            variant: 'icon',
+                                            leftText: 'Mon profil',
+                                            icon: <Profile />,
+                                        }}
+                                        rightProps={{
+                                            variant: 'empty',
+                                        }}
+                                    />
+                                </Link>
+                                <Link href='shop/premium' asChild>
+                                    <Table
+                                        leftProps={{
+                                            variant: 'icon',
+                                            leftText: 'Premium',
+                                            icon: <Subscription />,
+                                        }}
+                                        rightProps={{
+                                            variant: 'empty',
+                                        }}
+                                    />
+                                </Link>
+                                <Link href='favorites' asChild>
+                                    <Table
+                                        leftProps={{
+                                            variant: 'icon',
+                                            leftText: 'Favoris',
+                                            icon: <Heart />,
+                                        }}
+                                        rightProps={{
+                                            variant: 'empty',
+                                        }}
+                                    />
+                                </Link>
+                                <Link href='evaluations' asChild>
+                                    <Table
+                                        leftProps={{
+                                            variant: 'icon',
+                                            leftText: 'Évaluations',
+                                            icon: <Star0 />,
+                                        }}
+                                        rightProps={{
+                                            variant: 'empty',
+                                        }}
+                                    />
+                                </Link>
+                                <Link href='trocs' asChild>
+                                    <Table
+                                        leftProps={{
+                                            variant: 'icon',
+                                            leftText: 'Mes trocs',
+                                            icon: <Troc />,
+                                        }}
+                                        rightProps={{
+                                            variant: 'text',
+                                            active: true,
+                                            rightText: '14 nov.',
+                                            chevron: false,
+                                        }}
+                                    />
+                                </Link>
+                                <Link href='history' asChild>
+                                    <Table
+                                        leftProps={{
+                                            variant: 'icon',
+                                            leftText: 'Historique',
+                                            icon: <History />,
+                                        }}
+                                        rightProps={{
+                                            variant: 'empty',
+                                        }}
+                                    />
+                                </Link>
                             </Flex>
 
                             <Divider padding />
 
                             <Flex style={[styles.tableContainer]}>
-                                <Table
-                                    leftProps={{
-                                        variant: 'icon',
-                                        leftText: 'Centre d\'assistance',
-                                        icon: <Assistance />,
-                                    }}
-                                    rightProps={{
-                                        variant: 'empty',
-                                    }}
-                                    onPress={() => {
-                                        router.push('help_center');
-                                    }}
-                                />
-                                <Table
-                                    leftProps={{
-                                        variant: 'icon',
-                                        leftText: 'Paramètres',
-                                        icon: <Settings />,
-                                    }}
-                                    rightProps={{
-                                        variant: 'empty',
-                                    }}
-                                    onPress={() => {
-                                        router.push('settings/settings');
-                                    }}
-                                />
+                                <Link href='help_center' asChild>
+                                    <Table
+                                        leftProps={{
+                                            variant: 'icon',
+                                            leftText: 'Centre d\'assistance',
+                                            icon: <Assistance />,
+                                        }}
+                                        rightProps={{
+                                            variant: 'empty',
+                                        }}
+                                    />
+                                </Link>
+                                <Link href='settings/settings' asChild>
+                                    <Table
+                                        leftProps={{
+                                            variant: 'icon',
+                                            leftText: 'Paramètres',
+                                            icon: <Settings />,
+                                        }}
+                                        rightProps={{
+                                            variant: 'empty',
+                                        }}
+                                    />
+                                </Link>
                             </Flex>
                         </Flex>
                         <Fade side="bottom" />
@@ -200,7 +196,7 @@ const CustomDrawer = (props: any) => {
             </Flex>
         </DrawerContentScrollView>
     );
-};
+});
 
 export default function Layout() {
     return (

@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Table;
+export default React.memo(Table);
 
 // Pour utiliser une Table dans un header
 // const tableLeft = {

@@ -23,6 +23,7 @@ interface Props extends RNTextProps {
     containerStyle?: ViewStyle;
     type?: 'primary' | 'secondary' | 'placeholder' | 'invert' | 'brand';
     variant?: TextVariant;
+    textDecorationLine?: 'underline' | 'none' | 'line-through' | 'underline line-through';
     onPress?: () => void;
 }
 
@@ -32,6 +33,7 @@ const Text: React.FC<Props> = ({
     containerStyle,
     type = 'primary',
     variant = 'body_Large',
+    textDecorationLine = 'none',
     onPress,
     ...rest
 }) => {
@@ -39,7 +41,10 @@ const Text: React.FC<Props> = ({
 
     const combinedStyle = useMemo(() => [
         activeTheme.typography[variant],
-        { color: activeTheme.colors.text[type] },
+        {
+            color: activeTheme.colors.text[type],
+            textDecorationLine: textDecorationLine,
+        },
         style,
     ], [activeTheme, type, variant, style]);
 

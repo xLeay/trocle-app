@@ -28,20 +28,26 @@ export default function Tab() {
                 options={{
                     title: 'Messages',
                     header: () =>
-                        <Flex direction="row" justifyContent='space-between' alignItems='center' style={{ backgroundColor: activeTheme.colors.surface.secondary, width: '100%' }}>
-                            <Flex direction='row' style={{ justifyContent: 'flex-start', flex: 1 }}>
+                        <Flex gap={activeTheme.spacing._100} direction="row" style={{
+                            backgroundColor: activeTheme.colors.surface.secondary,
+                            width: '100%',
+                            paddingLeft: activeTheme.spacing._200,
+                            paddingRight: activeTheme.spacing._100
+                        }}>
+                            <Flex direction='row' justifyContent='flex-start' style={{ flex: 1 }}>
                                 <TopAppBar
                                     left={left}
                                     center={center}
                                     right={right}
-                                    style={{ 
+                                    style={{
                                         paddingHorizontal: 0,
-                                        paddingLeft: activeTheme.spacing._200 
                                     }}
                                 />
                             </Flex>
-                            <Flex direction='row' style={{ justifyContent: 'flex-end', minWidth: 56, height: 60, paddingHorizontal: activeTheme.spacing._100 }}>
-                                <Button icon={<Notification />} variant="ghost" size="small" onPress={() => console.log('Notifications')} />
+                            <Flex direction='row' style={{
+                                height: 60,
+                            }}>
+                                <Button icon={<Notification />} variant="ghost" size="large" onPress={() => console.log('Notifications')} />
                             </Flex>
                         </Flex>,
                 }}

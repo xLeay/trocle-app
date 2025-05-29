@@ -86,4 +86,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default TableLeft;
+export default React.memo(TableLeft);

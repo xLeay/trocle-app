@@ -127,6 +127,7 @@ export default function SignUpScreen() {
                         autoCapitalize={'none'}
                         hasError={!emailValid && email.length > 0 || (emailValid && checkEmailExists?.id)}
                         legend={emailValid && checkEmailExists?.id ? 'Cet email est deja utilisé.' : ''}
+                        keyboardType={'email-address'}
                     />
                     <TextField
                         placeholder={'Mot de passe'}

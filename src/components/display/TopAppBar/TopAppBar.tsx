@@ -39,15 +39,15 @@ const TopAppBar = ({
             style={[styles.container, { backgroundColor: activeTheme.colors.surface.secondary }, style || {}]}
         >
             {/* <View style={[styles.topBar, styles.topBarLeft, { flex: left ? 1 : 0 }]}> */}
-            <View style={[styles.topBar, styles.topBarLeft, leftStyles]}>
+            <Flex style={[styles.topBar, styles.topBarLeft, leftStyles]}>
                 {left}
-            </View>
-            <View style={[styles.topBar, styles.topBarCenter, centerStyles]}>
+            </Flex>
+            <Flex style={[styles.topBar, styles.topBarCenter, centerStyles]}>
                 {center}
-            </View>
-            <View style={[styles.topBar, styles.topBarRight, rightStyles]}>
+            </Flex>
+            <Flex style={[styles.topBar, styles.topBarRight, rightStyles]}>
                 {right}
-            </View>
+            </Flex>
         </Flex>
     );
 };

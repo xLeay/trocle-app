@@ -1,0 +1,66 @@
+import React, {
+    createContext, useCallback, useContext, useId, useMemo, useRef, useState, useEffect, ReactElement, PropsWithChildren
+} from 'react';
+
+export type Component = ReactElement;
+export type ContextType = {
+    outlet: Component | null;
+    append(id: string, component: Component): void;
+    remove(id: string): void;
+};
+export type ComponentMap = { [id: string]: Component };
+
+export function createPortalGroup() {
+    const Context = createContext<ContextType>({
+        outlet: null,
+        append: () => { },
+        remove: () => { },
+    });
+
+    function Provider(props: PropsWithChildren<{}>) {
+        const map = useRef<ComponentMap>({});
+        const [outlet, setOutlet] = useState<ContextType['outlet']>(null);
+
+        const append = useCallback<ContextType['append']>((id, component) => {
+            if (map.current[id]) return;
+            map.current[id] = <React.Fragment key={id}>{component}</React.Fragment>;
+            setOutlet(<>{Object.values(map.current)}</>);
+        }, []);
+
+        const remove = useCallback<ContextType['remove']>(id => {
+            delete map.current[id];
+            setOutlet(<>{Object.values(map.current)}</>);
+        }, []);
+
+        const contextValue = useMemo(
+            () => ({ outlet, append, remove }),
+            [outlet, append, remove]
+        );
+
+        return (
+            <Context.Provider value={contextValue}>{props.children}</Context.Provider>
+        );
+    }
+
+    function Outlet() {
+        const ctx = useContext(Context);
+        return ctx.outlet;
+    }
+
+    function Portal({ children }: PropsWithChildren<{}>) {
+        const { append, remove } = useContext(Context);
+        const id = useId();
+        useEffect(() => {
+            append(id, children as Component);
+            return () => remove(id);
+        }, [id, children, append, remove]);
+        return null;
+    }
+
+    return { Provider, Outlet, Portal };
+}
+
+const DefaultPortal = createPortalGroup();
+export const Provider = DefaultPortal.Provider;
+export const Outlet = DefaultPortal.Outlet;
+export const Portal = DefaultPortal.Portal;

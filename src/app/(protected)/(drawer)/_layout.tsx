@@ -2,7 +2,7 @@ import React from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
 import { Drawer } from 'expo-router/drawer';
-import { DrawerContentScrollView, DrawerItem, DrawerItemList } from '@react-navigation/drawer';
+import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { router, Link } from 'expo-router';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
@@ -15,6 +15,7 @@ import Divider from '#/display/Divider';
 import Fade from '#/miscellaneous/Fade';
 
 import { Profile, Subscription, Heart, Star0, Troc, History, Assistance, Settings, Sun, Moon } from '#/icons';
+
 
 const avatarImage = require('@/assets/icon.png');
 
@@ -211,7 +212,9 @@ export default function Layout() {
                     },
                     drawerPosition: 'right',
                     overlayColor: 'rgba(0,0,0,0.6)',
-
+                    swipeEdgeWidth: 40,
+                    swipeMinDistance: 40,
+                    freezeOnBlur: true,
                 }}
                 drawerContent={(props) => <CustomDrawer {...props} />}
             />

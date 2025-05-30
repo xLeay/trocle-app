@@ -36,7 +36,9 @@ export interface TopAppBarProps {
     tableRight?: TableRightProps;
 
     rightArea?: {
+        label?: string;
         iconName?: React.ElementType;
+        iconPosition?: 'left' | 'right';
         onPress: () => void;
     }[];
 }

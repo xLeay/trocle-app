@@ -60,7 +60,7 @@
         {
           "android": {
             "parentTheme": "Default",
-            "enforceNavigationBarContrast": false
+            "enforceNavigationBarContrast": true
           }
         }
       ]

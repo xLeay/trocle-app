@@ -95,7 +95,7 @@ const topAppBarConfigs = {
             </Flex>
         ),
         center: null,
-        // Nécessite : rightArea: {iconName?: nomIcone; onPress: function}[]
+        // Nécessite : rightArea: {label?: string; iconName?: nomIcone; iconPosition?: 'left' | 'right'; onPress: function}[]
         right: ({ rightArea }: TopAppBarProps) => {
             if (!rightArea || rightArea.length === 0) {
                 return null;
@@ -105,7 +105,9 @@ const topAppBarConfigs = {
                     {rightArea.map((action, idx) => (
                         <Button
                             key={idx}
+                            label={action.label ?? ''}
                             icon={action.iconName ? React.createElement(action.iconName) : <Circle />}
+                            iconPosition={action.iconPosition ?? 'left'}
                             variant="ghost"
                             size="small"
                             onPress={action.onPress}
@@ -118,7 +120,7 @@ const topAppBarConfigs = {
 
     _medium: {
         left: null,
-        // Nécessite : canGoBack: boolean, onBack: function, label: string, rightArea: {iconName?: nomIcone; onPress: function}[]
+        // Nécessite : canGoBack: boolean, onBack: function, label: string, rightArea: {label?: string; iconName?: nomIcone; iconPosition?: 'left' | 'right'; onPress: function}[]
         center: ({ canGoBack, onBack, label, rightArea }: TopAppBarProps) => (
             <Flex gap={8} border borderColor="blue" style={{ flex: 1, paddingBottom: 24 }}>
                 <Flex direction="row" border borderColor="black" justifyContent="space-between" style={{ width: '100%' }}>
@@ -148,7 +150,7 @@ const topAppBarConfigs = {
 
     _large: {
         left: null,
-        // Nécessite : canGoBack: boolean, onBack: function, label: string, rightArea: {iconName?: nomIcone; onPress: function}[]
+        // Nécessite : canGoBack: boolean, onBack: function, label: string, rightArea: {label?: string; iconName?: nomIcone; iconPosition?: 'left' | 'right'; onPress: function}[]
         center: ({ canGoBack, onBack, label, rightArea }: TopAppBarProps) => (
             <Flex gap={32} style={{ flex: 1, paddingBottom: 28 }}>
                 <Flex direction="row" justifyContent="space-between" style={{ width: '100%' }}>

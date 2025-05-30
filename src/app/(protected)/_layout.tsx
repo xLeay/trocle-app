@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { AppState } from 'react-native';
+import { AppState, } from 'react-native';
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import { Redirect, Stack } from 'expo-router';
 import { useAuthStore } from '@/src/state/authStore';
@@ -38,9 +38,6 @@ export default function ProtectedLayout() {
     return (
         <Stack
             screenOptions={{
-                headerStyle: {
-                    backgroundColor: activeTheme.colors.surface.secondary,
-                },
                 headerShown: false,
             }}
         >
@@ -66,8 +63,8 @@ export default function ProtectedLayout() {
                 }}
             />
             <Stack.Screen
-                name="modal/creation"
-                options={{ headerShown: true, }}
+                name="modal"
+                options={{ headerShown: false, }}
             />
             <Stack.Screen
                 name="shop/premium"

@@ -28,6 +28,7 @@ export type ButtonVariant =
     | 'ghost'
     | 'transparent'
     | 'gradient'
+    | 'danger'
     ;
 
 export type ButtonSize = 'small' | 'large' | 'FAB';
@@ -116,6 +117,9 @@ const Button = forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>(({
                 ] : variant === 'transparent' ? [
                     activeTheme.colors.surface.transparent,
                     activeTheme.colors.surface.transparentContrast
+                ] : variant === 'danger' ? [
+                    activeTheme.colors.surface.danger,
+                    activeTheme.colors.surface.dangerLight
                 ] : [
                     activeTheme.colors.component.button.disabled,
                     activeTheme.colors.component.button.disabled
@@ -126,7 +130,7 @@ const Button = forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>(({
 
     const textColor = disabled
         ? activeTheme.colors.surface.field
-        : variant === 'primary'
+        : variant === 'primary' || variant === 'danger'
             ? 'white'
             : variant === 'secondary' || variant === 'transparent' || variant === 'gradient'
                 ? activeTheme.colors.text.invert

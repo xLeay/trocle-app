@@ -11,6 +11,7 @@ import ProductBlock from './ProductBlock';
 import AdSection from './AdSection';
 import SuggestedUsersBlock from './SuggestedUsersBlock';
 import SuggestedUserProductsBlock from './SuggestedUserProductsBlock';
+import { useScrollToTopOnTabPress } from '@/src/lib/hooks/useScrollToTopOnTabPress';
 
 
 import Text from '#/Text';
@@ -19,6 +20,8 @@ import Flex from '#/Flex';
 import { Chevronright } from '#/icons';
 
 export default function Feed() {
+
+    const listRef = useScrollToTopOnTabPress<any>();
 
     const { activeTheme } = useTheme();
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error } = useFeed();
@@ -111,6 +114,7 @@ export default function Feed() {
     if (!feedData.length) return <Text>Aucun élément pour l'instant</Text>;
     return (
         <FlashList
+            ref={listRef}
             data={feedData}
             renderItem={renderItem}
             keyExtractor={(item, index) => {

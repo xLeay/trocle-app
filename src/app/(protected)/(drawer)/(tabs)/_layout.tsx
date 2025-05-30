@@ -1,5 +1,5 @@
 import { useTheme } from '@/src/lib/hooks/useTheme';
-import { useDrawerStatus } from '@react-navigation/drawer';
+import { useDrawerStatus, useDrawerProgress } from '@react-navigation/drawer';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { Link, Tabs } from 'expo-router';
 import React, { useState, useEffect } from 'react';

@@ -1,6 +1,10 @@
+import { useMemo, useRef, useState } from 'react';
+import { Modal, StyleSheet } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
-import { useRef, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import * as ImagePicker from 'expo-image-picker';
+import { Pressable, Keyboard, ActivityIndicator } from 'react-native';
+import { SystemBars } from 'react-native-edge-to-edge';
 
 import { useGoBack } from '@/src/lib/hooks/useGoBack';
 import { useTheme } from '@/src/lib/hooks/useTheme';
@@ -14,11 +18,11 @@ import Divider from '#/display/Divider';
 import Table from '#/display/Table';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 import Radio from '#/controls/Radio';
-
 import ModularBottomSheet from '#/display/ModularBottomSheet';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import ImageRatio from '#/display/ImageRatio';
+import Fade from '#/miscellaneous/Fade';
 
-import { Close, Arrowleft, Mylocation, Photo } from '#/icons';
+import { Close, Arrowleft, Mylocation, Photo, Plus } from '#/icons';
 
 
 
@@ -88,8 +92,7 @@ const productStates = [
 
 
 export default function CreationModal() {
-
-    const { activeTheme } = useTheme();
+    const { theme, activeTheme } = useTheme();
     const router = useRouter();
 
     // Config de la top app bar
@@ -103,8 +106,6 @@ export default function CreationModal() {
         onBack,
         label: 'Poste ton article',
     });
-
-    // Les différents champs
 
     // Section 1
     const [title, setTitle] = useState('');
@@ -126,9 +127,70 @@ export default function CreationModal() {
     const [estimatedPrice, setEstimatedPrice] = useState('');
     const [location, setLocation] = useState('');
 
+    // Section 4
+    const [photos, setPhotos] = useState<any[]>([]);
+    const [loadingPhotos, setLoadingPhotos] = useState(false);
+    const maxPhotos = 10;
+    const gotPhotos = photos.length > 0;
+
+    // Section 5 (Validation)
+    const [loading, setLoading] = useState(false);
+    const formValid = useMemo(() => {
+        return (
+            title.length > 0 &&
+            description.length > 0 &&
+            selectedCategory &&
+            selectedProductState &&
+            estimatedPrice.length > 0 &&
+            location.length > 0 &&
+            photos.length > 0 &&
+            photos.length <= maxPhotos
+        );
+    }, [title, description, selectedCategory, selectedProductState, estimatedPrice, location, photos]);
+
+    const handleCreateArticle = () => {
+        setLoading(true);
+        // TODO : Créer l'article
+        console.log('Création de l\'article');
+        setLoading(false);
+    }
+
+    const handleAddPhoto = async () => {
+        if (photos.length >= maxPhotos) return;
+
+        setLoadingPhotos(true);
+
+        // Demande la permission si besoin
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            alert('Permission requise pour accéder à la galerie.');
+            setLoadingPhotos(false);
+            return;
+        }
+
+        // Ouvre la galerie
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsMultipleSelection: true,
+            // allowsEditing: true,
+            aspect: [1, 1],
+            quality: 0.8,
+            selectionLimit: maxPhotos - photos.length, // Limite le nombre de photos sélectionnables
+        });
+
+        if (!result.canceled) {
+            // result.assets est un tableau d’images sélectionnées
+            setPhotos([...photos, ...result.assets]);
+        }
+
+        setLoadingPhotos(false);
+    };
+
+
 
     const getChildren = (item: any, allData: any[]) =>
         allData.filter((cat: any) => cat.parentId === item.id);
+
 
     return (
         <Flex style={[styles.container, { backgroundColor: activeTheme.colors.surface.secondary }]}>
@@ -145,7 +207,7 @@ export default function CreationModal() {
             />
 
             {/* Content */}
-            <Flex scroll border gap={activeTheme.spacing._400} style={{ paddingTop: activeTheme.spacing._200, width: '100%', flex: 1 }}>
+            <Flex scroll gap={activeTheme.spacing._400} style={{ paddingTop: activeTheme.spacing._200, width: '100%', flex: 1 }}>
                 {/* Section */}
                 <Flex gap={activeTheme.spacing._200} style={{ paddingHorizontal: activeTheme.spacing._200, width: '100%' }}>
                     <TextField
@@ -257,11 +319,124 @@ export default function CreationModal() {
                     {/* Textes */}
                     <Flex gap={activeTheme.spacing._100}>
                         <Text variant='title_Large' type='primary'>Ajoute des photos à ton article</Text>
-                        <Text variant='body_Small' type='secondary'>Tu peux ajouter jusqu’à 10 photos. N’hésite pas, cela permet de mettre en valeur tes articles et augmenter ton nombre d’échanges.</Text>
+                        {!gotPhotos && (
+                            <Text variant='body_Small' type='secondary'>Tu peux ajouter jusqu’à 10 photos. N’hésite pas, cela permet de mettre en valeur tes articles et augmenter ton nombre d’échanges.</Text>
+                        )}
                     </Flex>
 
-                    <Flex>
-                        <Button label='Ajouter photo' variant='secondary' size='large' icon={<Photo />} />
+                    <Flex
+                        direction={gotPhotos || loadingPhotos ? 'row' : 'column'}
+                        style={{ width: gotPhotos || loadingPhotos ? '100%' : null }}>
+                        {loadingPhotos ? (
+                            <Flex alignItems="center" justifyContent="center" style={{ width: '100%', height: 100 }}>
+                                <ActivityIndicator size="large" color={activeTheme.colors.icon.primary} />
+                            </Flex>
+                        ) : gotPhotos ? (
+                            // Photos container
+                            <Flex gap={activeTheme.spacing._100} style={{ width: '100%' }}>
+                                <Flex direction='row'>
+                                    {/* Scroll */}
+                                    <Flex
+                                        overflow='hidden'
+                                        scroll
+                                        direction='row'
+                                        alignItems='center'
+                                        gap={activeTheme.spacing._400}
+                                        style={{
+                                            width: '100%',
+                                            borderTopRightRadius: activeTheme.radius.default,
+                                            borderBottomRightRadius: activeTheme.radius.default,
+                                        }}>
+
+                                        {/* Photos */}
+                                        <Flex
+                                            direction='row'
+                                            gap={activeTheme.spacing._200}
+                                        >
+                                            {photos.map((photo, index) => (
+                                                <Flex key={index}>
+                                                    <Pressable
+                                                        onPress={() => {
+                                                            router.push({
+                                                                pathname: '/modal/productImage',
+                                                                params: { uri: photo.uri, index }
+                                                            });
+                                                        }}
+                                                        style={{
+                                                            width: 127,
+                                                            borderWidth: 1
+                                                        }}
+                                                    >
+                                                        <ImageRatio
+                                                            ratio='cover'
+                                                            source={{ uri: photo.uri }}
+                                                            style={{
+                                                                borderRadius: activeTheme.radius.default,
+                                                            }}
+                                                            contentFit="cover"
+                                                            transition={1000}
+                                                        />
+
+                                                        <Flex
+                                                            alignItems='center'
+                                                            justifyContent='center'
+                                                            style={{
+                                                                position: 'absolute',
+                                                                top: activeTheme.spacing._100,
+                                                                right: activeTheme.spacing._100,
+                                                                backgroundColor: activeTheme.colors.icon.invert,
+                                                                height: 24,
+                                                                width: 24,
+                                                                borderRadius: 12,
+                                                            }}
+                                                        >
+                                                            <Pressable onPress={() => {
+                                                                setPhotos(photos.filter((_, i) => i !== index));
+                                                            }}>
+                                                                <Close color={activeTheme.colors.icon.primary} />
+                                                            </Pressable>
+                                                        </Flex>
+                                                    </Pressable>
+                                                </Flex>
+                                            ))}
+                                        </Flex>
+
+                                        <Button
+                                            variant='outlined'
+                                            size='large'
+                                            icon={<Plus />}
+                                            onPress={() => {
+                                                Keyboard.dismiss();
+                                                handleAddPhoto();
+                                            }}
+                                            disabled={photos.length >= maxPhotos}
+                                        />
+
+                                        <Flex style={{ width: 0, height: 20 }} />
+                                    </Flex>
+
+                                    {photos.length >= 3 && (
+                                        <Fade side='right' />
+                                    )}
+                                </Flex>
+
+                                {/* Photos count */}
+                                <Flex>
+                                    <Text variant='body_Small' type='secondary'>{photos.length}/{maxPhotos}</Text>
+                                </Flex>
+                            </Flex>
+                        ) : (
+                            <Button
+                                label='Ajouter photo'
+                                variant='secondary'
+                                size='large'
+                                icon={<Photo />}
+                                onPress={() => {
+                                    Keyboard.dismiss();
+                                    handleAddPhoto();
+                                }}
+                            />
+                        )}
                     </Flex>
                 </Flex>
 
@@ -273,11 +448,32 @@ export default function CreationModal() {
                     <Text variant='body_Large' type='secondary'>En postant mon article, j’accepte les <Text variant='title_Small' type='secondary' onPress={() => router.push('/terms-and-conditions')} style={{ textDecorationLine: 'underline' }}>conditions générales d’utilisations</Text> de Trocle.</Text>
                 </Flex>
 
-                <Flex style={{ height: activeTheme.spacing._400 }} />
+                <Flex style={{ height: activeTheme.spacing._1000 }} />
             </Flex>
 
 
-
+            {/* Bottom */}
+            <Flex style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                paddingHorizontal: activeTheme.spacing._200,
+                paddingVertical: activeTheme.spacing._200,
+                backgroundColor: activeTheme.colors.surface.secondary,
+                borderTopWidth: 1,
+                borderColor: activeTheme.colors.surface.divider,
+            }}>
+                <Button
+                    label="Poster l'article"
+                    variant="primary"
+                    size="large"
+                    fullWidth
+                    disabled={!formValid || loading}
+                    loading={loading}
+                    onPress={handleCreateArticle}
+                />
+            </Flex>
 
 
 
@@ -357,7 +553,6 @@ export default function CreationModal() {
                 iconPosition='right'
                 selectedId={selectedProductState?.id}
             />
-
         </Flex>
     );
 }

@@ -56,9 +56,9 @@ function InnerApp() {
         <React.Fragment>
             <QueryClientProvider client={queryClient}>
                 <GestureHandlerRootView style={{ flex: 1 }}>
-                    <KeyboardProvider>
-                        <BottomSheetModalProvider>
-                            <SafeAreaView style={{ flex: 1, backgroundColor: activeTheme.colors.surface.secondary }}>
+                    <SafeAreaView style={{ flex: 1, backgroundColor: activeTheme.colors.surface.secondary }}>
+                        <KeyboardProvider>
+                            <BottomSheetModalProvider>
                                 <SystemBars style={theme === 'dark' ? 'light' : 'dark'} />
                                 <Stack>
                                     <Stack.Screen
@@ -76,9 +76,9 @@ function InnerApp() {
                                     />
                                 </Stack>
                                 <Snackbar />
-                            </SafeAreaView>
-                        </BottomSheetModalProvider>
-                    </KeyboardProvider>
+                            </BottomSheetModalProvider>
+                        </KeyboardProvider>
+                    </SafeAreaView>
                 </GestureHandlerRootView>
             </QueryClientProvider>
         </React.Fragment>

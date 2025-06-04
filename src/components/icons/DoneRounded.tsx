@@ -1,7 +1,6 @@
-
 import { createMultiPathSVG } from './iconsTemplate';
 
-const filledPaths = [
+const filledPaths: string[] = [
   
 ];
 

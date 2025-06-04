@@ -130,6 +130,7 @@ const TextField = ({
                         }
                         handleFocus();
                     }}
+                    disabled={disabled}
                 >
                     <Flex direction='row' alignItems='center' gap={activeTheme.spacing._100} style={{ flex: 1 }}>
                         {type === 'icon' && icon && (
@@ -163,12 +164,12 @@ const TextField = ({
                             <Chevronbottom />
                         )}
                         {type === 'password' && (
-                            <Pressable onPress={handlePasswordVisibility}>
+                            <Pressable onPress={handlePasswordVisibility} disabled={disabled}>
                                 {isPasswordVisible ? <Eye color={iconColor} /> : <Eyeslash color={iconColor} />}
                             </Pressable>
                         )}
                         {type === 'action' && icon && action && (
-                            <Pressable onPress={action}>
+                            <Pressable onPress={action} disabled={disabled}>
                                 {React.isValidElement(icon)
                                     ? React.cloneElement(icon as React.ReactElement<any>, {
                                         color: (icon.props as IconProps).color ?? iconColor,

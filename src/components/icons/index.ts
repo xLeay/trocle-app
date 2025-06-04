@@ -130,3 +130,5 @@ export { default as Undo } from './UndoRounded';
 export { default as Unfollow } from './UnfollowRounded';
 export { default as Upload } from './UploadRounded';
 export { default as Wallet } from './WalletRounded';
+export { default as Crop } from './CropRounded';
+export { default as Rotate } from './RotateRounded';

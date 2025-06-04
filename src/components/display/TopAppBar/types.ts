@@ -19,6 +19,7 @@ export interface TopAppBarProps {
     onPress?: () => void;
 
     iconName?: React.ElementType;
+    iconColor?: string;
 
     canGoBack?: boolean;
     onBack?: () => void;
@@ -38,6 +39,7 @@ export interface TopAppBarProps {
     rightArea?: {
         label?: string;
         iconName?: React.ElementType;
+        iconColor?: string;
         iconPosition?: 'left' | 'right';
         onPress: () => void;
     }[];

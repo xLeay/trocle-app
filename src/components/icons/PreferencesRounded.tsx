@@ -1,11 +1,11 @@
 
 import { createMultiPathSVG } from './iconsTemplate';
 
-const filledPaths = [
+const filledPaths: string[] = [
   
 ];
 
-const strokePaths = [
+const strokePaths: string[] = [
   "M9.5 11a3.5 3.5 0 0 0 3.42-2.75h6.33a.75.75 0 0 0 0-1.5h-6.33a3.501 3.501 0 0 0-6.84 0H4.75a.75.75 0 0 0 0 1.5h1.33A3.5 3.5 0 0 0 9.5 11M7.502 7.5a1.999 1.999 0 1 0 3.997 0 1.999 1.999 0 0 0-3.998 0M18.92 17.25a3.501 3.501 0 0 1-6.84 0H4.75a.75.75 0 0 1 0-1.5h7.33a3.501 3.501 0 0 1 6.84 0h.33a.75.75 0 0 1 0 1.5zM13.5 16.5a1.999 1.999 0 1 0 3.998 0 1.999 1.999 0 0 0-3.997 0"
 ];
 

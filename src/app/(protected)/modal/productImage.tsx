@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { StyleSheet } from 'react-native';
-import { SystemBars } from 'react-native-edge-to-edge';
+import { StyleSheet, Image } from 'react-native';
+import { SaveFormat, useImageManipulator } from 'expo-image-manipulator'
+import * as ImagePicker from 'expo-image-picker';
 
 import { usePhotoContext } from '#/context/PhotoContext';
 import { useTheme } from '@/src/lib/hooks/useTheme';
@@ -8,13 +10,13 @@ import { useGoBack } from '@/src/lib/hooks/useGoBack';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
 import Flex from '#/Flex';
+import Grid from '#/Grid';
 import Text from '#/Text';
 import Button from '#/controls/Button';
 import TopAppBar from '@/src/components/display/TopAppBar/TopAppBar';
 import ImageRatio from '#/display/ImageRatio';
 
-import { Arrowleft, Done } from '#/icons';
-import { useState } from 'react';
+import { Arrowleft, Crop, Rotate, Delete } from '#/icons';
 
 
 export default function ProductImageModal() {
@@ -33,8 +35,6 @@ export default function ProductImageModal() {
         rightArea: [
             {
                 label: 'Appliquer',
-                iconName: Done,
-                iconPosition: 'right',
                 onPress: () => router.back(),
             },
         ],
@@ -46,28 +46,90 @@ export default function ProductImageModal() {
     const photoContext = usePhotoContext();
     if (!photoContext) throw new Error("PhotoContext absent du provider");
 
-    const { photos, setPhotos } = photoContext;
-
+    const [ready, setReady] = useState(false);
     const idx = Number(index);
 
+    const [currentUri, setCurrentUri] = useState<string | undefined>(undefined);
 
-    const [isBlack, setIsBlack] = useState(false);
-    const toggleBlack = () => {
-        SystemBars.setHidden(!isBlack);
-        setIsBlack(!isBlack);
+    const { photos, setPhotos } = photoContext;
+    const ctx = useImageManipulator(photos[idx].uri);
+
+
+    useEffect(() => {
+        if (!photoContext) return;
+
+        const { photos } = photoContext;
+        if (photos[idx]) {
+            setReady(true);
+        } else {
+            console.warn("Photo non trouvée à l’index :", idx);
+            router.back();
+        }
+    }, [photoContext, idx]);
+
+    useEffect(() => {
+        if (photos[idx]) {
+            setCurrentUri(photos[idx].uri);
+        }
+    }, [photos, idx]);
+
+
+    // const handleCrop = async (cropBox: { x: number, y: number, width: number, height: number }) => {
+    //     ctx.crop({ originX: cropBox.x, originY: cropBox.y, width: cropBox.width, height: cropBox.height });
+    //     const image = await ctx.renderAsync();
+    //     const result = await image.saveAsync({ format: SaveFormat.PNG });
+
+    //     const newPhotos = [...photos];
+    //     newPhotos[idx] = { ...photos[idx], uri: result.uri };
+    //     setPhotos(newPhotos);
+    //     setCurrentUri(result.uri);
+    // };
+
+    const handleCrop = () => {
+        router.push({
+            pathname: '/modal/cropImage',
+            params: {
+                index: String(idx),
+            },
+        });
+    };
+
+    const handleRotate = async () => {
+        console.log('handleRotate');
+
+        if (!uri) return;
+        ctx.rotate(90);
+        const image = await ctx.renderAsync();
+        const result = await image.saveAsync({
+            format: SaveFormat.PNG,
+        });
+
+        const newPhotos = [...photos];
+        newPhotos[idx] = { ...photos[idx], uri: result.uri };
+        setPhotos(newPhotos);
+        setCurrentUri(result.uri);
     }
 
+    const handleDelete = () => {
+        console.log('handleDelete');
+
+        if (!uri) return;
+        const newPhotos = [...photos];
+        newPhotos.splice(idx, 1);
+
+        router.back();
+
+        setTimeout(() => {
+            setPhotos(newPhotos);
+            setCurrentUri(newPhotos[0]?.uri);
+        }, 0);
+    }
+
+    if (!ready) return null;
     return (
         <Flex style={[
             styles.container,
-            {
-                backgroundColor: activeTheme.colors.surface.secondary,
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-            }
+            { backgroundColor: activeTheme.colors.surface.secondary }
         ]}
         >
             <Stack.Screen
@@ -77,9 +139,6 @@ export default function ProductImageModal() {
                             left={left}
                             center={center}
                             right={right}
-                            style={{
-                                backgroundColor: 'transparent',
-                            }}
                         />
                     ),
                 }}
@@ -90,41 +149,56 @@ export default function ProductImageModal() {
                 style={{
                     flex: 1,
                     width: '100%',
-                    backgroundColor: 'rgba(0,0,0,0.85)',
                 }}
             >
-                <Button label="Mettre en noir" onPress={toggleBlack} />
                 <ImageRatio
-                    ratio="cover"
-                    source={{ uri }}
+                    source={{ uri: currentUri }}
                     style={{
-                        width: 320,
-                        maxWidth: '90%',
-                        borderRadius: 16,
-                        borderWidth: 2,
-                        borderColor: '#fff',
+                        width: '100%',
                     }}
                     contentFit="contain"
                     transition={500}
                 />
-                <Flex direction="row" gap={16} style={{ marginTop: 24 }}>
+            </Flex>
+
+            <Flex
+                border
+                direction="row"
+                justifyContent="center"
+                alignItems='center'
+                style={{ width: '100%', paddingHorizontal: activeTheme.spacing._200, paddingVertical: activeTheme.spacing._200 }}
+            >
+                <Flex direction="row" gap={activeTheme.spacing._400} style={{}}>
                     <Button
-                        label="Supprimer"
-                        variant="danger"
+                        icon={<Crop />}
+                        variant="outlined"
+                        size="large"
                         onPress={() => {
-                            setPhotos(photos.filter((_, i) => i !== idx));
-                            router.back();
+                            handleCrop();
                         }}
                     />
+
                     <Button
-                        label="Editer"
+                        icon={<Rotate />}
                         variant="outlined"
+                        size="large"
                         onPress={() => {
-                            router.push(`/modal/productImage?index=${idx}`);
+                            handleRotate();
+                        }}
+                    />
+
+                    <Button
+                        icon={<Delete />}
+                        variant="outlined"
+                        size="large"
+                        onPress={() => {
+                            handleDelete();
                         }}
                     />
                 </Flex>
             </Flex>
+
+
         </Flex>
     );
 }

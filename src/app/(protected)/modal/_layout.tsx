@@ -11,6 +11,7 @@ export default function ModalLayout() {
             <Stack>
                 <Stack.Screen name="creation" />
                 <Stack.Screen name="productImage" />
+                <Stack.Screen name="cropImage" />
             </Stack>
         </PhotoContext.Provider>
     );

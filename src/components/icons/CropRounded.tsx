@@ -1,0 +1,13 @@
+
+import { createMultiPathSVG } from './iconsTemplate';
+
+const filledPaths: string[] = [
+  
+];
+
+const strokePaths: string[] = [
+  "M5.75 2C6.16421 2 6.5 2.33579 6.5 2.75V5H17C18.1046 5 19 5.89543 19 7V17.5H21.25C21.6642 17.5 22 17.8358 22 18.25C22 18.6642 21.6642 19 21.25 19H19V21.25C19 21.6642 18.6642 22 18.25 22C17.8358 22 17.5 21.6642 17.5 21.25V19H7C5.89543 19 5 18.1046 5 17V6.5H2.75C2.33579 6.5 2 6.16421 2 5.75C2 5.33579 2.33579 5 2.75 5H5V2.75C5 2.33579 5.33579 2 5.75 2ZM6.5 6.5V16.5C6.5 17.0523 6.94772 17.5 7.5 17.5H17.5V7.5C17.5 6.94772 17.0523 6.5 16.5 6.5H6.5Z"
+];
+
+const CropRounded = createMultiPathSVG({ filledPaths, strokePaths });
+export default CropRounded;

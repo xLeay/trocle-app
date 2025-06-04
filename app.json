@@ -63,6 +63,12 @@
             "enforceNavigationBarContrast": true
           }
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Autoriser Trocle à accéder à votre position."
+        }
       ]
     ]
   }

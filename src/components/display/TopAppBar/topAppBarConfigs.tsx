@@ -31,21 +31,21 @@ const topAppBarConfigs = {
     _application: {
         left: <View />,
         center: <TrocleLogoFull variant="medium" color="black" />,
-        // Nécessite : onPress: function, iconName: string
-        right: ({ onPress, iconName }: TopAppBarProps) =>
-            <Button icon={iconName ? React.createElement(iconName) : <Circle />} variant="ghost" size="small" onPress={onPress} />,
+        // Nécessite : onPress: function, iconName: string, iconColor: string
+        right: ({ onPress, iconName, iconColor }: TopAppBarProps) =>
+            <Button icon={iconName ? React.createElement(iconName, { color: iconColor }) : <Circle />} variant="ghost" size="small" onPress={onPress} />,
     },
 
     _center: {
-        // Nécessite : canGoBack: boolean, onBack: function
-        left: ({ canGoBack, onBack }: TopAppBarProps) => canGoBack ? (
-            <Button icon={<Arrowleft />} variant="ghost" size="small" onPress={onBack} />
+        // Nécessite : canGoBack: boolean, onBack: function, iconColor: string
+        left: ({ canGoBack, onBack, iconColor }: TopAppBarProps) => canGoBack ? (
+            <Button icon={<Arrowleft color={iconColor} />} variant="ghost" size="small" onPress={onBack} />
         ) : <View />,
         // Nécessite : label: string
         center: ({ label = "Titre" }: TopAppBarProps) => <Text variant="title_Medium">{label}</Text>,
-        // Nécessite : onPress: function, iconName: string
-        right: ({ onPress, iconName }: TopAppBarProps) =>
-            <Button icon={iconName ? React.createElement(iconName) : <Circle />} variant="ghost" size="small" onPress={onPress} />,
+        // Nécessite : onPress: function, iconName: string, iconColor: string
+        right: ({ onPress, iconName, iconColor }: TopAppBarProps) =>
+            <Button icon={iconName ? React.createElement(iconName, { color: iconColor }) : <Circle />} variant="ghost" size="small" onPress={onPress} />,
     },
 
     _search: {
@@ -58,9 +58,9 @@ const topAppBarConfigs = {
     },
 
     _withProgressBar: {
-        // Nécessite : canGoBack: boolean, onBack: function
-        left: ({ canGoBack, onBack }: TopAppBarProps) => canGoBack ? (
-            <Button icon={<Arrowleft />} variant="ghost" size="small" onPress={onBack} />
+        // Nécessite : canGoBack: boolean, onBack: function, iconColor: string
+        left: ({ canGoBack, onBack, iconColor }: TopAppBarProps) => canGoBack ? (
+            <Button icon={<Arrowleft color={iconColor} />} variant="ghost" size="small" onPress={onBack} />
         ) : <View />,
         // Nécessite : progress: number, progressBarType: primary | mono
         center: ({ progress, progressBarType }: TopAppBarProps) => (
@@ -71,11 +71,11 @@ const topAppBarConfigs = {
     },
 
     "_small+table": {
-        // Nécessite : canGoBack: boolean, onBack: function, tableLeft: TableLeftProps, tableRight: TableRightProps
-        left: ({ canGoBack, onBack, tableLeft, tableRight }: TopAppBarProps) => (
+        // Nécessite : canGoBack: boolean, onBack: function, iconColor: string, tableLeft: TableLeftProps, tableRight: TableRightProps
+        left: ({ canGoBack, onBack, iconColor, tableLeft, tableRight }: TopAppBarProps) => (
             <Flex direction="row" gap={4} style={{ flex: 1 }}>
                 {canGoBack ? (
-                    <Button icon={<Arrowleft />} variant="ghost" size="small" onPress={onBack} />
+                    <Button icon={<Arrowleft color={iconColor} />} variant="ghost" size="small" onPress={onBack} />
                 ) : <View style={{ width: 32 }} />}
                 <Table leftProps={tableLeft} rightProps={tableRight} style={{ flex: 1 }} />
             </Flex>
@@ -85,11 +85,11 @@ const topAppBarConfigs = {
     },
 
     _small: {
-        // Nécessite : canGoBack: boolean, onBack: function, label: string, iconName: string
-        left: ({ canGoBack, onBack, label, iconName }: TopAppBarProps) => (
+        // Nécessite : canGoBack: boolean, onBack: function, label: string, iconName: string, iconColor: string
+        left: ({ canGoBack, onBack, label, iconName, iconColor }: TopAppBarProps) => (
             <Flex direction="row" gap={16} style={{ flex: 1 }}>
                 {canGoBack ? (
-                    <Button icon={iconName ? React.createElement(iconName) : <Arrowleft />} variant="ghost" size="small" onPress={onBack} />
+                    <Button icon={iconName ? React.createElement(iconName, { color: iconColor }) : <Arrowleft color={iconColor} />} variant="ghost" size="small" onPress={onBack} />
                 ) : <View style={{ width: 32 }} />}
                 <Text variant="title_Medium">{label}</Text>
             </Flex>
@@ -106,7 +106,7 @@ const topAppBarConfigs = {
                         <Button
                             key={idx}
                             label={action.label ?? ''}
-                            icon={action.iconName ? React.createElement(action.iconName) : <Circle />}
+                            icon={action.iconName ? React.createElement(action.iconName, { color: action.iconColor }) : null}
                             iconPosition={action.iconPosition ?? 'left'}
                             variant="ghost"
                             size="small"
@@ -132,7 +132,7 @@ const topAppBarConfigs = {
                         {rightArea?.map((action, idx) => (
                             <Button
                                 key={idx}
-                                icon={action.iconName ? React.createElement(action.iconName) : <Circle />}
+                                icon={action.iconName ? React.createElement(action.iconName, { color: action.iconColor }) : null}
                                 variant="ghost"
                                 size="small"
                                 onPress={action.onPress}
@@ -162,7 +162,7 @@ const topAppBarConfigs = {
                         {rightArea?.map((action, idx) => (
                             <Button
                                 key={idx}
-                                icon={action.iconName ? React.createElement(action.iconName) : <Circle />}
+                                icon={action.iconName ? React.createElement(action.iconName, { color: action.iconColor }) : null}
                                 variant="ghost"
                                 size="small"
                                 onPress={action.onPress}

@@ -26,7 +26,7 @@ const RATIO_PRESETS: Record<RatioName, number> = {
 };
 
 type ImageRatioProps = {
-    ratio: RatioName;
+    ratio?: RatioName;
     style?: any;
 } & Omit<ImageProps, "style">;
 
@@ -37,7 +37,7 @@ const ImageRatio = ({ ratio, style, ...props }: ImageRatioProps) => {
         setWidth(e.nativeEvent.layout.width);
     }, []);
 
-    const aspectRatio = RATIO_PRESETS[ratio];
+    const aspectRatio = RATIO_PRESETS[ratio ?? "cover"];
 
     // Si width n'est pas encore connu, on ne rend rien (ou un loader)
     return (
@@ -47,7 +47,7 @@ const ImageRatio = ({ ratio, style, ...props }: ImageRatioProps) => {
                     {...props}
                     style={{
                         width: "100%",
-                        height: width / aspectRatio,
+                        height: ratio ? width / aspectRatio : '100%',
                         borderRadius: style?.borderRadius,
                         ...StyleSheet.flatten(style),
                     }}

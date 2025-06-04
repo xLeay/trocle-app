@@ -1,14 +1,17 @@
 import { useMemo, useRef, useState } from 'react';
-import { Modal, StyleSheet } from 'react-native';
+import { Alert, Linking, Modal, Platform, StyleSheet } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import * as ImagePicker from 'expo-image-picker';
 import { Pressable, Keyboard, ActivityIndicator } from 'react-native';
-import { SystemBars } from 'react-native-edge-to-edge';
+import * as Location from 'expo-location'
 
 import { useGoBack } from '@/src/lib/hooks/useGoBack';
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
+import useLocation from '@/src/lib/hooks/useLocation';
+import { useSnackbarStore } from '@/src/state/snackbarStore';
+import { usePhotoContext } from '#/context/PhotoContext';
 
 import Flex from '#/Flex';
 import Text from '#/Text';
@@ -23,7 +26,6 @@ import ImageRatio from '#/display/ImageRatio';
 import Fade from '#/miscellaneous/Fade';
 
 import { Close, Arrowleft, Mylocation, Photo, Plus } from '#/icons';
-
 
 
 // Exemple de données
@@ -94,6 +96,9 @@ const productStates = [
 export default function CreationModal() {
     const { theme, activeTheme } = useTheme();
     const router = useRouter();
+    const { addSnackbar } = useSnackbarStore();
+
+
 
     // Config de la top app bar
     const topAppBarConfig = "_small";
@@ -125,10 +130,14 @@ export default function CreationModal() {
 
     // Section 3
     const [estimatedPrice, setEstimatedPrice] = useState('');
+    const { latitude, longitude, plainLocation, error } = useLocation();
     const [location, setLocation] = useState('');
 
+
     // Section 4
-    const [photos, setPhotos] = useState<any[]>([]);
+    const photoContext = usePhotoContext();
+    if (!photoContext) throw new Error("PhotoContext absent du provider");
+    const { photos, setPhotos } = photoContext;
     const [loadingPhotos, setLoadingPhotos] = useState(false);
     const maxPhotos = 10;
     const gotPhotos = photos.length > 0;
@@ -154,6 +163,41 @@ export default function CreationModal() {
         console.log('Création de l\'article');
         setLoading(false);
     }
+
+    const handleLocationClick = async () => {
+        if (plainLocation) {
+            setLocation(`${plainLocation.city}, ${plainLocation.postalCode}`)
+        }
+
+        if (error) {
+            console.log('La localisation n\'est pas disponible');
+
+            const { status } = await Location.getForegroundPermissionsAsync()
+            if (status !== 'granted') {
+                const { status: newStatus } = await Location.requestForegroundPermissionsAsync()
+
+                if (newStatus !== 'granted') {
+                    return Alert.alert(
+                        "Permission requise",
+                        "L'accès à la localisation est nécessaire. Activez-la dans les réglages.",
+                        [
+                            { text: "Annuler", style: "cancel" },
+                            {
+                                text: "Ouvrir les réglages",
+                                onPress: () => {
+                                    const url = Platform.OS === 'ios' ? 'app-settings:' : undefined
+                                    Linking.openSettings().catch(() => {
+                                        if (url) Linking.openURL(url)
+                                    })
+                                }
+                            }
+                        ]
+                    )
+                }
+            }
+        }
+    }
+
 
     const handleAddPhoto = async () => {
         if (photos.length >= maxPhotos) return;
@@ -299,13 +343,15 @@ export default function CreationModal() {
                         <TextField
                             type='action'
                             action={() => {
-                                console.log('mettre la localisation');
+                                console.log('handleLocationClick');
+                                handleLocationClick();
                             }}
-                            icon={<Mylocation />}
+                            icon={<Mylocation color={activeTheme.colors.icon.primary} />}
                             placeholder={'Paris, France'}
                             value={location}
                             onChangeText={(text) => setLocation(text)}
                             label={'Localisation de l\'article *'}
+                            editable={false}
                         />
                     </Flex>
                 </Flex>
@@ -364,7 +410,6 @@ export default function CreationModal() {
                                                         }}
                                                         style={{
                                                             width: 127,
-                                                            borderWidth: 1
                                                         }}
                                                     >
                                                         <ImageRatio

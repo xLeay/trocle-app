@@ -39,6 +39,7 @@ export default function CropImage() {
             {
                 label: 'Appliquer',
                 iconName: Done,
+                iconPosition: 'right',
                 onPress: () => handleApplyCrop(),
             },
         ],

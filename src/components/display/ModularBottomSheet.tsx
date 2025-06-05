@@ -17,6 +17,9 @@ type Item = {
     name: string;
     parentId?: number | string | null;
     [key: string]: any;
+    leftIcon?: React.ReactNode;
+    legendText?: string;
+    leftVariant?: 'avatar' | 'empty' | 'icon';
 };
 
 type ModularBottomSheetTopVariant = 'handle' | 'empty' | 'icon' | 'text + icon';
@@ -200,6 +203,9 @@ const ModularBottomSheet = forwardRef<BottomSheetModal, ModularBottomSheetProps>
                             <Table
                                 leftProps={{
                                     leftText: item.name,
+                                    icon: item.leftIcon,
+                                    legendText: item.legendText,
+                                    variant: item.leftVariant,
                                 }}
                                 rightProps={
                                     renderRight

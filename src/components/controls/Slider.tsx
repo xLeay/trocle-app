@@ -7,7 +7,11 @@ import Animated, {
     runOnJS,
     withTiming,
 } from 'react-native-reanimated';
+
+import { useTheme } from '@/src/lib/hooks/useTheme';
+
 import Flex from '#/Flex';
+import Tooltip from '#/display/Tooltip';
 
 interface SliderProps {
     min: number;
@@ -18,7 +22,8 @@ interface SliderProps {
     sliderWidth?: number;
 }
 
-const THUMB_SIZE = 20;
+const CONTAINER_HEIGHT = 40;
+const THUMB_SIZE = 28;
 
 export default function Slider({
     min,
@@ -28,6 +33,9 @@ export default function Slider({
     disabled = false,
     sliderWidth = 300,
 }: SliderProps) {
+
+    const { activeTheme } = useTheme();
+
     const range = max - min;
     const position = useSharedValue(((value - min) / range) * sliderWidth);
     const [isActive, setIsActive] = useState(false);
@@ -50,7 +58,10 @@ export default function Slider({
         .onEnd(() => runOnJS(setIsActive)(false));
 
     const thumbStyle = useAnimatedStyle(() => ({
-        transform: [{ translateX: position.value - THUMB_SIZE / 2 }],
+        transform: [
+            { translateX: position.value - THUMB_SIZE / 2 },
+            { translateY: -(CONTAINER_HEIGHT - THUMB_SIZE) }
+        ],
     }));
 
     const fillStyle = useAnimatedStyle(() => ({
@@ -58,8 +69,11 @@ export default function Slider({
     }));
 
     const haloStyle = useAnimatedStyle(() => ({
-        opacity: withTiming(isActive ? 1 : 0, { duration: 200 }),
-        transform: [{ scale: withTiming(isActive ? 1 : 0.5, { duration: 200 }) }],
+        opacity: withTiming(isActive ? 0.7 : 1, { duration: 200 }),
+        transform: [
+            { scale: withTiming(isActive ? (CONTAINER_HEIGHT / THUMB_SIZE) : 1, { duration: 200 }) },
+            // { translateY: -(CONTAINER_HEIGHT - THUMB_SIZE) }
+        ]
     }));
 
     const tooltipStyle = useAnimatedStyle(() => ({
@@ -70,12 +84,16 @@ export default function Slider({
     const valueFromPosition = (pos: number) => min + (pos / sliderWidth) * range;
 
     return (
-        <Flex style={[styles.wrapper, { width: sliderWidth + THUMB_SIZE }]}>
+        <Flex
+            border
+            alignItems='center'
+            justifyContent='center'
+            style={[styles.wrapper, { width: sliderWidth + THUMB_SIZE, height: CONTAINER_HEIGHT }]}>
             <Flex
                 style={[
                     styles.track,
                     {
-                        backgroundColor: disabled ? '#e0e0e0' : '#eee',
+                        backgroundColor: disabled ? activeTheme.colors.surface.field : activeTheme.colors.surface.divider,
                         width: sliderWidth,
                     },
                 ]}
@@ -84,7 +102,7 @@ export default function Slider({
                     style={[
                         styles.fill,
                         {
-                            backgroundColor: disabled ? '#9e9e9e' : '#00B386',
+                            backgroundColor: disabled ? activeTheme.colors.surface.brandLight : activeTheme.colors.surface.brand,
                         },
                         fillStyle,
                     ]}
@@ -92,17 +110,37 @@ export default function Slider({
 
                 {!disabled && (
                     <GestureDetector gesture={gesture}>
-                        <Animated.View style={[styles.thumb, thumbStyle]}>
+                        <Animated.View
+                            style={[
+                                styles.thumb,
+                                thumbStyle,
+                                {
+                                    backgroundColor: disabled
+                                        ? activeTheme.colors.surface.brandLight
+                                        : activeTheme.colors.surface.brand,
+                                },
+                            ]}
+                        >
+
                             {isActive && (
                                 <>
                                     <Animated.View
-                                        style={[styles.thumbHalo, haloStyle]}
+                                        style={[
+                                            styles.thumbHalo,
+                                            haloStyle,
+                                            {
+                                                backgroundColor: activeTheme.colors.surface.brand
+                                            },
+                                        ]}
                                     />
-                                    <Animated.Text style={[styles.tooltip, tooltipStyle]}>
-                                        {Math.round(valueFromPosition(position.value))}
-                                    </Animated.Text>
+
+
+                                    {/* <Animated.Text style={[styles.tooltip, tooltipStyle]}>
+                                            {Math.round(valueFromPosition(position.value))}
+                                        </Animated.Text> */}
                                 </>
                             )}
+
                         </Animated.View>
                     </GestureDetector>
                 )}
@@ -112,49 +150,31 @@ export default function Slider({
 }
 
 const styles = StyleSheet.create({
-    wrapper: {
-        paddingVertical: 20,
-        alignItems: 'center',
-    },
+    wrapper: {},
     track: {
-        height: 6,
-        borderRadius: 3,
-        backgroundColor: '#eee',
-        justifyContent: 'center',
-        position: 'relative',
+        height: 4,
+        borderRadius: 2,
     },
     fill: {
-        height: 6,
-        backgroundColor: '#00B386',
-        borderRadius: 3,
+        height: 4,
+        borderRadius: 2,
         position: 'absolute',
         left: 0,
     },
     thumb: {
         position: 'absolute',
-        top: -7,
         width: THUMB_SIZE,
         height: THUMB_SIZE,
         borderRadius: THUMB_SIZE / 2,
-        backgroundColor: '#00B386',
         zIndex: 2,
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
     },
     thumbHalo: {
         position: 'absolute',
-        width: THUMB_SIZE * 2,
-        height: THUMB_SIZE * 2,
-        borderRadius: THUMB_SIZE,
-        backgroundColor: 'rgba(0,179,134,0.3)',
+        width: THUMB_SIZE,
+        height: THUMB_SIZE,
+        borderRadius: THUMB_SIZE / 2,
         zIndex: -1,
     },
     tooltip: {

@@ -54,6 +54,8 @@ export default function ProductImageModal() {
     const { photos, setPhotos } = photoContext;
     const ctx = useImageManipulator(photos[idx].uri);
 
+    const [loading, setLoading] = useState(false);
+
 
     useEffect(() => {
         if (!photoContext) return;
@@ -62,7 +64,7 @@ export default function ProductImageModal() {
         if (photos[idx]) {
             setReady(true);
         } else {
-            console.warn("Photo non trouvée à l’index :", idx);
+            console.warn("Photo non trouvée à l'index :", idx);
             router.back();
         }
     }, [photoContext, idx]);
@@ -73,17 +75,6 @@ export default function ProductImageModal() {
         }
     }, [photos, idx]);
 
-
-    // const handleCrop = async (cropBox: { x: number, y: number, width: number, height: number }) => {
-    //     ctx.crop({ originX: cropBox.x, originY: cropBox.y, width: cropBox.width, height: cropBox.height });
-    //     const image = await ctx.renderAsync();
-    //     const result = await image.saveAsync({ format: SaveFormat.PNG });
-
-    //     const newPhotos = [...photos];
-    //     newPhotos[idx] = { ...photos[idx], uri: result.uri };
-    //     setPhotos(newPhotos);
-    //     setCurrentUri(result.uri);
-    // };
 
     const handleCrop = () => {
         router.push({
@@ -98,16 +89,20 @@ export default function ProductImageModal() {
         console.log('handleRotate');
 
         if (!uri) return;
+        setLoading(true);
+
         ctx.rotate(90);
         const image = await ctx.renderAsync();
         const result = await image.saveAsync({
-            format: SaveFormat.PNG,
+            format: SaveFormat.JPEG,
         });
 
         const newPhotos = [...photos];
         newPhotos[idx] = { ...photos[idx], uri: result.uri };
         setPhotos(newPhotos);
         setCurrentUri(result.uri);
+
+        setLoading(false);
     }
 
     const handleDelete = () => {
@@ -185,6 +180,7 @@ export default function ProductImageModal() {
                         onPress={() => {
                             handleRotate();
                         }}
+                        loading={loading}
                     />
 
                     <Button

@@ -34,7 +34,7 @@ export type ButtonVariant =
 export type ButtonSize = 'small' | 'large' | 'FAB';
 export type IconPosition = 'left' | 'right' | 'only';
 
-interface ButtonProps {
+export interface ButtonProps {
     onPress?: () => void;
     onLongPress?: () => void;
     label?: string;

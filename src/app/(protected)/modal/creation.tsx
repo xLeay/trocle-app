@@ -1,15 +1,16 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Linking, Modal, Platform, StyleSheet } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
 import { Pressable, Keyboard, ActivityIndicator } from 'react-native';
 import * as Location from 'expo-location'
 
 import { useGoBack } from '@/src/lib/hooks/useGoBack';
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
-import useLocation from '@/src/lib/hooks/useLocation';
+import { useLocationStore } from '@/src/state/locationStore';
 import { useSnackbarStore } from '@/src/state/snackbarStore';
 import { usePhotoContext } from '#/context/PhotoContext';
 
@@ -24,8 +25,9 @@ import Radio from '#/controls/Radio';
 import ModularBottomSheet from '#/display/ModularBottomSheet';
 import ImageRatio from '#/display/ImageRatio';
 import Fade from '#/miscellaneous/Fade';
+import Tooltip from '#/display/Tooltip';
 
-import { Close, Arrowleft, Mylocation, Photo, Plus } from '#/icons';
+import { Close, Arrowleft, Mylocation, Photo, Plus, Image } from '#/icons';
 
 
 // Exemple de données
@@ -130,7 +132,7 @@ export default function CreationModal() {
 
     // Section 3
     const [estimatedPrice, setEstimatedPrice] = useState('');
-    const { latitude, longitude, plainLocation, error } = useLocation();
+    const { latitude, longitude, plainLocation, error, fetchLocation } = useLocationStore();
     const [location, setLocation] = useState('');
 
 
@@ -141,6 +143,8 @@ export default function CreationModal() {
     const [loadingPhotos, setLoadingPhotos] = useState(false);
     const maxPhotos = 10;
     const gotPhotos = photos.length > 0;
+    const [selectedPhotoType, setSelectedPhotoType] = useState<'camera' | 'library' | null>(null);
+    const addPhotoSheetRef = useRef<BottomSheetModal>(null);
 
     // Section 5 (Validation)
     const [loading, setLoading] = useState(false);
@@ -156,6 +160,11 @@ export default function CreationModal() {
             photos.length <= maxPhotos
         );
     }, [title, description, selectedCategory, selectedProductState, estimatedPrice, location, photos]);
+
+    // On récupère la localisation du store
+    useEffect(() => {
+        fetchLocation()
+    }, [])
 
     const handleCreateArticle = () => {
         setLoading(true);
@@ -199,35 +208,61 @@ export default function CreationModal() {
     }
 
 
-    const handleAddPhoto = async () => {
+    const handleAddPhoto = async (type: 'camera' | 'library') => {
         if (photos.length >= maxPhotos) return;
 
         setLoadingPhotos(true);
 
-        // Demande la permission si besoin
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-            alert('Permission requise pour accéder à la galerie.');
+        try {
+            if (type === 'camera') {
+                const { status } = await ImagePicker.requestCameraPermissionsAsync();
+                if (status !== 'granted') {
+                    alert('Permission caméra refusée');
+                    return;
+                }
+
+                const result = await ImagePicker.launchCameraAsync({ quality: 0.8 });
+
+                if (!result.canceled) {
+                    const manipulated = await ImageManipulator.manipulateAsync(
+                        result.assets[0].uri,
+                        [],
+                        { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+                    );
+                    setPhotos([...photos, { ...result.assets[0], uri: manipulated.uri }]);
+                }
+
+            } else if (type === 'library') {
+                const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                if (status !== 'granted') {
+                    alert('Permission galerie refusée');
+                    return;
+                }
+
+                const result = await ImagePicker.launchImageLibraryAsync({
+                    mediaTypes: 'images',
+                    allowsMultipleSelection: true,
+                    selectionLimit: maxPhotos - photos.length,
+                    quality: 0.8,
+                });
+
+                if (!result.canceled) {
+                    const processedAssets = await Promise.all(
+                        result.assets.map(async (asset) => {
+                            const manipulated = await ImageManipulator.manipulateAsync(
+                                asset.uri,
+                                [],
+                                { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+                            );
+                            return { ...asset, uri: manipulated.uri };
+                        })
+                    );
+                    setPhotos([...photos, ...processedAssets]);
+                }
+            }
+        } finally {
             setLoadingPhotos(false);
-            return;
         }
-
-        // Ouvre la galerie
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ['images'],
-            allowsMultipleSelection: true,
-            // allowsEditing: true,
-            aspect: [1, 1],
-            quality: 0.8,
-            selectionLimit: maxPhotos - photos.length, // Limite le nombre de photos sélectionnables
-        });
-
-        if (!result.canceled) {
-            // result.assets est un tableau d’images sélectionnées
-            setPhotos([...photos, ...result.assets]);
-        }
-
-        setLoadingPhotos(false);
     };
 
 
@@ -361,12 +396,11 @@ export default function CreationModal() {
 
                 {/* Section */}
                 <Flex gap={activeTheme.spacing._200} style={{ paddingHorizontal: activeTheme.spacing._200, width: '100%' }}>
-
                     {/* Textes */}
                     <Flex gap={activeTheme.spacing._100}>
                         <Text variant='title_Large' type='primary'>Ajoute des photos à ton article</Text>
                         {!gotPhotos && (
-                            <Text variant='body_Small' type='secondary'>Tu peux ajouter jusqu’à 10 photos. N’hésite pas, cela permet de mettre en valeur tes articles et augmenter ton nombre d’échanges.</Text>
+                            <Text variant='body_Small' type='secondary'>Tu peux ajouter jusqu'à 10 photos. N'hésite pas, cela permet de mettre en valeur tes articles et augmenter ton nombre d'échanges.</Text>
                         )}
                     </Flex>
 
@@ -383,8 +417,8 @@ export default function CreationModal() {
                                 <Flex direction='row'>
                                     {/* Scroll */}
                                     <Flex
-                                        overflow='hidden'
-                                        scroll
+                                        // overflow='hidden'
+                                        // scroll
                                         direction='row'
                                         alignItems='center'
                                         gap={activeTheme.spacing._400}
@@ -446,16 +480,20 @@ export default function CreationModal() {
                                             ))}
                                         </Flex>
 
-                                        <Button
-                                            variant='outlined'
-                                            size='large'
-                                            icon={<Plus />}
-                                            onPress={() => {
-                                                Keyboard.dismiss();
-                                                handleAddPhoto();
-                                            }}
-                                            disabled={photos.length >= maxPhotos}
-                                        />
+                                        <Tooltip
+                                            content='Ajouter des photos'
+                                        >
+                                            <Button
+                                                variant='outlined'
+                                                size='large'
+                                                icon={<Plus />}
+                                                onPress={() => {
+                                                    Keyboard.dismiss();
+                                                    addPhotoSheetRef.current?.present();
+                                                }}
+                                                disabled={photos.length >= maxPhotos}
+                                            />
+                                        </Tooltip>
 
                                         <Flex style={{ width: 0, height: 20 }} />
                                     </Flex>
@@ -478,7 +516,7 @@ export default function CreationModal() {
                                 icon={<Photo />}
                                 onPress={() => {
                                     Keyboard.dismiss();
-                                    handleAddPhoto();
+                                    addPhotoSheetRef.current?.present();
                                 }}
                             />
                         )}
@@ -490,7 +528,7 @@ export default function CreationModal() {
 
                 {/* Section */}
                 <Flex gap={activeTheme.spacing._200} style={{ paddingHorizontal: activeTheme.spacing._200, width: '100%' }}>
-                    <Text variant='body_Large' type='secondary'>En postant mon article, j’accepte les <Text variant='title_Small' type='secondary' onPress={() => router.push('/terms-and-conditions')} style={{ textDecorationLine: 'underline' }}>conditions générales d’utilisations</Text> de Trocle.</Text>
+                    <Text variant='body_Large' type='secondary'>En postant mon article, j'accepte les <Text variant='title_Small' type='secondary' onPress={() => router.push('/terms-and-conditions')} style={{ textDecorationLine: 'underline' }}>conditions générales d'utilisations</Text> de Trocle.</Text>
                 </Flex>
 
                 <Flex style={{ height: activeTheme.spacing._1000 }} />
@@ -597,6 +635,31 @@ export default function CreationModal() {
                 icon={productStateStack.length > 1 ? <Arrowleft /> : <Close />}
                 iconPosition='right'
                 selectedId={selectedProductState?.id}
+            />
+
+            {/* Sheet de sélection de photos */}
+            <ModularBottomSheet
+                ref={addPhotoSheetRef}
+                data={[
+                    { id: 'camera', name: 'Prendre une photo', leftIcon: <Photo />, leftVariant: 'icon' },
+                    { id: 'library', name: 'Choisir une photo', leftIcon: <Image />, leftVariant: 'icon' },
+                ]}
+                allData={[]}
+                onSelect={(item) => {
+                    setSelectedPhotoType(item.id as 'camera' | 'library');
+                    addPhotoSheetRef.current?.dismiss();
+                    handleAddPhoto(item.id as 'camera' | 'library');
+                }}
+                renderRight={() => ({ variant: 'empty' })}
+                selectedId={selectedPhotoType}
+                snapPoints={['25%']}
+                topVariant='handle'
+                initialTitle=''
+                iconPosition='left'
+                onClose={() => {
+                    setSelectedPhotoType(null);
+                    addPhotoSheetRef.current?.dismiss();
+                }}
             />
         </Flex>
     );

@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import { View, ScrollView, ViewProps, ScrollViewProps, ViewStyle } from 'react-native';
+import { ScrollView, ScrollViewProps, View, ViewProps, ViewStyle } from 'react-native';
 
 interface Props extends ViewProps {
     style?: ViewStyle | ViewStyle[];
@@ -56,6 +56,8 @@ const Flex = forwardRef<any, Props>(({
                 showsVerticalScrollIndicator={true}
                 style={[viewStyle, style]}
                 contentContainerStyle={baseContentStyle}
+                overScrollMode='never'
+                bounces={true}
                 {...scrollProps}
             >
                 {children}

@@ -1,33 +1,31 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Linking, Modal, Platform, StyleSheet } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
-import { Pressable, Keyboard, ActivityIndicator } from 'react-native';
-import * as Location from 'expo-location'
+import * as ImagePicker from 'expo-image-picker';
+import * as Location from 'expo-location';
+import { Stack, useRouter } from 'expo-router';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, Alert, Keyboard, Linking, Platform, Pressable, StyleSheet } from 'react-native';
 
+import { usePhotoContext } from '#/context/PhotoContext';
 import { useGoBack } from '@/src/lib/hooks/useGoBack';
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 import { useLocationStore } from '@/src/state/locationStore';
 import { useSnackbarStore } from '@/src/state/snackbarStore';
-import { usePhotoContext } from '#/context/PhotoContext';
 
 import Flex from '#/Flex';
 import Text from '#/Text';
 import Button from '#/controls/Button';
+import Radio from '#/controls/Radio';
 import TextField from '#/controls/TextField';
 import Divider from '#/display/Divider';
-import Table from '#/display/Table';
-import TopAppBar from '#/display/TopAppBar/TopAppBar';
-import Radio from '#/controls/Radio';
-import ModularBottomSheet from '#/display/ModularBottomSheet';
 import ImageRatio from '#/display/ImageRatio';
-import Fade from '#/miscellaneous/Fade';
+import ModularBottomSheet from '#/display/ModularBottomSheet';
+import Table from '#/display/Table';
 import Tooltip from '#/display/Tooltip';
+import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
-import { Close, Arrowleft, Mylocation, Photo, Plus, Image } from '#/icons';
+import { Arrowleft, Close, Image, Mylocation, Photo, Plus } from '#/icons';
 
 
 // Exemple de données
@@ -418,7 +416,7 @@ export default function CreationModal() {
                                     {/* Scroll */}
                                     <Flex
                                         // overflow='hidden'
-                                        // scroll
+                                        scroll
                                         direction='row'
                                         alignItems='center'
                                         gap={activeTheme.spacing._400}
@@ -498,9 +496,6 @@ export default function CreationModal() {
                                         <Flex style={{ width: 0, height: 20 }} />
                                     </Flex>
 
-                                    {photos.length >= 3 && (
-                                        <Fade side='right' />
-                                    )}
                                 </Flex>
 
                                 {/* Photos count */}

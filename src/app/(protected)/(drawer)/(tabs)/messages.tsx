@@ -8,8 +8,8 @@ import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 import Flex from '#/Flex';
 import Text from '#/Text';
 import Button from '#/controls/Button';
-import TopAppBar from '#/display/TopAppBar/TopAppBar';
 import Tooltip from '#/display/Tooltip';
+import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
 import { Notification, Plus } from '#/icons';
 

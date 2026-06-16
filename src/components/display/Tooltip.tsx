@@ -1,27 +1,25 @@
-import React, { useState, useRef, isValidElement, Children, cloneElement } from 'react';
+import React, { Children, cloneElement, isValidElement, useRef, useState } from 'react';
 import {
-    StyleSheet,
-    ViewStyle,
-    StyleProp,
-    LayoutRectangle,
     Dimensions,
-    Pressable,
+    LayoutRectangle,
     Modal,
+    Pressable,
+    StyleProp,
+    StyleSheet,
     View,
-    TextLayoutEventData
+    ViewStyle
 } from 'react-native';
 import Animated, {
-    useSharedValue,
-    useAnimatedStyle,
-    withTiming,
     runOnJS,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
 } from 'react-native-reanimated';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
 
-import Text from '#/Text';
 import Flex from '#/Flex';
-import Button from '#/controls/Button';
+import Text from '#/Text';
 
 interface TooltipProps {
     type?: 'default' | 'rich';
@@ -45,7 +43,7 @@ export default function Tooltip({
     actions,
     position = 'top',
     offset = 8,
-    beforeDelay = 500,
+    beforeDelay = 1000,
     afterDelay = 2000,
     children,
 }: TooltipProps) {
@@ -77,7 +75,9 @@ export default function Tooltip({
         if (longPressTimeout.current) {
             clearTimeout(longPressTimeout.current);
         }
-        hideTooltip();
+        setTimeout(() => {
+            hideTooltip();
+        }, afterDelay); // ms
     };
 
     const showTooltip = () => {
@@ -94,15 +94,13 @@ export default function Tooltip({
     };
 
     const hideTooltip = () => {
-        // Start animation in reverse after a delay
-        setTimeout(() => {
-            opacity.value = withTiming(0, { duration: ANIMATION_DURATION }, (isFinished) => {
-                if (isFinished) {
-                    runOnJS(setVisible)(false); // Hide the modal after animation is complete
-                }
-            });
-            translateY.value = withTiming(ANIMATION_OFFSET, { duration: ANIMATION_DURATION }); // Slide down
-        }, afterDelay);
+        // Start animation in reverse
+        opacity.value = withTiming(0, { duration: ANIMATION_DURATION }, (isFinished) => {
+            if (isFinished) {
+                runOnJS(setVisible)(false); // Hide the modal after animation is complete
+            }
+        });
+        translateY.value = withTiming(ANIMATION_OFFSET, { duration: ANIMATION_DURATION }); // Slide down
     };
 
 
@@ -259,7 +257,7 @@ export default function Tooltip({
 
             if (visible) {
                 if (childOnPress) {
-                    newProps.onPress = () => {};
+                    newProps.onPress = () => { };
                 }
 
                 if (childPointerEvents) {
@@ -281,7 +279,7 @@ export default function Tooltip({
 
     return (
         <>
-            <View
+            <Flex
                 ref={childRef}
                 collapsable={false}
                 onTouchStart={handleTouchStart}
@@ -289,18 +287,22 @@ export default function Tooltip({
                 style={{
                     borderWidth: 1,
                     borderColor: 'red',
-                    position: 'absolute',
+                    // position: 'absolute',
                 }}
+
             >
                 {clonedChildren}
-            </View>
+            </Flex>
 
             <Modal
                 transparent={true}
                 visible={visible}
                 onRequestClose={hideTooltip}
             >
-                <Pressable style={StyleSheet.absoluteFill} onPress={hideTooltip}>
+                <Pressable style={StyleSheet.absoluteFill} onPress={() => {
+                    // console.log('press')
+                    hideTooltip();
+                }}>
                     {visible && childLayout && (
                         <Animated.View
                             style={[styles.tooltipWrapper, getTooltipPosition(), animatedTooltipStyle]}

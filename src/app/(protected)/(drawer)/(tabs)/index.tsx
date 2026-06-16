@@ -15,10 +15,9 @@ export default function Tab() {
     const { activeTheme } = useTheme();
 
     const imagesList = [
-        'https://images1.vinted.net/t/04_01de2_ZGKABtika9i8WkksPtb27e4D/f800/1746196575.jpeg?s=7ebf8d9920dd6da3506cde89e009592c739ff1cc',
-        'https://images1.vinted.net/t/02_019c1_7u1tf2oBHWaHvvczUT9PwG8E/f800/1746196575.jpeg?s=040d7d6c0f6d27a58a819c89e0f41a631e9cfeff',
-        'https://images1.vinted.net/t/04_01750_C7H5xAmTdUwgX6vxxKpQxMXD/f800/1746196575.jpeg?s=c34ab299ea7d439c4f160f3b1564e2809408e477',
-        'https://images1.vinted.net/t/04_016fe_mZR3hE7dGUnQfb4Kp4Msqxav/f800/1746196575.jpeg?s=ee70f746bf5b5564c41c9ebe1979c1307a75e498',
+        'https://images1.vinted.net/t/06_009c7_CK8akpyqmiiHQHBJVgisdniY/f800/1781207271.webp?s=5e7a319cd598d463327e6f4dc548a5e0c925c45b',
+        'https://images1.vinted.net/t/06_02478_S5x1B4aq7JJTEufrGmpWnT89/f800/1781207271.webp?s=53eb7feb6b0321bfd37dedb054f839e9e4f9bd54',
+        'https://images1.vinted.net/t/05_022a2_hUVNxBLDEeSTbPM7HH9qzCFX/f800/1781207271.webp?s=856cf400488f29b9b21efd462bb0be838c744e90',
     ]
 
     const [currentIndex, setCurrentIndex] = useState(0);

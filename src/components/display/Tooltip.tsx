@@ -43,8 +43,8 @@ export default function Tooltip({
     actions,
     position = 'top',
     offset = 8,
-    beforeDelay = 1000,
-    afterDelay = 2000,
+    beforeDelay = 750,
+    afterDelay = 1500,
     children,
 }: TooltipProps) {
     const { activeTheme } = useTheme();
@@ -76,7 +76,11 @@ export default function Tooltip({
             clearTimeout(longPressTimeout.current);
         }
         setTimeout(() => {
-            hideTooltip();
+            if (type === 'rich') {
+                // Ne rien faire, on ferme au click
+            } else {
+                hideTooltip();
+            }
         }, afterDelay); // ms
     };
 
@@ -285,8 +289,8 @@ export default function Tooltip({
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}
                 style={{
-                    borderWidth: 1,
-                    borderColor: 'red',
+                    // borderWidth: 1,
+                    // borderColor: 'red',
                     // position: 'absolute',
                 }}
 

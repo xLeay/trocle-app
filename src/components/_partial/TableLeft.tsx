@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
 import { useTheme } from '@/src/lib/hooks/useTheme';
+import React from 'react';
+import { ImageSourcePropType, StyleSheet } from 'react-native';
 
 // Composants
 import Flex from '#/Flex';
@@ -17,6 +17,7 @@ export interface TableLeftProps {
     leftText?: string;
     legendText?: string;
     icon?: React.ReactNode;
+    src?: ImageSourcePropType | string;
 }
 
 const TableLeft: React.FC<TableLeftProps> = ({
@@ -24,6 +25,7 @@ const TableLeft: React.FC<TableLeftProps> = ({
     leftText = 'Texte',
     legendText = '',
     icon,
+    src,
 }) => {
 
     const { activeTheme } = useTheme();
@@ -32,7 +34,7 @@ const TableLeft: React.FC<TableLeftProps> = ({
     const getVariantComponent = () => {
         switch (variant) {
             case 'avatar':
-                return <Avatar size="medium" />;
+                return <Avatar size="medium" customImage={src} />;
             case 'icon':
                 return icon === undefined ? (
                     <Circle size={24} color={iconColor} />

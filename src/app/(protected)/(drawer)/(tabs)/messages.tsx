@@ -6,12 +6,11 @@ import { useTheme } from '@/src/lib/hooks/useTheme';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
 import Flex from '#/Flex';
-import Text from '#/Text';
 import Button from '#/controls/Button';
-import Tooltip from '#/display/Tooltip';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
-import { Notification, Plus } from '#/icons';
+import { Notification } from '#/icons';
+import Table from '@/src/components/display/Table';
 
 
 export default function Tab() {
@@ -56,65 +55,40 @@ export default function Tab() {
                         </Flex>,
                 }}
             />
-            <Text>Tab Messages</Text>
-            <Text>{search || 'No search'}</Text>
 
-            <Flex style={{ height: 60 }} />
+            {/* <Text>Tab Messages</Text>
+            <Text>{search || 'No search'}</Text> */}
 
-            <Flex border gap={32} alignItems='center'>
-                <Tooltip
-                    content="Les infobulles riches attirent l'attention sur un élément particulier de la fonctionnalité qui mérite l'attention de l'utilisateur."
-                    type='rich'
-                    title='Titre'
-                    actions={[
-                        <Button
-                            key='action_1'
-                            variant='ghost'
-                            label='Annuler'
-                            onPress={() => console.log('Annuler')}
-                        />
-                        ,
-                        <Button
-                            key='action_2'
-                            variant='ghost'
-                            label='Valider'
-                            onPress={() => console.log('Valider')}
-                        />
-                    ]}
+
+            <Flex border style={{ flex: 1, width: '100%', paddingVertical: activeTheme.spacing._100 }}>
+                <Flex border gap={activeTheme.spacing._200}
+                    style={{ width: '100%' }}
                 >
-                    <Flex border style={{ padding: activeTheme.spacing._200 }}>
-                        <Text variant='body_Small'>Tooltip Rich</Text>
-                    </Flex>
-                </Tooltip>
-
-                <Tooltip
-                    content='Ajouter aux favoris'
-                >
-                    <Flex border style={{ padding: activeTheme.spacing._200 }}>
-                        <Text variant='body_Small'>Tooltip Simple (une ligne)</Text>
-                    </Flex>
-                </Tooltip>
-
-                <Tooltip
-                    content='Cliquez ici pour ajouter cet article à vos favoris. Cela vous permet de le retrouver facilement plus tard dans votre liste personnalisée'
-                >
-                    <Flex border style={{ padding: activeTheme.spacing._200 }}>
-                        <Text variant='body_Small'>Tooltip Simple (plusieurs lignes)</Text>
-                    </Flex>
-                </Tooltip>
-
-                <Tooltip
-                    content='Button'
-                >
-                    <Button
-                        variant='outlined'
-                        size='large'
-                        icon={<Plus />}
-                        onPress={() => {
-                            console.log(`cliqué: ${count++}`);
+                    <Table
+                        leftProps={{
+                            variant: 'avatar',
+                            leftText: 'Shuri',
+                            legendText: 'Ça me va, on fait comme ça !',
+                            src: 'https://api.dicebear.com/10.x/dylan/svg?seed=' + Math.random(),
+                        }}
+                        rightProps={{
+                            variant: 'timestamp',
+                            timestampText: '1 h',
                         }}
                     />
-                </Tooltip>
+                    <Table
+                        leftProps={{
+                            variant: 'avatar',
+                            leftText: 'Mon profil',
+                            // src: require('@/assets/icon.png'),
+                            src: 'https://api.dicebear.com/10.x/dylan/svg?seed=' + Math.random(),
+                        }}
+                        rightProps={{
+                            variant: 'empty',
+                        }}
+                    />
+
+                </Flex>
             </Flex>
         </View>
     );

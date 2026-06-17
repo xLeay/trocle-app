@@ -1,22 +1,19 @@
-import { useEffect, useState } from 'react';
+import { SaveFormat, useImageManipulator } from 'expo-image-manipulator';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { StyleSheet, Image } from 'react-native';
-import { SaveFormat, useImageManipulator } from 'expo-image-manipulator'
-import * as ImagePicker from 'expo-image-picker';
+import { useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
 
 import { usePhotoContext } from '#/context/PhotoContext';
-import { useTheme } from '@/src/lib/hooks/useTheme';
 import { useGoBack } from '@/src/lib/hooks/useGoBack';
+import { useTheme } from '@/src/lib/hooks/useTheme';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
 import Flex from '#/Flex';
-import Grid from '#/Grid';
-import Text from '#/Text';
 import Button from '#/controls/Button';
-import TopAppBar from '@/src/components/display/TopAppBar/TopAppBar';
 import ImageRatio from '#/display/ImageRatio';
+import TopAppBar from '@/src/components/display/TopAppBar/TopAppBar';
 
-import { Arrowleft, Crop, Rotate, Delete } from '#/icons';
+import { Arrowleft, Crop, Delete, Rotate } from '#/icons';
 
 
 export default function ProductImageModal() {
@@ -157,7 +154,6 @@ export default function ProductImageModal() {
             </Flex>
 
             <Flex
-                border
                 direction="row"
                 justifyContent="center"
                 alignItems='center'
@@ -171,6 +167,7 @@ export default function ProductImageModal() {
                         onPress={() => {
                             handleCrop();
                         }}
+                        disabled
                     />
 
                     <Button

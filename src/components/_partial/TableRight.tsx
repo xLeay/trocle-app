@@ -1,17 +1,17 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
 import { useTheme } from '@/src/lib/hooks/useTheme';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 
 // Composants
 import Flex from '#/Flex';
 import Text from '#/Text';
 import Button from '#/controls/Button';
-import Switch from '#/controls/Switch';
 import Checkbox from '#/controls/Checkbox';
 import Radio from '#/controls/Radio';
+import Switch from '#/controls/Switch';
 
 // Icônes
-import { Circle, Chevronright } from '#/icons';
+import { Chevronright, Circle } from '#/icons';
 
 export type RightVariant =
     | 'empty'
@@ -107,8 +107,8 @@ const TableRight: React.FC<TableRightProps> = ({
                 );
             case 'timestamp':
                 return (
-                    <Flex style={[styles.timeStamp]}>
-                        <Flex direction='row' gap={activeTheme.spacing._50}>
+                    <Flex border style={[styles.timeStamp, { flex: 1 }]} >
+                        <Flex border direction='row' alignItems='center' gap={activeTheme.spacing._50} borderColor='red'>
                             <View style={[styles.timeStampDot, { backgroundColor: activeTheme.colors.text.placeholder }]} />
                             <Text variant="body_Small" type='placeholder' >
                                 {timestampText}
@@ -122,7 +122,7 @@ const TableRight: React.FC<TableRightProps> = ({
     };
 
     return (
-        <Flex direction='row' gap={activeTheme.spacing._100} style={styles.container}>
+        <Flex direction='column' border borderColor='red' alignItems='flex-end' gap={activeTheme.spacing._100} style={styles.container}>
             {getVariantComponent()}
         </Flex>
     );

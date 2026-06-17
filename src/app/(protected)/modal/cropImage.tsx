@@ -1,26 +1,32 @@
-import { useEffect, useState } from 'react';
-import { StyleSheet, Image } from 'react-native';
-import { useRouter, useLocalSearchParams, Stack } from 'expo-router';
 import { SaveFormat, useImageManipulator } from 'expo-image-manipulator';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Image } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
 import { usePhotoContext } from '#/context/PhotoContext';
-import { useTheme } from '@/src/lib/hooks/useTheme';
 import { useGoBack } from '@/src/lib/hooks/useGoBack';
+import { useTheme } from '@/src/lib/hooks/useTheme';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
 import Flex from '#/Flex';
 import Text from '#/Text';
-import TopAppBar from '#/display/TopAppBar/TopAppBar';
-import CropBox from '#/display/CropBox';
 import Slider from '#/controls/Slider';
+import CropBox from '#/display/CropBox';
+import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
 import { Close, Done } from '#/icons';
 
 const CROP_BOX_SIZE = 300;
 const MIN_SCALE = 1;
 const MAX_SCALE = 4;
+
+
+const clamp = (value: number, min: number, max: number) => {
+    'worklet';
+    return Math.min(Math.max(value, min), max);
+};
 
 export default function CropImage() {
     const { activeTheme } = useTheme();
@@ -58,11 +64,12 @@ export default function CropImage() {
     const ctx = useImageManipulator(image.uri);
 
     const [cropBox, setCropBox] = useState({
-        x: 50,
-        y: 50,
+        x: 0,
+        y: 0,
         width: CROP_BOX_SIZE,
         height: CROP_BOX_SIZE,
     });
+
 
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
@@ -89,16 +96,16 @@ export default function CropImage() {
     const handlePinchGesture = Gesture.Pinch()
         .onChange((event) => {
             scale.value = Math.min(Math.max(event.scale, MIN_SCALE), MAX_SCALE);
-            setScaleUI(scale.value);
+            runOnJS(setScaleUI)(scale.value);
         });
 
-    const gesture = Gesture.Race(handlePanGesture, handlePinchGesture);
+    const gesture = Gesture.Simultaneous(handlePanGesture, handlePinchGesture);
 
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [
+            { scale: scale.value },
             { translateX: translateX.value },
             { translateY: translateY.value },
-            { scale: scale.value },
         ],
     }));
 
@@ -111,7 +118,7 @@ export default function CropImage() {
                 Image.getSize(
                     image.uri,
                     (w, h) => resolve({ width: w, height: h }),
-                    (err) => reject(err)
+                    reject
                 );
             });
 
@@ -155,6 +162,14 @@ export default function CropImage() {
         }
     };
 
+
+
+
+
+
+
+
+
     return (
         <Flex alignItems='center' justifyContent='center' style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.9)' }}>
             <Stack.Screen
@@ -187,8 +202,9 @@ export default function CropImage() {
                             },
                             animatedStyle
                         ]}
-                        resizeMode="contain"
                     />
+
+
                 </Animated.View>
             </GestureDetector>
 
@@ -219,9 +235,11 @@ export default function CropImage() {
                     }}
                 />
 
-                <Text type='brand'>{scaleUI}</Text>
+                <Text type='brand'>{Math.round(scaleUI)}</Text>
             </Flex>
 
         </Flex>
     );
 }
+
+

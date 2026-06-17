@@ -1,24 +1,15 @@
-import { useRef, useState } from "react";
 import { StyleSheet } from "react-native";
-import { Image } from 'expo-image';
-import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withSpring,
-    withTiming,
-} from 'react-native-reanimated';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
-import { Product, User } from "@/src/types/feed";
+import { User } from "@/src/types/feed";
 
+import Card from "#/Card";
 import Flex from "#/Flex";
-import Grid from "#/Grid";
 import Text from "#/Text";
 import Button from '#/controls/Button';
-import Card from "#/Card";
 import Avatar from "#/display/Avatar";
 
-import { Heart, State1, State2, State3, State4, Star0, Star05, Star1, Certification, Plusvert } from '#/icons';
+import { Star1 } from '#/icons';
 
 
 interface SuggestedUsersBlockProps {

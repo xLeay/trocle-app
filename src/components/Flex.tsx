@@ -13,6 +13,7 @@ interface Props extends ViewProps {
     scroll?: boolean;
     scrollProps?: ScrollViewProps;
     overflow?: 'visible' | 'hidden';
+    zIndex?: number;
 }
 
 // Utilisation de React.ForwardRefRenderFunction pour une meilleure inférence de type
@@ -28,6 +29,7 @@ const Flex = forwardRef<any, Props>(({
     scroll = false,
     scrollProps = {},
     overflow = 'visible',
+    zIndex,
     children,
     ...props
 }, ref) => {
@@ -43,6 +45,7 @@ const Flex = forwardRef<any, Props>(({
         overflow: overflow,
         borderColor: border ? borderColor : 'transparent',
         borderWidth: border ? borderWidth : 0,
+        zIndex: zIndex,
     };
 
     if (scroll) {

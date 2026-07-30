@@ -6,13 +6,13 @@ import { TopAppBarProps } from "./types";
 // Composants
 import Flex from "#/Flex";
 import Text from "#/Text";
-import Button from "#/controls/Button";
 import SearchBar from "#/bars/SearchBar";
+import Button from "#/controls/Button";
 import ProgressBar from "#/display/ProgressBar";
 import Table from "#/display/Table";
 
 // Icônes
-import { Circle, Arrowleft } from "#/icons";
+import { Arrowleft, Circle } from "#/icons";
 import { TrocleLogoFull } from "#/logos";
 
 
@@ -51,8 +51,8 @@ const topAppBarConfigs = {
     _search: {
         left: null,
         // Nécessite : search: string, setSearch: function, placeHolder: string
-        center: ({ search, setSearch, placeHolder }: TopAppBarProps) => (
-            <SearchBar value={search} onChangeText={ensureFunction(setSearch)} placeholder={placeHolder} />
+        center: ({ search, setSearch, placeHolder, onFocus, onBlur }: TopAppBarProps) => (
+            <SearchBar value={search} onChangeText={ensureFunction(setSearch)} placeholder={placeHolder} onFocus={onFocus} onBlur={onBlur} />
         ),
         right: null,
     },

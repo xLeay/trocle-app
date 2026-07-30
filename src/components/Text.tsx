@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
-import { Text as RNText, View, TextStyle, ViewStyle, TextProps as RNTextProps } from 'react-native';
 import { useTheme } from '@/src/lib/hooks/useTheme';
+import React, { useMemo } from 'react';
+import { Text as RNText, TextProps as RNTextProps, TextStyle, View, ViewStyle } from 'react-native';
 
 export type TextVariant =
     | 'display_Large'
@@ -22,16 +22,24 @@ interface Props extends RNTextProps {
     style?: TextStyle;
     containerStyle?: ViewStyle;
     type?: 'primary' | 'secondary' | 'placeholder' | 'invert' | 'brand';
+    weight?: 'regular' | 'medium' | 'bold';
     variant?: TextVariant;
     textDecorationLine?: 'underline' | 'none' | 'line-through' | 'underline line-through';
     onPress?: () => void;
 }
+
+const fontFamilyMap = {
+    regular: 'RethinkSans-Regular',
+    medium: 'RethinkSans-Medium',
+    bold: 'RethinkSans-Bold',
+};
 
 const Text: React.FC<Props> = ({
     children,
     style,
     containerStyle,
     type = 'primary',
+    weight,
     variant = 'body_Large',
     textDecorationLine = 'none',
     onPress,
@@ -44,6 +52,7 @@ const Text: React.FC<Props> = ({
         {
             color: activeTheme.colors.text[type],
             textDecorationLine: textDecorationLine,
+            fontFamily: weight ? fontFamilyMap[weight] : undefined,
         },
         style,
     ], [activeTheme, type, variant, style]);

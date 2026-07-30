@@ -1,16 +1,14 @@
-import React, { useMemo, useRef } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
 import { useTheme } from '@/src/lib/hooks/useTheme';
-import { TextInput as RNTextInput } from 'react-native';
+import React, { useRef } from 'react';
+import { Pressable, TextInput as RNTextInput, StyleSheet } from 'react-native';
 
 // Composants
-import TextInput from '#/TextInput';
 import Button from '#/controls/Button';
 import Flex from '#/Flex';
+import TextInput from '#/TextInput';
 
 // Icones
-import { Search } from '#/icons';
-import { Closecircle } from '#/icons';
+import { Closecircle, Search } from '#/icons';
 
 
 interface SearchBarProps {
@@ -18,6 +16,8 @@ interface SearchBarProps {
     onChangeText: (text: string) => void;
     placeholder?: string;
     disabled?: boolean;
+    onFocus?: () => void;
+    onBlur?: () => void;
 }
 
 const SearchBar = ({
@@ -25,16 +25,20 @@ const SearchBar = ({
     value = '',
     placeholder = 'Recherche',
     disabled = false,
+    onFocus,
+    onBlur,
 }: SearchBarProps) => {
     const { activeTheme } = useTheme();
     const inputRef = useRef<RNTextInput>(null);
     const [isFocused, setIsFocused] = React.useState(false);
 
     const handleFocus = () => {
+        onFocus?.()
         setIsFocused(true)
     };
 
     const handleBlur = () => {
+        onBlur?.()
         setIsFocused(false)
     };
 

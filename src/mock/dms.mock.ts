@@ -1,0 +1,177 @@
+export interface ConversationMock {
+    id: string;
+    name: string;
+    lastMessage: string;
+    read: boolean;
+    timestamp: string;
+    certified?: boolean;
+    certificationColor?: string;
+    avatarSeed: string;
+}
+
+export const MOCK_CONVERSATIONS: ConversationMock[] = [
+    {
+        id: '1',
+        name: 'Shuri',
+        lastMessage: 'Ça me va, on fait comme ça !',
+        read: true,
+        timestamp: '1 h',
+        certified: true,
+        avatarSeed: 'shuri',
+    },
+    {
+        id: '2',
+        name: 'Dodo',
+        lastMessage: 'C’est super ! Cela répond exactement à...',
+        read: false,
+        timestamp: '2 h',
+        avatarSeed: 'dodo',
+    },
+    {
+        id: '3',
+        name: 'Équipe Trocle',
+        lastMessage: 'Profitez dès maintenant des nouvelles fonctionnalités de l\'application.',
+        read: true,
+        timestamp: '3 sem',
+        certified: true,
+        certificationColor: 'accent',
+        avatarSeed: 'trocle',
+    },
+    {
+        id: '4',
+        name: 'lesimpoy',
+        lastMessage: "Merci beaucoup trocle encore une fois, comme je l'ai dit avant sur Trocle",
+        read: true,
+        timestamp: '4 sem',
+        avatarSeed: 'lesimpoy',
+    },
+    {
+        id: '5',
+        name: 'lesimpoy',
+        lastMessage: "Merci beaucoup encore une fois, comme je l'ai dit avant",
+        read: true,
+        timestamp: '4 sem',
+        avatarSeed: 'lesimpoy',
+    },
+    {
+        id: '6',
+        name: 'lesimpoy',
+        lastMessage: "Merci beaucoup encore une fois, comme je l'ai dit avant",
+        read: true,
+        timestamp: '4 sem',
+        avatarSeed: 'lesimpoy',
+    },
+    {
+        id: '7',
+        name: 'lesimpoy',
+        lastMessage: "Merci beaucoup encore une fois, comme je l'ai dit avant",
+        read: true,
+        timestamp: '4 sem',
+        avatarSeed: 'lesimpoy',
+    },
+    {
+        id: '8',
+        name: 'lesimpoy',
+        lastMessage: "Merci beaucoup encore une fois, comme je l'ai dit avant",
+        read: true,
+        timestamp: '4 sem',
+        avatarSeed: 'lesimpoy',
+    },
+    {
+        id: '9',
+        name: 'lesimpoy',
+        lastMessage: "Merci beaucoup encore une fois, comme je l'ai dit avant",
+        read: true,
+        timestamp: '4 sem',
+        avatarSeed: 'lesimpoy',
+    },
+    {
+        id: '10',
+        name: 'lesimpoy',
+        lastMessage: "Merci beaucoup encore une fois, comme je l'ai dit avant",
+        read: true,
+        timestamp: '4 sem',
+        avatarSeed: 'lesimpoy',
+    },
+    {
+        id: '11',
+        name: 'lesimpoy',
+        lastMessage: "Merci beaucoup encore une fois, comme je l'ai dit avant",
+        read: true,
+        timestamp: '4 sem',
+        avatarSeed: 'lesimpoy',
+    },
+    {
+        id: '12',
+        name: 'lesimpoy',
+        lastMessage: "Merci beaucoup encore une fois, comme je l'ai dit avant",
+        read: true,
+        timestamp: '4 sem',
+        avatarSeed: 'lesimpoy',
+    },
+    {
+        id: '13',
+        name: 'lesimpoy',
+        lastMessage: "Merci beaucoup encore une fois, comme je l'ai dit avant",
+        read: true,
+        timestamp: '4 sem',
+        avatarSeed: 'lesimpoy',
+    },
+    {
+        id: '14',
+        name: 'lesimpoy',
+        lastMessage: "Merci beaucoup encore une fois, comme je l'ai dit avant",
+        read: true,
+        timestamp: '4 sem',
+        avatarSeed: 'lesimpoy',
+    },
+    {
+        id: '15',
+        name: 'lesimpoy',
+        lastMessage: "Merci beaucoup encore une fois, comme je l'ai dit avant",
+        read: true,
+        timestamp: '4 sem',
+        avatarSeed: 'lesimpoy',
+    },
+    {
+        id: '16',
+        name: 'lesimpoy',
+        lastMessage: "Merci beaucoup encore une fois, comme je l'ai dit avant",
+        read: true,
+        timestamp: '4 sem',
+        avatarSeed: 'lesimpoy',
+    },
+    {
+        id: '17',
+        name: 'lesimpoy',
+        lastMessage: "Merci beaucoup encore une fois, comme je l'ai dit avant",
+        read: true,
+        timestamp: '4 sem',
+        avatarSeed: 'lesimpoy',
+    },
+    {
+        id: '18',
+        name: 'lesimpoy',
+        lastMessage: "Merci beaucoup encore une fois, comme je l'ai dit avant",
+        read: true,
+        timestamp: '4 sem',
+        avatarSeed: 'lesimpoy',
+    },
+    {
+        id: '19',
+        name: 'lesimpoy',
+        lastMessage: "Merci beaucoup encore une fois, comme je l'ai dit avant",
+        read: true,
+        timestamp: '4 sem',
+        avatarSeed: 'lesimpoy',
+    },
+    {
+        id: '20',
+        name: 'lesimpoy',
+        lastMessage: "Merci beaucoup encore une fois, comme je l'ai dit avant",
+        read: true,
+        timestamp: '4 sem',
+        avatarSeed: 'lesimpoy',
+    },
+
+];

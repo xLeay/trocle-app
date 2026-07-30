@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, ViewStyle, Pressable } from 'react-native';
+import React from 'react';
+import { Pressable, StyleSheet, ViewStyle } from 'react-native';
 import Animated, {
     interpolateColor,
     useAnimatedStyle,
@@ -54,7 +54,9 @@ const Table: React.FC<TableProps> = ({
                 onPressIn={handlePressIn}
                 onPressOut={handlePressOut}
             >
-                <Flex direction='row' justifyContent='space-between'>
+                <Flex direction='row' justifyContent='space-between'
+                // border borderColor='green'
+                >
                     <TableLeft {...leftProps} />
                     <TableRight {...rightProps} />
                 </Flex>

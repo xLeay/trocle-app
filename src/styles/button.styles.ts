@@ -87,10 +87,12 @@ export const styles = StyleSheet.create({
         borderRadius: 56 / 2,
     },
     FABShadow: {
-        shadowColor: 'rgba(0, 0, 0, 0.25)',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.8,
-        shadowRadius: 6,
-        elevation: 10,
+        // shadowColor: 'rgba(0, 0, 0, 0.5)',
+        // shadowOffset: { width: 0, height: 2 },
+        // shadowOpacity: 0.8,
+        // shadowRadius: 6,
+        // elevation: 10,
+
+        boxShadow: '0 3px 7px 2px rgba(0, 0, 0, 0.25)'
     },
 });

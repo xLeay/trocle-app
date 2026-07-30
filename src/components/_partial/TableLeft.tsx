@@ -4,11 +4,11 @@ import { ImageSourcePropType, StyleSheet } from 'react-native';
 
 // Composants
 import Flex from '#/Flex';
-import Text from '#/Text';
-import Avatar from '#/display/Avatar';
+import Avatar, { AvatarSize } from '#/display/Avatar';
+import HighlightedText from '#/display/HighlightedText';
 
 // Icônes
-import { Circle } from '#/icons';
+import { Certification, Circle } from '#/icons';
 
 export type LeftVariant = 'empty' | 'avatar' | 'icon';
 
@@ -16,16 +16,28 @@ export interface TableLeftProps {
     variant?: LeftVariant;
     leftText?: string;
     legendText?: string;
+    numberOfLines?: number;
     icon?: React.ReactNode;
     src?: ImageSourcePropType | string;
+    avatarSize?: AvatarSize;
+    read?: boolean;
+    certified?: boolean;
+    certificationColor?: string;
+    searchQuery?: string;
 }
 
 const TableLeft: React.FC<TableLeftProps> = ({
     variant = 'empty',
     leftText = 'Texte',
     legendText = '',
+    numberOfLines,
     icon,
     src,
+    avatarSize = 'medium',
+    read = true,
+    certified = false,
+    certificationColor,
+    searchQuery
 }) => {
 
     const { activeTheme } = useTheme();
@@ -34,7 +46,7 @@ const TableLeft: React.FC<TableLeftProps> = ({
     const getVariantComponent = () => {
         switch (variant) {
             case 'avatar':
-                return <Avatar size="medium" customImage={src} />;
+                return <Avatar size={avatarSize} customImage={src} />;
             case 'icon':
                 return icon === undefined ? (
                     <Circle size={24} color={iconColor} />
@@ -55,18 +67,48 @@ const TableLeft: React.FC<TableLeftProps> = ({
     };
 
     return (
-        <Flex direction='row' gap={activeTheme.spacing._100} style={styles.container}>
+        <Flex
+            // border borderColor='purple' borderWidth={2} 
+            direction='row' gap={activeTheme.spacing._100} style={styles.container}>
             {getVariantComponent()}
 
             {leftText && (
-                <Flex style={styles.leftText}>
-                    <Text variant="body_Large">
-                        {leftText}
-                    </Text>
+                <Flex
+                    // border borderColor='red'
+                    style={styles.leftText}>
+                    <Flex direction='row'>
+                        {/* <Text
+                            variant="body_Large"
+                            weight={!read ? 'bold' : 'regular'}
+                            numberOfLines={numberOfLines}
+                        >
+                            {leftText}
+                        </Text> */}
+                        <HighlightedText
+                            text={leftText}
+                            highlight={searchQuery ?? ''}
+                            variant="body_Large"
+                            weight={!read ? 'bold' : 'regular'}
+                            numberOfLines={numberOfLines}
+                        />
+                        {certified && <Certification filled size={24} color={certificationColor} />}
+                    </Flex>
                     {legendText && (
-                        <Text variant="body_Medium" type='secondary' >
-                            {legendText}
-                        </Text>
+                        // <Text
+                        //     variant="body_Medium"
+                        //     type={!read ? 'primary' : 'secondary'}
+                        //     weight={!read ? 'bold' : 'regular'}
+                        //     numberOfLines={numberOfLines}
+                        // >
+                        //     {legendText}
+                        // </Text>
+                        <HighlightedText
+                            text={legendText}
+                            highlight={searchQuery ?? ''}
+                            variant="body_Medium"
+                            weight={!read ? 'bold' : 'regular'}
+                            numberOfLines={numberOfLines}
+                        />
                     )}
                 </Flex>
             )}
@@ -82,9 +124,19 @@ const styles = StyleSheet.create({
 
         // borderWidth: 1,
         // borderColor: 'red',
+
+        // width: '100%',
+        flex: 1,
+
+        overflow: 'hidden'
+
     },
     leftText: {
         alignItems: 'flex-start',
+        flex: 1
+        // width: '100%',
+
+
     },
 });
 

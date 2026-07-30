@@ -29,6 +29,8 @@ export interface TopAppBarProps {
     search?: string;
     setSearch?: (text: string) => void;
     placeHolder?: string;
+    onFocus?: () => void;
+    onBlur?: () => void;
 
     progress?: number;
     progressBarType?: 'primary' | 'mono';

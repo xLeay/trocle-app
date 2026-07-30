@@ -7,31 +7,50 @@ import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
 import Flex from '#/Flex';
 import Button from '#/controls/Button';
+import SegmentedControls from '#/controls/SegmentedControls';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
-import { Notification } from '#/icons';
-import Table from '@/src/components/display/Table';
+import PrivateMessagesList, { SearchFilterType } from '#/messages/PrivateMessagesList';
 
+import { Notification } from '#/icons';
+
+
+
+const FILTER_OPTIONS: { label: string; value: SearchFilterType }[] = [
+    { label: 'Tout', value: 'all' },
+    { label: 'Utilisateurs', value: 'users' },
+    { label: 'Messages', value: 'messages' },
+];
 
 export default function Tab() {
     const { activeTheme } = useTheme();
 
     const [search, setSearch] = useState('');
+    const [isSearchActive, setIsSearchActive] = useState(false);
+
     const { left, center, right } = useTopAppBar("_search", {
         search: search,
         setSearch: setSearch,
-        placeHolder: "Recherche",
+        placeHolder: "Recherchez dans les messages privés...",
+        onFocus: () => setIsSearchActive(true),
+        onBlur: () => {
+            if (!search) setIsSearchActive(false);
+        },
     });
 
-    let count = 1;
+    const [tabIndex, setTabIndex] = useState(0);
+    const currentFilter = FILTER_OPTIONS[tabIndex].value;
+
+    // Détermine si le mode recherche est actif (au focus ou si du texte est saisi)
+    const isSearching = isSearchActive || search.trim().length > 0;
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: activeTheme.colors.surface.secondary }]}>
             <Stack.Screen
                 options={{
                     title: 'Messages',
                     header: () =>
-                        <Flex gap={activeTheme.spacing._100} direction="row" style={{
+                        <Flex gap={activeTheme.spacing._0} direction="row" style={{
                             backgroundColor: activeTheme.colors.surface.secondary,
                             width: '100%',
                             paddingLeft: activeTheme.spacing._200,
@@ -56,40 +75,18 @@ export default function Tab() {
                 }}
             />
 
-            {/* <Text>Tab Messages</Text>
-            <Text>{search || 'No search'}</Text> */}
-
-
-            <Flex border style={{ flex: 1, width: '100%', paddingVertical: activeTheme.spacing._100 }}>
-                <Flex border gap={activeTheme.spacing._200}
-                    style={{ width: '100%' }}
-                >
-                    <Table
-                        leftProps={{
-                            variant: 'avatar',
-                            leftText: 'Shuri',
-                            legendText: 'Ça me va, on fait comme ça !',
-                            src: 'https://api.dicebear.com/10.x/dylan/svg?seed=' + Math.random(),
-                        }}
-                        rightProps={{
-                            variant: 'timestamp',
-                            timestampText: '1 h',
-                        }}
+            {isSearching && (
+                <Flex zIndex={10} style={{ paddingInline: activeTheme.spacing._200 }}>
+                    <SegmentedControls
+                        options={FILTER_OPTIONS.map(opt => opt.label)}
+                        selectedIndex={tabIndex}
+                        onChange={setTabIndex}
                     />
-                    <Table
-                        leftProps={{
-                            variant: 'avatar',
-                            leftText: 'Mon profil',
-                            // src: require('@/assets/icon.png'),
-                            src: 'https://api.dicebear.com/10.x/dylan/svg?seed=' + Math.random(),
-                        }}
-                        rightProps={{
-                            variant: 'empty',
-                        }}
-                    />
-
                 </Flex>
-            </Flex>
+            )}
+
+            <PrivateMessagesList search={search} filterType={currentFilter} />
+
         </View>
     );
 }

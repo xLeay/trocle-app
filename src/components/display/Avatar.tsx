@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, StyleSheet, ViewStyle, ImageSourcePropType, Pressable, Text } from 'react-native';
-import { Image } from 'expo-image';
 import { useTheme } from '@/src/lib/hooks/useTheme';
+import { Image } from 'expo-image';
+import React from 'react';
+import { ImageSourcePropType, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
 import Animated, {
     interpolateColor,
     useAnimatedStyle,
@@ -11,7 +11,7 @@ import Animated, {
 
 import defaultImage from '@/assets/avatar.png';
 
-type AvatarSize = 'enormous' | 'veryLarge' | 'large' | 'medium' | 'small' | 'tiny';
+export type AvatarSize = 'enormous' | 'veryLarge' | 'large' | 'medium' | 'small' | 'tiny';
 
 // Taille en pixels pour chaque taille d'avatar
 const sizeMapping: Record<AvatarSize, number> = {

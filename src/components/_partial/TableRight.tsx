@@ -34,6 +34,7 @@ export interface TableRightProps {
     checkbox?: React.ReactNode;
     radio?: React.ReactNode;
     timestampText?: string;
+    read?: boolean;
 }
 
 const TableRight: React.FC<TableRightProps> = ({
@@ -47,6 +48,7 @@ const TableRight: React.FC<TableRightProps> = ({
     checkbox: checkboxElement,
     radio: radioElement,
     timestampText = 'Timestamp',
+    read = true,
 }) => {
 
     const { activeTheme } = useTheme();
@@ -107,10 +109,10 @@ const TableRight: React.FC<TableRightProps> = ({
                 );
             case 'timestamp':
                 return (
-                    <Flex border style={[styles.timeStamp, { flex: 1 }]} >
-                        <Flex border direction='row' alignItems='center' gap={activeTheme.spacing._50} borderColor='red'>
-                            <View style={[styles.timeStampDot, { backgroundColor: activeTheme.colors.text.placeholder }]} />
-                            <Text variant="body_Small" type='placeholder' >
+                    <Flex style={[styles.timeStamp, { flex: 1, minHeight: 48, paddingBlock: activeTheme.spacing._50 }]}>
+                        <Flex direction='row' alignItems='center' gap={activeTheme.spacing._50}>
+                            <View style={[styles.timeStampDot, { backgroundColor: read ? activeTheme.colors.text.placeholder : activeTheme.colors.text.brand }]} />
+                            <Text variant="body_Small" type={read ? 'placeholder' : 'brand'} >
                                 {timestampText}
                             </Text>
                         </Flex>
@@ -122,7 +124,9 @@ const TableRight: React.FC<TableRightProps> = ({
     };
 
     return (
-        <Flex direction='column' border borderColor='red' alignItems='flex-end' gap={activeTheme.spacing._100} style={styles.container}>
+        <Flex
+            // border borderColor='blue'
+            direction='column' gap={activeTheme.spacing._100} style={styles.container}>
             {getVariantComponent()}
         </Flex>
     );
@@ -131,11 +135,13 @@ const TableRight: React.FC<TableRightProps> = ({
 const styles = StyleSheet.create({
     container: {
         minHeight: 48,
-        justifyContent: 'flex-end',
-        alignItems: 'center',
+        justifyContent: 'center',
+        // alignItems: 'center',
 
         // borderWidth: 1,
         // borderColor: 'blue',
+        // flex: 1
+
     },
     empty: {
         width: 24,

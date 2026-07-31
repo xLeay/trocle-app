@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -69,7 +69,7 @@ export default function Tab() {
                             <Flex direction='row' style={{
                                 height: 60,
                             }}>
-                                <Button icon={<Notification />} variant="ghost" size="large" onPress={() => console.log('Notifications')} />
+                                <Button icon={<Notification />} variant="ghost" size="large" onPress={() => router.push('/(protected)/notifications')} />
                             </Flex>
                         </Flex>,
                 }}

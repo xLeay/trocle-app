@@ -52,10 +52,10 @@ const Text: React.FC<Props> = ({
         {
             color: activeTheme.colors.text[type],
             textDecorationLine: textDecorationLine,
-            fontFamily: weight ? fontFamilyMap[weight] : undefined,
+            ...(weight && { fontFamily: fontFamilyMap[weight] }),
         },
         style,
-    ], [activeTheme, type, variant, style]);
+    ], [activeTheme, type, variant, weight, style]);
 
     const textElement = (
         <RNText style={combinedStyle} onPress={onPress} {...rest}>

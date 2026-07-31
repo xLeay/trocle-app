@@ -29,6 +29,7 @@ export interface AvatarProps {
     size?: AvatarSize;
     onPress?: () => void;
     touchable?: boolean;
+    blurred?: number;
 }
 
 const Avatar: React.FC<AvatarProps> = ({
@@ -38,6 +39,7 @@ const Avatar: React.FC<AvatarProps> = ({
     size = 'medium',
     onPress,
     touchable = true,
+    blurred = 0,
 }) => {
 
     const { activeTheme } = useTheme();
@@ -79,6 +81,7 @@ const Avatar: React.FC<AvatarProps> = ({
                     source={customImage || defaultImage}
                     contentFit="cover"
                     transition={500}
+                    blurRadius={blurred}
                 />
                 {animatedView && (
                     <Animated.View

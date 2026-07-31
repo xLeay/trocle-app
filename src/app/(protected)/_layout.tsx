@@ -1,9 +1,9 @@
+import { useTheme } from '@/src/lib/hooks/useTheme';
+import { supabase } from '@/src/lib/supabase';
+import { useAuthStore } from '@/src/state/authStore';
+import { Redirect, Stack } from 'expo-router';
 import React, { useEffect } from 'react';
 import { AppState, } from 'react-native';
-import { useTheme } from '@/src/lib/hooks/useTheme';
-import { Redirect, Stack } from 'expo-router';
-import { useAuthStore } from '@/src/state/authStore';
-import { supabase } from '@/src/lib/supabase';
 
 export default function ProtectedLayout() {
     const { activeTheme } = useTheme();
@@ -96,6 +96,10 @@ export default function ProtectedLayout() {
             />
             <Stack.Screen
                 name="product/[id]"
+                options={{ headerShown: true, }}
+            />
+            <Stack.Screen
+                name="notifications"
                 options={{ headerShown: true, }}
             />
         </Stack>

@@ -50,7 +50,7 @@ const topAppBarConfigs = {
 
     _search: {
         left: null,
-        // Nécessite : search: string, setSearch: function, placeHolder: string
+        // Nécessite : search: string, setSearch: function, placeHolder: string, onFocus: function, onBlur: function
         center: ({ search, setSearch, placeHolder, onFocus, onBlur }: TopAppBarProps) => (
             <SearchBar value={search} onChangeText={ensureFunction(setSearch)} placeholder={placeHolder} onFocus={onFocus} onBlur={onBlur} />
         ),
@@ -77,7 +77,12 @@ const topAppBarConfigs = {
                 {canGoBack ? (
                     <Button icon={<Arrowleft color={iconColor} />} variant="ghost" size="small" onPress={onBack} />
                 ) : <View style={{ width: 32 }} />}
-                <Table leftProps={tableLeft} rightProps={tableRight} style={{ flex: 1 }} />
+                <Table isPressable={false} leftProps={tableLeft} rightProps={tableRight} style={{
+                    flex: 1,
+                    paddingLeft: 4,
+                    paddingRight: 0,
+                    paddingBlock: 0,
+                }} />
             </Flex>
         ),
         center: null,

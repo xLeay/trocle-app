@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { router } from 'expo-router';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
 
@@ -18,7 +19,6 @@ interface PrivateMessagesListProps {
     search?: string;
     filterType?: SearchFilterType;
     conversations?: ConversationMock[];
-    onPressConversation?: (conversation: ConversationMock) => void;
     onPressNewMessage?: () => void;
 }
 
@@ -26,7 +26,6 @@ const PrivateMessagesList: React.FC<PrivateMessagesListProps> = ({
     search = '',
     filterType = 'all',
     conversations = MOCK_CONVERSATIONS,
-    onPressConversation,
     onPressNewMessage,
 }) => {
 
@@ -63,7 +62,7 @@ const PrivateMessagesList: React.FC<PrivateMessagesListProps> = ({
                     {filteredConversations.map((item) => (
                         <Table
                             key={item.id}
-                            onPress={() => onPressConversation?.(item)}
+                            onPress={() => router.push(`/chat/${item.id}`)}
                             leftProps={{
                                 variant: 'avatar',
                                 avatarSize: 'large',

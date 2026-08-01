@@ -10,10 +10,7 @@ import NotificationsList from '#/messages/NotificationsList';
 
 import { Arrowleft } from '#/icons';
 
-
 import { MOCK_NOTIFICATIONS } from '@/src/mock/notifs.mock';
-
-
 
 
 export default function Notifications() {

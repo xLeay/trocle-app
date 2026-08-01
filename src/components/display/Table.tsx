@@ -19,6 +19,7 @@ interface TableProps {
     rightProps?: React.ComponentProps<typeof TableRight>;
     style?: ViewStyle;
     onPress?: () => void;
+    isPressable?: boolean;
 }
 
 const Table: React.FC<TableProps> = ({
@@ -26,6 +27,7 @@ const Table: React.FC<TableProps> = ({
     rightProps,
     style = {},
     onPress,
+    isPressable = true,
 }) => {
     const { activeTheme } = useTheme();
 
@@ -49,18 +51,27 @@ const Table: React.FC<TableProps> = ({
 
     return (
         <Animated.View style={[styles.container, style, animatedStyle, { borderRadius: activeTheme.radius.card, paddingHorizontal: activeTheme.spacing._200 }]}>
-            <Pressable
-                onPress={onPress}
-                onPressIn={handlePressIn}
-                onPressOut={handlePressOut}
-            >
+            {isPressable ? (
+                <Pressable
+                    onPress={onPress}
+                    onPressIn={handlePressIn}
+                    onPressOut={handlePressOut}
+                >
+                    <Flex direction='row' justifyContent='space-between'
+                    // border borderColor='green'
+                    >
+                        <TableLeft {...leftProps} />
+                        <TableRight {...rightProps} />
+                    </Flex>
+                </Pressable>
+            ) : (
                 <Flex direction='row' justifyContent='space-between'
                 // border borderColor='green'
                 >
                     <TableLeft {...leftProps} />
                     <TableRight {...rightProps} />
                 </Flex>
-            </Pressable>
+            )}
         </Animated.View>
     );
 };

@@ -102,6 +102,10 @@ export default function ProtectedLayout() {
                 name="notifications"
                 options={{ headerShown: true, }}
             />
+            <Stack.Screen
+                name="chat/[id]"
+                options={{ headerShown: true }}
+            />
         </Stack>
     );
 }

@@ -8,6 +8,8 @@ type Props = React.ComponentProps<typeof RNTextInput> & {
     style?: TextStyle[];
     type?: 'primary' | 'secondary' | 'placeholder' | 'invert' | 'brand';
     variant?: TextVariant;
+    placeholderColor?: string;
+    caretColor?: string;
 }
 
 const ThemedTextInput = forwardRef<RNTextInput, Props>(({
@@ -15,6 +17,8 @@ const ThemedTextInput = forwardRef<RNTextInput, Props>(({
     style,
     type = 'primary',
     variant = 'body_Large',
+    placeholderColor,
+    caretColor,
     ...props
 }, ref) => {
 
@@ -34,8 +38,8 @@ const ThemedTextInput = forwardRef<RNTextInput, Props>(({
             <RNTextInput
                 ref={ref}
                 style={[inputStyles]}
-                placeholderTextColor={activeTheme.colors.text.placeholder}
-                cursorColor={color}
+                placeholderTextColor={placeholderColor ?? activeTheme.colors.text.placeholder}
+                cursorColor={caretColor ?? color}
 
                 {...props}
             />

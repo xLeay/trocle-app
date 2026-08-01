@@ -71,12 +71,12 @@ export const styles = StyleSheet.create({
         borderRadius: 32 / 2,
     },
     largeIconButton: {
-        width: 48,
-        height: 48,
+        width: 40,
+        height: 40,
         paddingHorizontal: 0,
     },
     largeIconButtonRadius: {
-        borderRadius: 48 / 2,
+        borderRadius: 40 / 2,
     },
     FABButton: {
         height: 56,

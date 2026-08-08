@@ -1,10 +1,15 @@
 import { useTheme } from '@/src/lib/hooks/useTheme';
-import React, { useRef, useState } from 'react';
-import { Pressable, StyleSheet, TextInput as RNTextInput } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { Pressable, TextInput as RNTextInput, StyleSheet, Keyboard } from 'react-native';
 
+// Composants
+import Button from '#/controls/Button';
 import Flex from '#/Flex';
 import TextInput from '#/TextInput';
+
+// Icones
 import { Image, Send } from '#/icons';
+
 
 interface MessageBarProps {
     value?: string;
@@ -29,221 +34,140 @@ const MessageBar = ({
 }: MessageBarProps) => {
     const { activeTheme } = useTheme();
     const inputRef = useRef<RNTextInput>(null);
-    const [isFocused, setIsFocused] = useState(false);
+    const [isFocused, setIsFocused] = React.useState(false);
 
-    const hasText = value.trim().length > 0;
-    const isExpanded = isFocused;
-    const canSend = hasText && !disabled;
 
-    const handleFocus = () => {
-        setIsFocused(true);
-        onFocus?.();
-    };
-
-    const handleBlur = () => {
-        setIsFocused(false);
-        onBlur?.();
-    };
-
+    const handleFocus = () => { onFocus?.(); setIsFocused(true); };
+    const handleBlur = () => { onBlur?.(); setIsFocused(false); };
     const handleSend = () => {
-        const message = value.trim();
-
-        if (!message || !onSend) {
-            return;
-        }
-
-        onSend(message);
+        if (typeof onSend === 'function') onSend(value);
+        setIsFocused(false);
         inputRef.current?.blur();
     };
 
+    const isExpanded = isFocused;          // default/filled -> compact ; focused/filled_focused -> expanded
+    const showSend = value.length > 0;
+
+    const iconEl = (
+        <Button
+            key="icon"
+            icon={<Image color={activeTheme.colors.icon.primary} />}
+            variant="ghost"
+            size="large"
+            onPress={onImagePress}
+        />
+    );
+
+    const inputEl = (
+        <TextInput
+            key="input"
+            ref={inputRef}
+            placeholder={placeholder}
+            placeholderColor={activeTheme.colors.text.secondary}
+            caretColor={activeTheme.colors.text.brand}
+            value={value}
+            onChangeText={onChangeText}
+            style={[styles.input, {
+                paddingLeft: isExpanded ? activeTheme.spacing._100 : 0,
+                marginRight: isExpanded ? 0 : activeTheme.spacing._100
+            }]}
+            containerStyle={{ flex: isExpanded ? 0 : 1 }}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            editable={!disabled}
+            multiline={isExpanded}
+        />
+    );
+
+    const sendEl = showSend ? (
+        <Button
+            key="send"
+            icon={<Send />}
+            variant="primary"
+            size="large"
+            onPress={handleSend}
+            disabled={!showSend}
+        />
+    ) : null;
+
+
+    useEffect(() => {
+        const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+            setIsFocused(false);
+            onBlur?.();
+            inputRef.current?.blur();
+        });
+        return () => {
+            hideSubscription.remove();
+        };
+    }, [onBlur]);
+
     return (
-        <Flex
-            direction="row"
-            alignItems="flex-end"
-            style={[
-                styles.container,
-                {
-                    backgroundColor:
-                        activeTheme.colors.component.messageBar.background,
-                    borderRadius: isExpanded
-                        ? activeTheme.radius.default
-                        : styles.container.borderRadius,
-                    paddingHorizontal: activeTheme.spacing._100,
-                    paddingVertical: isExpanded
-                        ? activeTheme.spacing._50
-                        : 0,
-                },
-            ]}
+        <Pressable
+            onPress={() => {
+                inputRef.current?.focus();
+                setIsFocused(true);
+            }}
+            style={styles.container}
         >
             <Flex
                 direction={isExpanded ? 'column' : 'row'}
                 alignItems={isExpanded ? 'stretch' : 'center'}
-                style={styles.content}
+                style={[styles.inner, {
+                    borderWidth: isFocused ? 1 : 0,
+                    borderColor: activeTheme.colors.border.brand,
+                    backgroundColor: activeTheme.colors.component.messageBar.background,
+                    // backgroundColor: activeTheme.colors.surface.accentSecondary,
+                    paddingHorizontal: activeTheme.spacing._100,
+                    // paddingBottom: activeTheme.spacing._50,
+                    paddingBottom: isExpanded ? activeTheme.spacing._100 : 0
+                }]}
             >
-                <Flex
-                    direction="row"
-                    alignItems="center"
-                    style={styles.inputRow}
-                >
-                    {!isExpanded && (
-                        <ImageButton
-                            color={activeTheme.colors.icon.primary}
-                            disabled={disabled}
-                            onPress={onImagePress}
-                        />
-                    )}
-
-                    <Pressable
-                        style={styles.inputPressable}
-                        disabled={disabled}
-                        onPress={() => inputRef.current?.focus()}
-                    >
-                        <TextInput
-                            ref={inputRef}
-                            placeholder={placeholder}
-                            placeholderColor={activeTheme.colors.text.secondary}
-                            caretColor={activeTheme.colors.text.brand}
-                            value={value}
-                            onChangeText={onChangeText}
-                            editable={!disabled}
-                            multiline={isExpanded}
-                            onFocus={handleFocus}
-                            onBlur={handleBlur}
-                            style={[
-                                styles.input,
-                                {
-                                    color: activeTheme.colors.text.primary,
-                                    textAlignVertical: isExpanded
-                                        ? 'top'
-                                        : 'center',
-                                },
-                            ]}
-                            containerStyle={styles.inputContainer}
-                        />
-                    </Pressable>
-
-                    {canSend && !isExpanded && (
-                        <SendButton
-                            color={activeTheme.colors.text.invert}
-                            backgroundColor={activeTheme.colors.component.button.primary}
-                            onPress={handleSend}
-                        />
-                    )}
-                </Flex>
-
-                {isExpanded && (
-                    <Flex direction="row" justifyContent="space-between">
-                        <ImageButton
-                            color={activeTheme.colors.icon.primary}
-                            disabled={disabled}
-                            onPress={onImagePress}
-                        />
-
-                        {canSend && (
-                            <SendButton
-                                color={activeTheme.colors.text.invert}
-                                backgroundColor={
-                                    activeTheme.colors.component.button.primary
-                                }
-                                onPress={handleSend}
-                            />
-                        )}
-                    </Flex>
+                {isExpanded ? (
+                    <>
+                        {inputEl}
+                        <Flex
+                            // border
+                            borderColor='red'
+                            key="actions" direction="row" alignItems="center" style={styles.actionsRow}>
+                            {iconEl}
+                            {sendEl}
+                        </Flex>
+                    </>
+                ) : (
+                    <>
+                        {iconEl}
+                        {inputEl}
+                        {sendEl}
+                    </>
                 )}
             </Flex>
-        </Flex>
+        </Pressable>
     );
 };
-
-interface ImageButtonProps {
-    color: string;
-    disabled: boolean;
-    onPress?: () => void;
-}
-
-const ImageButton = ({ color, disabled, onPress }: ImageButtonProps) => (
-    <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Ajouter une image"
-        disabled={disabled}
-        onPress={onPress}
-        style={({ pressed }) => [
-            styles.iconButton,
-            pressed && styles.pressed,
-            disabled && styles.disabled,
-        ]}
-    >
-        <Image color={color} size={24} />
-    </Pressable>
-);
-
-interface SendButtonProps {
-    color: string;
-    backgroundColor: string;
-    onPress: () => void;
-}
-
-const SendButton = ({ color, backgroundColor, onPress }: SendButtonProps) => (
-    <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Envoyer le message"
-        onPress={onPress}
-        style={({ pressed }) => [
-            styles.sendButton,
-            { backgroundColor },
-            pressed && styles.pressed,
-        ]}
-    >
-        <Send color={color} size={24} />
-    </Pressable>
-);
 
 export default MessageBar;
 
 const styles = StyleSheet.create({
     container: {
+        width: '100%',
+    },
+    inner: {
         minHeight: 52,
         borderRadius: 26,
-        overflow: 'hidden',
+
+        // borderWidth: 1,
     },
-    content: {
-        flex: 1,
-    },
-    inputRow: {
-        flex: 1,
-        minHeight: 52,
-    },
-    inputPressable: {
-        flex: 1,
-        alignSelf: 'stretch',
-    },
-    inputContainer: {
-        flex: 1,
+    actionsRow: {
+        justifyContent: 'space-between',
     },
     input: {
-        flex: 1,
-        minHeight: 52,
-        paddingHorizontal: 8,
-        paddingVertical: 0,
-        fontSize: 20,
-    },
-    iconButton: {
-        width: 40,
-        height: 40,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    sendButton: {
-        width: 60,
-        height: 60,
-        borderRadius: 30,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    pressed: {
-        opacity: 0.7,
-    },
-    disabled: {
-        opacity: 0.5,
+        // height: 52,
+        maxHeight: 96,
+
+        includeFontPadding: false,
+        textAlignVertical: 'center',
+
+        // borderWidth: 1,
     },
 });

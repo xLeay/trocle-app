@@ -4,7 +4,7 @@ import { ScrollView, ScrollViewProps, View, ViewProps, ViewStyle } from 'react-n
 interface Props extends ViewProps {
     style?: ViewStyle | ViewStyle[];
     gap?: number;
-    direction?: 'row' | 'column';
+    direction?: 'row' | 'column' | 'row-reverse' | 'column-reverse';
     justifyContent?: 'flex-start' | 'center' | 'flex-end' | 'space-between' | 'space-around' | 'space-evenly';
     alignItems?: 'flex-start' | 'center' | 'flex-end' | 'stretch';
     border?: boolean;
@@ -14,6 +14,7 @@ interface Props extends ViewProps {
     scrollProps?: ScrollViewProps;
     overflow?: 'visible' | 'hidden';
     zIndex?: number;
+    fullWidth?: boolean;
 }
 
 // Utilisation de React.ForwardRefRenderFunction pour une meilleure inférence de type
@@ -30,23 +31,26 @@ const Flex = forwardRef<any, Props>(({
     scrollProps = {},
     overflow = 'visible',
     zIndex,
+    fullWidth = false,
     children,
     ...props
 }, ref) => {
 
-    const baseContentStyle = {
+    const baseContentStyle: ViewStyle = {
         flexDirection: direction,
         justifyContent: justifyContent,
         alignItems: alignItems,
         gap: gap,
     };
 
-    const viewStyle = {
+    const viewStyle: ViewStyle = {
         overflow: overflow,
         borderColor: border ? borderColor : 'transparent',
         borderWidth: border ? borderWidth : 0,
         zIndex: zIndex,
+        ...(fullWidth && { width: '100%' }),
     };
+
 
     if (scroll) {
         const isHorizontal = direction === 'row';

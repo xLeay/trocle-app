@@ -1,8 +1,7 @@
 import React from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
-import { Drawer } from 'expo-router/drawer';
-import { DrawerContentScrollView } from '@react-navigation/drawer';
+import { Drawer, DrawerContentScrollView } from 'expo-router/drawer';
 import { router, Link } from 'expo-router';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';

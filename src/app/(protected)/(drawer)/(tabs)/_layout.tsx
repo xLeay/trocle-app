@@ -1,15 +1,18 @@
-import { useTheme } from '@/src/lib/hooks/useTheme';
-import { useDrawerStatus, useDrawerProgress } from '@react-navigation/drawer';
-import { DrawerActions, useNavigation } from '@react-navigation/native';
-import { Link, Tabs } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { Pressable } from 'react-native';
+import { Link, Tabs, useNavigation } from 'expo-router';
 
-import Avatar from '#/display/Avatar';
+import { useDrawerStatus } from 'expo-router/drawer';
+import type { DrawerNavigationProp } from 'expo-router/drawer';
+
+
+import { useTheme } from '@/src/lib/hooks/useTheme';
+import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
+import Avatar from '#/display/Avatar';
+
 import { Bubble, Compass, Plus, Preferences, Troc } from '#/icons';
-import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
 
 const avatarImage = require('@/assets/icon.png');
@@ -34,7 +37,7 @@ const CreationTabButton = () => {
 };
 
 const AvatarTabButton = () => {
-    const navigation = useNavigation();
+    const navigation = useNavigation<DrawerNavigationProp<ReactNavigation.RootParamList>>();
     const drawerStatus = useDrawerStatus();
     const isDrawerOpen = drawerStatus === 'open';
     const [isAvatarPressed, setIsAvatarPressed] = useState(false);
@@ -46,7 +49,7 @@ const AvatarTabButton = () => {
     }, [isDrawerOpen, isAvatarPressed]);
 
     const handlePress = () => {
-        navigation.dispatch(DrawerActions.openDrawer());
+        navigation.openDrawer();
         setIsAvatarPressed(true);
     };
 

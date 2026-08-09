@@ -1,5 +1,6 @@
 
 import React, { useMemo } from 'react';
+import type { ColorValue } from 'react-native';
 import Svg, { Path, Defs, LinearGradient, Stop } from 'react-native-svg';
 
 interface GradientProps {
@@ -9,7 +10,7 @@ interface GradientProps {
 
 interface IconProps {
     size?: number;
-    color?: string;
+    color?: ColorValue;
     filled?: boolean;
     gradient?: GradientProps;
     style?: object;

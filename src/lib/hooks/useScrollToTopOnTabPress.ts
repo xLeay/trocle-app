@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "expo-router/react-navigation";
 
 // Ce hook retourne une ref à passer à ton composant scrollable
 export function useScrollToTopOnTabPress<T extends { scrollTo?: Function; scrollToOffset?: Function }>() {

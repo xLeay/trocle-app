@@ -6,6 +6,7 @@ import { ImageSourcePropType, StyleSheet } from 'react-native';
 import Flex from '#/Flex';
 import Avatar, { AvatarSize } from '#/display/Avatar';
 import HighlightedText from '#/display/HighlightedText';
+import { TextType } from '#/Text';
 
 // Icônes
 import { Certification, Circle } from '#/icons';
@@ -15,6 +16,7 @@ export type LeftVariant = 'empty' | 'avatar' | 'icon';
 export interface TableLeftProps {
     variant?: LeftVariant;
     leftText?: string;
+    leftTextType?: TextType;
     legendText?: string;
     numberOfLines?: number;
     icon?: React.ReactNode;
@@ -29,6 +31,7 @@ export interface TableLeftProps {
 const TableLeft: React.FC<TableLeftProps> = ({
     variant = 'empty',
     leftText = 'Texte',
+    leftTextType,
     legendText = '',
     numberOfLines,
     icon,
@@ -47,20 +50,15 @@ const TableLeft: React.FC<TableLeftProps> = ({
         switch (variant) {
             case 'avatar':
                 return <Avatar size={avatarSize} customImage={src} />;
-            case 'icon':
-                return icon === undefined ? (
-                    <Circle size={24} color={iconColor} />
-                ) : (
-                    React.isValidElement(icon)
-                        ? React.cloneElement(
-                            icon as React.ReactElement<{ color?: string; fill?: string }>,
-                            {
-                                color: icon.props.color ?? iconColor,
-                                fill: icon.props.fill ?? iconColor,
-                            }
-                        )
-                        : icon
-                );
+            case 'icon': {
+                if (icon === undefined) return <Circle size={24} color={iconColor} />;
+                if (!React.isValidElement(icon)) return icon;
+                const typedIcon = icon as React.ReactElement<{ color?: string; fill?: string }>;
+                return React.cloneElement(typedIcon, {
+                    color: typedIcon.props.color ?? iconColor,
+                    fill: typedIcon.props.fill ?? iconColor,
+                });
+            }
             default:
                 return null;
         }
@@ -88,6 +86,7 @@ const TableLeft: React.FC<TableLeftProps> = ({
                             text={leftText}
                             highlight={searchQuery ?? ''}
                             variant="body_Large"
+                            type={leftTextType}
                             weight={!read ? 'bold' : 'regular'}
                             numberOfLines={numberOfLines}
                         />

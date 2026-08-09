@@ -89,6 +89,8 @@ const styles = StyleSheet.create({
 
 export default React.memo(Table);
 
+// Mettre une width au parent pour que le Table s'affiche correctement
+
 // Pour utiliser une Table dans un header
 // const tableLeft = {
 //     variant: 'icon',

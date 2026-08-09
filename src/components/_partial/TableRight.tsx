@@ -69,20 +69,15 @@ const TableRight: React.FC<TableRightProps> = ({
                         )}
                     </Flex>
                 )
-            case 'icon':
-                return icon === undefined ? (
-                    <Circle size={24} color={iconColor} />
-                ) : (
-                    React.isValidElement(icon)
-                        ? React.cloneElement(
-                            icon as React.ReactElement<{ color?: string; fill?: string }>,
-                            {
-                                color: icon.props.color ?? iconColor,
-                                fill: icon.props.fill ?? iconColor,
-                            }
-                        )
-                        : icon
-                );
+            case 'icon': {
+                if (icon === undefined) return <Circle size={24} color={iconColor} />;
+                if (!React.isValidElement(icon)) return icon;
+                const typedIcon = icon as React.ReactElement<{ color?: string; fill?: string }>;
+                return React.cloneElement(typedIcon, {
+                    color: typedIcon.props.color ?? iconColor,
+                    fill: typedIcon.props.fill ?? iconColor,
+                });
+            }
             case 'button':
                 return buttonElement === undefined ? (
                     <Button label="Bouton" variant="primary" size="small" />

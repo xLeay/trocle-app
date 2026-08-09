@@ -80,7 +80,7 @@ const Avatar: React.FC<AvatarProps> = ({
                     style={styles.image}
                     source={customImage || defaultImage}
                     contentFit="cover"
-                    transition={500}
+                    transition={250}
                     blurRadius={blurred}
                 />
                 {animatedView && (

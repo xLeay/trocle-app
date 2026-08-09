@@ -19,10 +19,11 @@ export const useThemeStore = create<ThemeState>((set) => ({
 
     toggleTheme: () => {
         set((state) => {
-            const next = state.theme === 'light' ? 'dark' : 'light'
-            AsyncStorage.setItem('theme', next)
-            return { theme: next, version: state.version + 1 }
-        })
+            const theme = state.theme === "light" ? "dark" : "light";
+            void AsyncStorage.setItem("theme", theme);
+
+            return { theme };
+        });
     },
 
     setTheme: (theme) => {

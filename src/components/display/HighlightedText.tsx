@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 
-import Text, { TextVariant } from '#/Text';
+import Text, { TextVariant, TextType } from '#/Text';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
 
@@ -9,7 +9,7 @@ interface HighlightedTextProps {
     highlight: string;
     variant?: TextVariant;
     weight?: 'regular' | 'medium' | 'bold';
-    type?: 'primary' | 'secondary' | 'placeholder' | 'invert' | 'brand';
+    type?: TextType;
     numberOfLines?: number;
 }
 

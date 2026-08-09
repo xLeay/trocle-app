@@ -71,13 +71,13 @@ const topAppBarConfigs = {
     },
 
     "_small+table": {
-        // Nécessite : canGoBack: boolean, onBack: function, iconColor: string, tableLeft: TableLeftProps, tableRight: TableRightProps
-        left: ({ canGoBack, onBack, iconColor, tableLeft, tableRight }: TopAppBarProps) => (
+        // Nécessite : canGoBack: boolean, onBack: function, iconColor: string, onPress: function, tableLeft: TableLeftProps, tableRight: TableRightProps
+        left: ({ canGoBack, onBack, iconColor, onPress, tableLeft, tableRight }: TopAppBarProps) => (
             <Flex direction="row" gap={4} style={{ flex: 1 }}>
                 {canGoBack ? (
                     <Button icon={<Arrowleft color={iconColor} />} variant="ghost" size="small" onPress={onBack} />
                 ) : <View style={{ width: 32 }} />}
-                <Table isPressable={false} leftProps={tableLeft} rightProps={tableRight} style={{
+                <Table onPress={onPress} isPressable={true} leftProps={tableLeft} rightProps={tableRight} style={{
                     flex: 1,
                     paddingLeft: 4,
                     paddingRight: 0,

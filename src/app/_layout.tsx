@@ -1,14 +1,18 @@
-import { useTheme } from '@/src/lib/hooks/useTheme';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect } from 'react';
-import { SystemBars } from 'react-native-edge-to-edge';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Stack } from 'expo-router';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+
 import { SafeAreaProvider, SafeAreaView, initialWindowMetrics } from 'react-native-safe-area-context';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from "react-native-keyboard-controller";
+import { SystemBars } from 'react-native-edge-to-edge';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+
+import { useTheme } from '@/src/lib/hooks/useTheme';
+import { useThemeStore } from '@/src/state/themeStore';
+
 import { Provider as PortalProvider } from '#/Portal';
 
 // TODO: Remove this when the React Native Safe Area Context is working and import the SafeAreaView from react-native-safe-area-context
@@ -21,7 +25,10 @@ SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient();
 
 function InnerApp() {
-    const { theme, activeTheme, initialized } = useTheme();
+    const { theme, activeTheme } = useTheme();
+
+    const initialized = useThemeStore((state) => state.initialized);
+    const loadTheme = useThemeStore((state) => state.loadTheme);
 
     const [loaded, error] = useFonts({
         'RethinkSans-VariableFont_wght': require('@/assets/fonts/Rethink_Sans/RethinkSans-VariableFont_wght.ttf'),
@@ -44,6 +51,10 @@ function InnerApp() {
             SplashScreen.hideAsync();
         }
     }, [loaded, error]);
+
+    useEffect(() => {
+        void loadTheme();
+    }, [loadTheme]);
 
     // useEffect(() => {
     //     SystemBars.setStyle('dark');

@@ -103,9 +103,14 @@ export default function ProtectedLayout() {
                 options={{ headerShown: true, }}
             />
             <Stack.Screen
-                name="chat/[id]"
+                name="chat/[id]/index"
                 options={{ headerShown: true }}
             />
+            <Stack.Screen
+                name="chat/[id]/details"
+                options={{ headerShown: true }}
+            />
+
         </Stack>
     );
 }

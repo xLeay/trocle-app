@@ -100,14 +100,16 @@ const text = {
         secondary: color.neutral._40,
         placeholder: color.neutral._60,
         invert: color.neutral._100,
-        brand: surface.light.brand
+        brand: surface.light.brand,
+        danger: surface.light.danger,
     },
     dark: {
         primary: color.neutral._90,
         secondary: color.neutral._70,
         placeholder: color.neutral._50,
         invert: color.neutral._0,
-        brand: surface.dark.brand
+        brand: surface.dark.brand,
+        danger: surface.dark.danger,
     }
 }
 

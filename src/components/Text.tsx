@@ -17,11 +17,13 @@ export type TextVariant =
     | 'label_Small'
     | 'button_Large';
 
+export type TextType = 'primary' | 'secondary' | 'placeholder' | 'invert' | 'brand' | 'danger';
+
 interface Props extends RNTextProps {
     children: React.ReactNode;
     style?: TextStyle;
     containerStyle?: ViewStyle;
-    type?: 'primary' | 'secondary' | 'placeholder' | 'invert' | 'brand';
+    type?: TextType;
     weight?: 'regular' | 'medium' | 'bold';
     variant?: TextVariant;
     textDecorationLine?: 'underline' | 'none' | 'line-through' | 'underline line-through';

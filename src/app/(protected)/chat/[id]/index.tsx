@@ -14,10 +14,13 @@ import TopAppBar from '#/display/TopAppBar/TopAppBar';
 import MessageBar from '#/bars/MessageBar';
 import MessageBubble from '#/display/MessageBubble';
 import ImageRatio from '#/display/ImageRatio';
+import Divider from '#/display/Divider';
+import Avatar from '#/display/Avatar';
 
-import { Troc } from '#/icons';
+import { Troc, Certification, Star0, Star05, Star1 } from '#/icons';
 
 import { MOCK_CONVERSATIONS } from '@/src/mock/dms.mock';
+import { User } from '@/src/types/user';
 
 
 export interface MessageAttachment {
@@ -78,11 +81,30 @@ export default function ChatScreen() {
                 <Button label="Troc" variant="outlined" size="small" icon={<Troc filled size={24} color={activeTheme.colors.surface.contrast} />} iconPosition='right' onPress={() => console.log('Proposer le Troc à ' + recipientName)} />
             ),
         },
+        onPress: () => router.push({
+            pathname: `/(protected)/chat/${id}/details`,
+            params: {
+                id: conversation?.id,
+                username: conversation?.name,
+                profile_picture: conversation?.avatarSeed,
+                certified: conversation?.certified ? 'true' : 'false',
+                certificationColor: conversation?.certificationColor,
+            }
+        }),
     });
 
 
     const currentUserId = 'user_me';
     const otherUserId = 'user_other';
+
+    const [presentation, setPresentation] = useState<User>({
+        id: otherUserId,
+        created_at: new Date().toISOString(),
+        username: recipientName,
+        profile_picture: `https://api.dicebear.com/10.x/dylan/svg?seed=${conversation?.avatarSeed}`,
+        trocoin_balance: 5,
+        bio: "Le goat de l'aviron"
+    })
 
     const [messages, setMessages] = useState<Message[]>([
         {
@@ -332,6 +354,38 @@ export default function ChatScreen() {
                 <Flex style={{ flex: 1, backgroundColor: activeTheme.colors.surface.secondary }}>
                     <FlatList
                         inverted
+                        ListFooterComponent={(
+                            <Flex alignItems='center' justifyContent='center' gap={activeTheme.spacing._400}>
+                                <Flex justifyContent='center' alignItems='center' gap={activeTheme.spacing._100}>
+                                    <Flex justifyContent='center' alignItems='center' gap={activeTheme.spacing._100}>
+                                        <Avatar size='veryLarge' customImage={presentation?.profile_picture} />
+                                        <Flex gap={activeTheme.spacing._0} justifyContent='center' alignItems='center'>
+                                            <Flex direction='row' alignItems='center' gap={activeTheme.spacing._0}>
+                                                <Text variant='body_Large'>{presentation?.username}</Text>
+                                                <Certification size={24} filled color={activeTheme.colors.icon.brand} />
+                                            </Flex>
+                                            <Flex gap={activeTheme.spacing._50} direction='row' justifyContent='center' alignItems='center'>
+                                                <Flex direction='row' gap={activeTheme.spacing._0}>
+                                                    <Text variant='body_Small'>4,3</Text>
+                                                    <Star1 size={16} color={activeTheme.colors.text.primary} />
+                                                </Flex>
+                                                <Text variant='body_Small'>(48)</Text>
+                                            </Flex>
+                                        </Flex>
+                                    </Flex>
+
+                                    <Text variant='body_Large'>{presentation?.bio}</Text>
+
+                                    <Flex direction='row' justifyContent='center' alignItems='center' gap={activeTheme.spacing._50}>
+                                        <Text variant='body_Medium' type='secondary'>18 abonnés</Text>
+                                        <Flex style={{ width: 4, height: 4, backgroundColor: activeTheme.colors.text.secondary, borderRadius: 4 }}></Flex>
+                                        <Text variant='body_Medium' type='secondary'>8 trocs</Text>
+                                    </Flex>
+                                </Flex>
+
+                                <Divider />
+                            </Flex>
+                        )}
                         data={reversedMessages}
                         keyExtractor={(item) => item.id.toString()}
                         style={{ width: '100%' }}
@@ -441,7 +495,7 @@ export default function ChatScreen() {
 
                     {/* Zone de saisie */}
 
-                    <Flex fullWidth borderColor='red' borderWidth={1} style={{ padding: activeTheme.spacing._100 }}>
+                    <Flex fullWidth style={{ padding: activeTheme.spacing._100, borderTopWidth: 1, borderColor: activeTheme.colors.surface.divider }}>
                         <MessageBar
                             placeholder='Écris ton message'
                             value={inputText}
@@ -461,10 +515,3 @@ export default function ChatScreen() {
         </>
     );
 }
-
-const styles = StyleSheet.create({
-    bubble: {
-        maxWidth: '80%',
-    },
-});
-

@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState, forwardRef, useEffect } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetScrollView, BottomSheetHandleProps } from '@gorhom/bottom-sheet';
 import { FlashList } from '@shopify/flash-list';
 
@@ -62,6 +63,7 @@ const ModularBottomSheet = forwardRef<BottomSheetModal, ModularBottomSheetProps>
     onStackChange,
 }, ref) => {
     const { activeTheme } = useTheme();
+    const insets = useSafeAreaInsets();
 
     const [stack, setStack] = useState<Item[][]>([data]);
     const [path, setPath] = useState<Item[]>([]);
@@ -185,6 +187,7 @@ const ModularBottomSheet = forwardRef<BottomSheetModal, ModularBottomSheetProps>
             backgroundStyle={{ backgroundColor: activeTheme.colors.surface.secondary }}
             onDismiss={onClose}
             enablePanDownToClose
+            bottomInset={insets.bottom}
         >
             <BottomSheetScrollView
                 contentContainerStyle={{ marginBottom: activeTheme.spacing._200 }}
@@ -193,7 +196,6 @@ const ModularBottomSheet = forwardRef<BottomSheetModal, ModularBottomSheetProps>
                 <FlashList
                     data={currentData}
                     extraData={{ selectedId }}
-                    estimatedItemSize={60}
                     keyExtractor={(item) => String(item.id)}
                     renderItem={({ item }) => {
                         const isAncestor = item.id in ancestorsMap;

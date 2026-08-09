@@ -30,7 +30,7 @@ export default function Feed() {
 
     const feedData = React.useMemo(() => {
         if (!data) return [];
-        
+
         return assembleFeed(
             data.pages.flatMap(p => p.products),
             data.pages.flatMap(p => p.users),
@@ -125,7 +125,6 @@ export default function Feed() {
                         return item.id ?? `ad-${index}`;
                 }
             }}
-            estimatedItemSize={400}
             onEndReached={() => {
                 if (hasNextPage && !isFetchingNextPage) {
                     fetchNextPage();

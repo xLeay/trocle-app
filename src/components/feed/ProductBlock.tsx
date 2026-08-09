@@ -50,7 +50,6 @@ const ProductsBlock: React.FC<ProductsBlockProps> = ({
                     data={item.images}
                     horizontal
                     pagingEnabled
-                    estimatedItemSize={324}
                     snapToInterval={343}
 
                     keyExtractor={(uri, index) => `${item.id}-img-${index}`}

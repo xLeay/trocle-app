@@ -4,6 +4,8 @@ import { router, useLocalSearchParams, Stack } from 'expo-router';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { FlashList } from '@shopify/flash-list';
+
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
@@ -352,7 +354,7 @@ export default function ChatScreen() {
                 }}
             >
                 <Flex style={{ flex: 1, backgroundColor: activeTheme.colors.surface.secondary }}>
-                    <FlatList
+                    <FlashList
                         inverted
                         ListFooterComponent={(
                             <Flex alignItems='center' justifyContent='center' gap={activeTheme.spacing._400}>

@@ -7,7 +7,6 @@
         "orientation": "portrait",
         "icon": "./assets/icon.png",
         "userInterfaceStyle": "light",
-        "newArchEnabled": true,
         "splash": {
             "image": "./assets/splash.png",
             "resizeMode": "cover",
@@ -23,8 +22,7 @@
                 "backgroundImage": "./assets/icon-android-background.png",
                 "backgroundColor": "#14B814"
             },
-            "package": "com.xleay.trocleapp",
-            "edgeToEdgeEnabled": true
+            "package": "com.xleay.trocleapp"
         },
         "web": {
             "favicon": "./assets/favicon.png"
@@ -70,7 +68,8 @@
                 {
                     "locationAlwaysAndWhenInUsePermission": "Autoriser Trocle à accéder à votre position."
                 }
-            ]
+            ],
+            "expo-image"
         ]
     }
 }

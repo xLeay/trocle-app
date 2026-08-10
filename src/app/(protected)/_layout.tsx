@@ -37,80 +37,24 @@ export default function ProtectedLayout() {
 
     return (
         <Stack
-            screenOptions={{
-                headerShown: false,
-            }}
+            screenOptions={{ headerShown: true, }}
         >
             <Stack.Screen
                 name="(drawer)"
-            />
-            <Stack.Screen
-                name="user/profile"
-                options={{ headerShown: true, }}
-            />
-            <Stack.Screen
-                name="user/followers"
-                options={{ headerShown: true, }}
-            />
-            <Stack.Screen
-                name="user/following"
-                options={{ headerShown: true, }}
-            />
-            <Stack.Screen
-                name="home/home"
-                options={{
-                    title: "Accueil",
-                }}
+                options={{ headerShown: false, }}
             />
             <Stack.Screen
                 name="modal"
                 options={{ headerShown: false, }}
             />
             <Stack.Screen
-                name="shop/premium"
-                options={{ headerShown: true, }}
+                name="user/[username]"
+                options={{ headerShown: false, }}
             />
             <Stack.Screen
-                name="favorites"
-                options={{ headerShown: true, }}
+                name="chat/[id]"
+                options={{ headerShown: false, }}
             />
-            <Stack.Screen
-                name="evaluations"
-                options={{ headerShown: true, }}
-            />
-            <Stack.Screen
-                name="trocs"
-                options={{ headerShown: true, }}
-            />
-            <Stack.Screen
-                name="history"
-                options={{ headerShown: true, }}
-            />
-            <Stack.Screen
-                name="help_center"
-                options={{ headerShown: true, }}
-            />
-            <Stack.Screen
-                name="settings/settings"
-                options={{ headerShown: true, }}
-            />
-            <Stack.Screen
-                name="product/[id]"
-                options={{ headerShown: true, }}
-            />
-            <Stack.Screen
-                name="notifications"
-                options={{ headerShown: true, }}
-            />
-            <Stack.Screen
-                name="chat/[id]/index"
-                options={{ headerShown: true }}
-            />
-            <Stack.Screen
-                name="chat/[id]/details"
-                options={{ headerShown: true }}
-            />
-
         </Stack>
     );
 }

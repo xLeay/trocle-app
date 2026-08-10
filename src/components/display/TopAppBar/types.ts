@@ -18,6 +18,8 @@ export interface TopAppBarProps {
 
     onPress?: () => void;
 
+    outlinedButtons?: boolean;
+
     iconName?: React.ElementType;
     iconColor?: string;
 

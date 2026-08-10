@@ -1,6 +1,6 @@
 {
     "expo": {
-        "name": "trocle-app",
+        "name": "Trocle",
         "slug": "trocle-app",
         "scheme": "trocle-app",
         "version": "1.0.0",
@@ -54,7 +54,7 @@
                 {
                     "android": {
                         "parentTheme": "Default",
-                        "enforceNavigationBarContrast": true
+                        "enforceNavigationBarContrast": false
                     }
                 }
             ],

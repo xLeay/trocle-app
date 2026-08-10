@@ -168,9 +168,9 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
-                name="avatarTab"
+                name="avatar-tab"
                 options={{
-                    title: 'AvatarTab',
+                    title: 'Avatar Tab',
                     tabBarButton: () => <AvatarTabButton />
                 }}
             />

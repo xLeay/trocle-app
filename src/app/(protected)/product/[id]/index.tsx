@@ -1,12 +1,16 @@
-import { View, Text, StyleSheet } from 'react-native';
-import { Stack } from 'expo-router';
-import { router } from 'expo-router';
+import { View, StyleSheet } from 'react-native';
+import { Stack, router, useRoute } from 'expo-router';
+
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
-import { Share } from '#/icons';
+import Text from '#/Text';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
-export default function Profile() {
-    const isPresented = router.canGoBack();
+import { Arrowleft } from '#/icons';
+
+export default function Product() {
+
+    const route = useRoute();
+    const { id } = route.params as { id: string };
 
     // Config de la top app bar
     const topAppBarConfig = "_small";
@@ -14,22 +18,16 @@ export default function Profile() {
     const onBack = () => { canGoBack && router.back() };
 
     const { left, center, right } = useTopAppBar(topAppBarConfig, {
+        iconName: Arrowleft,
         canGoBack,
         onBack,
-        label: '',
-        rightArea: [
-            {
-                iconName: Share,
-                onPress: () => alert('Partage !'),
-            },
-        ],
+        label: 'Paramètres',
     });
 
     return (
         <View style={styles.container}>
             <Stack.Screen
                 options={{
-                    headerShown: true,
                     header: () => (
                         <TopAppBar
                             left={left}
@@ -39,7 +37,7 @@ export default function Profile() {
                     ),
                 }}
             />
-            <Text>Profil depuis le drawer</Text>
+            <Text variant='display_Large'>Produit {id}</Text>
         </View>
     );
 }

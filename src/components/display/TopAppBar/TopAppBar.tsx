@@ -11,6 +11,7 @@ interface TopAppBarProps {
     center?: React.ReactNode;
     right?: React.ReactNode;
     style?: ViewStyle;
+    backgroundTransparent?: boolean;
 }
 
 // Composant
@@ -19,6 +20,7 @@ const TopAppBar = ({
     center,
     right,
     style,
+    backgroundTransparent,
 }: TopAppBarProps) => {
 
     const { activeTheme } = useTheme();
@@ -36,7 +38,7 @@ const TopAppBar = ({
             direction='row'
             justifyContent="space-between"
             alignItems="center"
-            style={[styles.container, { backgroundColor: activeTheme.colors.surface.secondary }, style || {}]}
+            style={[styles.container, backgroundTransparent ? {} : { backgroundColor: activeTheme.colors.surface.secondary }, style || {}]}
         >
             {/* <View style={[styles.topBar, styles.topBarLeft, { flex: left ? 1 : 0 }]}> */}
             <Flex style={[styles.topBar, styles.topBarLeft, leftStyles]}>

@@ -14,10 +14,6 @@ import { useTheme } from '@/src/lib/hooks/useTheme';
 import { useThemeStore } from '@/src/state/themeStore';
 
 import { Provider as PortalProvider } from '#/Portal';
-
-// TODO: Remove this when the React Native Safe Area Context is working and import the SafeAreaView from react-native-safe-area-context
-// import CustomSafeAreaView from '#/CustomSafeAreaView';
-
 import Snackbar from '#/display/Snackbar';
 
 SplashScreen.preventAutoHideAsync();
@@ -56,10 +52,6 @@ function InnerApp() {
         void loadTheme();
     }, [loadTheme]);
 
-    // useEffect(() => {
-    //     SystemBars.setStyle('dark');
-    // }, [theme]);
-
     if (!loaded && !error) { return null; }
     if (!initialized) { return null; }
 
@@ -68,27 +60,31 @@ function InnerApp() {
             <QueryClientProvider client={queryClient}>
                 <GestureHandlerRootView style={{ flex: 1 }}>
                     <KeyboardProvider>
-                        <SafeAreaView style={{ flex: 1, backgroundColor: activeTheme.colors.surface.secondary }}>
-                            <BottomSheetModalProvider>
-                                <SystemBars style={theme === 'dark' ? 'light' : 'dark'} />
-                                <Stack>
-                                    <Stack.Screen
-                                        name='(protected)'
-                                        options={{
-                                            headerShown: false,
-                                            animation: 'none'
-                                        }}
-                                    />
-                                    <Stack.Screen
-                                        name="(auth)"
-                                        options={{
-                                            headerShown: false,
-                                        }}
-                                    />
-                                </Stack>
-                                <Snackbar />
-                            </BottomSheetModalProvider>
-                        </SafeAreaView>
+                        {/* <SafeAreaView
+                            style={{ flex: 1, backgroundColor: activeTheme.colors.surface.secondary }}
+                        > */}
+                        <BottomSheetModalProvider>
+                            <SystemBars style={theme === 'dark' ? 'light' : 'dark'} />
+                            <Stack>
+                                <Stack.Screen
+                                    name='(protected)'
+                                    options={{
+                                        headerShown: false,
+                                        animation: 'none',
+                                        statusBarStyle: theme === 'dark' ? 'light' : 'dark'
+                                    }}
+                                />
+                                <Stack.Screen
+                                    name="(auth)"
+                                    options={{
+                                        headerShown: false,
+                                        statusBarStyle: theme === 'dark' ? 'light' : 'dark'
+                                    }}
+                                />
+                            </Stack>
+                            <Snackbar />
+                        </BottomSheetModalProvider>
+                        {/* </SafeAreaView> */}
                     </KeyboardProvider>
                 </GestureHandlerRootView>
             </QueryClientProvider>

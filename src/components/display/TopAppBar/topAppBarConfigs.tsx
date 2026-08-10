@@ -90,18 +90,21 @@ const topAppBarConfigs = {
     },
 
     _small: {
-        // Nécessite : canGoBack: boolean, onBack: function, label: string, iconName: string, iconColor: string
-        left: ({ canGoBack, onBack, label, iconName, iconColor }: TopAppBarProps) => (
+        // Nécessite : outlinedButtons: boolean, canGoBack: boolean, onBack: function, label: string, iconName: string, iconColor: string
+        left: ({ outlinedButtons, canGoBack, onBack, label, iconName, iconColor }: TopAppBarProps) => (
             <Flex direction="row" gap={16} style={{ flex: 1 }}>
                 {canGoBack ? (
-                    <Button icon={iconName ? React.createElement(iconName, { color: iconColor }) : <Arrowleft color={iconColor} />} variant="ghost" size="small" onPress={onBack} />
+                    <Button
+                        icon={iconName ? React.createElement(iconName, { color: iconColor }) : <Arrowleft color={iconColor} />}
+                        variant={outlinedButtons ? 'outlined' : 'ghost'}
+                        size="small" onPress={onBack} />
                 ) : <View style={{ width: 32 }} />}
                 <Text variant="title_Medium">{label}</Text>
             </Flex>
         ),
         center: null,
-        // Nécessite : rightArea: {label?: string; iconName?: nomIcone; iconPosition?: 'left' | 'right'; onPress: function}[]
-        right: ({ rightArea }: TopAppBarProps) => {
+        // Nécessite : outlinedButtons: boolean, rightArea: {label?: string; iconName?: nomIcone; iconPosition?: 'left' | 'right'; onPress: function}[]
+        right: ({ outlinedButtons, rightArea }: TopAppBarProps) => {
             if (!rightArea || rightArea.length === 0) {
                 return null;
             }
@@ -113,7 +116,7 @@ const topAppBarConfigs = {
                             label={action.label ?? ''}
                             icon={action.iconName ? React.createElement(action.iconName, { color: action.iconColor }) : null}
                             iconPosition={action.iconPosition ?? 'left'}
-                            variant="ghost"
+                            variant={outlinedButtons ? 'outlined' : 'ghost'}
                             size="small"
                             onPress={action.onPress}
                         />

@@ -7,7 +7,7 @@ import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
 import { Arrowleft } from '#/icons';
 
-export default function Product() {
+export default function Reviews() {
 
     // Config de la top app bar
     const topAppBarConfig = "_small";
@@ -18,7 +18,7 @@ export default function Product() {
         iconName: Arrowleft,
         canGoBack,
         onBack,
-        label: 'Paramètres',
+        label: 'Les évaluations',
     });
 
     return (
@@ -34,7 +34,7 @@ export default function Product() {
                     ),
                 }}
             />
-            <Text>Product</Text>
+            <Text>Les évaluations</Text>
         </View>
     );
 }

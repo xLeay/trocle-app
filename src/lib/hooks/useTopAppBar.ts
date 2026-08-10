@@ -13,7 +13,7 @@ export default function useTopAppBar(configKey: TopAppBarConfiguration, options:
             center: typeof config.center === 'function' ? config.center(options) : config.center,
             right: typeof config.right === 'function' ? config.right(options) : config.right,
         };
-    }, [configKey, options]); // Utilisez directement l'objet options au lieu de JSON.stringify
+    }, [configKey, options]); // On utilise directement l'objet options au lieu de JSON.stringify
 
     return { left, center, right };
 }

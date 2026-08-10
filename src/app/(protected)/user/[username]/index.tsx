@@ -1,0 +1,317 @@
+import React from 'react';
+import { View, StyleSheet, Pressable } from 'react-native';
+import { Stack, router, useRoute, Link } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { useTheme } from '@/src/lib/hooks/useTheme';
+import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
+
+import CustomSafeAreaView from '#/CustomSafeAreaView';
+import Flex from '#/Flex';
+import Grid from '#/Grid';
+import Text from '#/Text';
+import TopAppBar from '#/display/TopAppBar/TopAppBar';
+import Button from '#/controls/Button';
+import ImageRatio from '#/display/ImageRatio';
+import Avatar from '#/display/Avatar';
+import Divider from '#/display/Divider';
+
+import { Share, Location, Calendar, Star0, Star05, Star1, Chevronright, Preferences, Plus, Trocoin } from '#/icons';
+
+const avatarImage = require('@/assets/icon.png');
+
+const connectedUser = 'xLeay'; // TODO : Remplacer par l'utilisateur connecté
+
+const MOCK_USER = {
+    banner: require('@/assets/profile_banner.png'),
+    avatar: avatarImage,
+    username: 'xLeay',
+    bio: 'Je troc de tout, assez souvent',
+    location: 'Seine-et-Marne, France',
+    joined: '2024-11-16',
+    trocsCount: 11,
+    followersCount: 12,
+    followingCount: 18,
+    reviewsCount: 11,
+    reviewsRating: 4.5
+}
+
+const ARTICLES = [
+    {
+        image: 'https://www.cdiscount.com/pdt2/8/0/1/1/700x700/aaaap45801/rw/console-xbox-360-blanche--3.jpg',
+        title: 'Xbox 360',
+        brand: 'Microsoft',
+        trocValue: 5000,
+    },
+    {
+        image: 'https://m.media-amazon.com/images/I/914DXSZgJ7L._AC_UF1000,1000_QL80_.jpg',
+        title: 'PS Vita',
+        brand: 'Sony',
+        trocValue: 8000,
+    },
+    {
+        image: 'https://m.media-amazon.com/images/I/61GcXE9lJ4L._AC_UF1000,1000_QL80_.jpg',
+        title: 'Piano électrique petite taille',
+        brand: 'Sans marque',
+        trocValue: 7000,
+    },
+]
+
+const getStarValue = (rating: number, index: number) => {
+    const value = rating - index
+
+    if (value >= 0.75) return 1
+    if (value >= 0.25) return 0.5
+    return 0
+}
+
+export default function Profile() {
+
+    const { activeTheme } = useTheme();
+
+    const insets = useSafeAreaInsets();
+
+    const route = useRoute();
+    const { username } = route.params as { username: string };
+
+    // Config de la top app bar
+    const canGoBack = router.canGoBack();
+    const onBack = () => { canGoBack && router.back() };
+
+    const { left, center, right } = useTopAppBar('_small', {
+        outlinedButtons: true,
+        canGoBack,
+        onBack,
+        label: '',
+        rightArea: [
+            {
+                iconName: Share,
+                onPress: () => alert('Partage !'),
+            },
+        ],
+    });
+
+    return (
+        <CustomSafeAreaView
+            edges={['bottom', 'left', 'right']}
+        >
+            <View style={[styles.container, { backgroundColor: activeTheme.colors.surface.secondary }]}>
+                <Stack.Screen
+                    options={{
+                        headerTransparent: true,
+                        statusBarStyle: 'inverted',
+                        headerShown: true,
+                        header: () => (
+                            <TopAppBar
+                                style={{ marginTop: insets.top }}
+                                backgroundTransparent
+                                left={left}
+                                center={center}
+                                right={right}
+                            />
+                        ),
+                    }}
+                />
+
+                {/* Page de profil */}
+                <Flex scroll gap={0} fullWidth style={{ padding: 0 }}>
+                    {/* Infos du profil */}
+                    <Flex fullWidth>
+                        {/* Bannière */}
+                        <Flex fullWidth style={{ backgroundColor: activeTheme.colors.surface.divider }}>
+                            <ImageRatio
+                                ratio={'banner'}
+                                source={MOCK_USER.banner}
+                            />
+                        </Flex>
+
+                        {/* Infos */}
+                        <Flex gap={activeTheme.spacing._100} style={{ padding: activeTheme.spacing._200 }}>
+                            {/* Top */}
+                            <Flex fullWidth gap={activeTheme.spacing._100}>
+                                {/* Avatar Boutons */}
+                                <Flex direction='row' fullWidth justifyContent='space-between'>
+                                    <Avatar size='veryLarge' customImage={MOCK_USER.avatar} />
+
+                                    {/* Boutons */}
+                                    <Flex direction='row' gap={activeTheme.spacing._100}>
+                                        {username === connectedUser ? (
+                                            <Button
+                                                size='small'
+                                                label='Modifier le profil'
+                                                variant='tertiary'
+                                                onPress={() => alert('Modifier le profil')}
+                                            />
+                                        ) : (
+                                            <>
+                                                <Button
+                                                    size='small'
+                                                    label='Suivre'
+                                                    variant='tertiary'
+                                                    onPress={() => alert('Suivre')}
+                                                />
+                                                <Button
+                                                    size='small'
+                                                    label='Contacter'
+                                                    variant='primary'
+                                                    onPress={() => alert('Contacter')}
+                                                />
+                                            </>
+                                        )}
+                                    </Flex>
+                                </Flex>
+
+                                <Text variant='title_Large'>{username}</Text>
+                            </Flex>
+
+                            {/* Bio */}
+                            <Text variant='body_Medium'>{MOCK_USER.bio}</Text>
+
+                            {/* Données */}
+                            <Flex gap={activeTheme.spacing._50}>
+                                {/* Localisation */}
+                                <Flex direction='row' gap={activeTheme.spacing._50} alignItems='center'>
+                                    <Location size={16} color={activeTheme.colors.text.secondary} />
+                                    <Text variant='body_Medium' type='secondary'>{MOCK_USER.location}</Text>
+                                </Flex>
+
+                                {/* Création de compte */}
+                                <Flex direction='row' gap={activeTheme.spacing._50} alignItems='center'>
+                                    <Calendar size={16} color={activeTheme.colors.text.secondary} />
+                                    <Text variant='body_Medium' type='secondary'>Membre depuis {new Date(MOCK_USER.joined)
+                                        .toLocaleDateString('fr-FR', {
+                                            month: 'long',
+                                            year: 'numeric',
+                                        })}
+                                    </Text>
+                                </Flex>
+                            </Flex>
+
+                            {/* Stats */}
+                            <Flex direction='row' gap={activeTheme.spacing._100} alignItems='center' justifyContent='center'>
+                                {[
+                                    { id: 'trocs', value: MOCK_USER.trocsCount, label: 'trocs' },
+                                    { id: 'followers', value: MOCK_USER.followersCount, label: 'abonnés' },
+                                    { id: 'following', value: MOCK_USER.followingCount, label: 'abonnements' },
+                                ].map((stat, index, stats) => (
+                                    <React.Fragment key={stat.id}>
+                                        <Flex direction="row" gap={activeTheme.spacing._50}>
+                                            <Text variant="label_Large">{stat.value}</Text>
+                                            <Text variant="body_Medium" type="secondary">
+                                                {stat.label}
+                                            </Text>
+                                        </Flex>
+
+                                        {index < stats.length - 1 && (
+                                            <Flex
+                                                style={{
+                                                    height: 3,
+                                                    width: 3,
+                                                    backgroundColor: activeTheme.colors.text.secondary,
+                                                    borderRadius: 2,
+                                                }}
+                                            />
+                                        )}
+                                    </React.Fragment>
+                                ))}
+                            </Flex>
+                        </Flex>
+
+                        <Divider />
+
+                        {/* Notes et Reviews */}
+                        <Pressable
+                            onPress={() => router.push(`/user/${username}/reviews`)}
+                            style={({ pressed }) => ({
+                                backgroundColor: pressed
+                                    ? activeTheme.colors.surface.divider
+                                    : 'transparent',
+                                borderRadius: 8,
+                            })}
+                        >
+                            <Flex direction='row' fullWidth justifyContent='space-between' alignItems='center' style={{ padding: activeTheme.spacing._100 }}>
+                                {/* Gauche */}
+                                <Flex direction='row' gap={activeTheme.spacing._50} alignItems='center'>
+                                    {/* Notes */}
+                                    <Flex direction="row" gap={0}>
+                                        {[0, 1, 2, 3, 4].map((index) => {
+                                            const value = getStarValue(MOCK_USER.reviewsRating, index)
+                                            if (value === 1) { return <Star1 key={index} size={32} color={activeTheme.colors.icon.yellow} /> }
+                                            if (value === 0.5) { return <Star05 key={index} size={32} color={activeTheme.colors.icon.yellow} /> }
+                                            return <Star0 key={index} size={32} color={activeTheme.colors.icon.yellow} />
+                                        })}
+                                    </Flex>
+                                    <Text variant='body_Medium'>({MOCK_USER.reviewsCount} évaluations)</Text>
+                                </Flex>
+
+                                {/* Droite */}
+                                <Chevronright />
+                            </Flex>
+                        </Pressable>
+
+                        <Divider />
+
+                    </Flex>
+
+                    {/* Articles */}
+                    <Flex fullWidth gap={activeTheme.spacing._200} style={{
+                        paddingTop: activeTheme.spacing._200,
+                        paddingInline: activeTheme.spacing._200
+                    }}>
+
+                        {/* Top */}
+                        <Flex fullWidth direction='row' justifyContent='space-between' alignItems='center'>
+                            <Text variant='title_Small'>3 articles</Text>
+                            <Button variant='outlined' label='Trier' iconPosition='left' icon={<Preferences />} onPress={() => {
+                                console.log('Trier')
+                            }} />
+                        </Flex>
+
+                        {/* Grid des articles */}
+                        <Grid columns={2} rows={2} gap={activeTheme.spacing._200} style={{}}>
+                            {ARTICLES.map((article) => (
+                                // Article
+                                <Flex gap={activeTheme.spacing._50}>
+                                    {/* Image */}
+                                    <Flex fullWidth overflow='hidden' style={{ borderRadius: activeTheme.radius.default }}>
+                                        <ImageRatio key={article.title} ratio='cover' source={article.image} />
+                                    </Flex>
+
+                                    {/* Infos */}
+                                    <Flex gap={0}>
+                                        <Text variant='label_Large'>{article.title}</Text>
+                                        <Text variant='body_Small' type='secondary'>{article.brand}</Text>
+                                        <Flex direction='row' gap={0} justifyContent='center'>
+                                            <Text variant='body_Small' type='secondary'>Estimé à {article.trocValue}</Text>
+                                            <Trocoin size={16} color={activeTheme.colors.text.secondary} />
+                                        </Flex>
+                                    </Flex>
+                                </Flex>
+                            ))}
+
+                            <Flex style={{ flex: 1, paddingBottom: activeTheme.spacing._1000 }} alignItems='center' justifyContent='center'>
+                                <Button variant='outlined' label='Ajouter' size='large' icon={<Plus />} iconPosition='right' onPress={() => {
+                                    console.log('Ajouter');
+                                }} />
+                            </Flex>
+
+
+                        </Grid>
+                    </Flex>
+
+                    <Flex style={{ height: activeTheme.spacing._600 }} />
+                </Flex>
+            </View>
+        </CustomSafeAreaView>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        // justifyContent: 'center'
+        // backgroundColor: 'red'
+    },
+
+});

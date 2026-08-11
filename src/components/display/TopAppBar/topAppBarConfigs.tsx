@@ -99,7 +99,11 @@ const topAppBarConfigs = {
                         variant={outlinedButtons ? 'outlined' : 'ghost'}
                         size="small" onPress={onBack} />
                 ) : <View style={{ width: 32 }} />}
-                <Text variant="title_Medium">{label}</Text>
+                {typeof label === 'string' ? (
+                    <Text variant="title_Medium">{label}</Text>
+                ) : (
+                    label
+                )}
             </Flex>
         ),
         center: null,
@@ -149,7 +153,11 @@ const topAppBarConfigs = {
                     </Flex>
                 </Flex>
                 <Flex border borderColor="green" direction="row" gap={8} style={{ width: '100%', paddingHorizontal: 8 }}>
-                    <Text variant="title_Medium">{label}</Text>
+                    {typeof label === 'string' ? (
+                        <Text variant="title_Medium">{label}</Text>
+                    ) : (
+                        label
+                    )}
                 </Flex>
             </Flex>
         ),
@@ -179,7 +187,11 @@ const topAppBarConfigs = {
                     </Flex>
                 </Flex>
                 <Flex direction="row" gap={8} style={{ width: '100%', paddingHorizontal: 8 }}>
-                    <Text variant="display_Small">{label}</Text>
+                    {typeof label === 'string' ? (
+                        <Text variant="display_Small">{label}</Text>
+                    ) : (
+                        label
+                    )}
                 </Flex>
             </Flex>
         ),

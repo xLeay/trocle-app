@@ -25,7 +25,6 @@ const userNameMock = 'xLeay';
 const CustomDrawer = React.memo((props: any) => {
     const { theme, activeTheme, toggleTheme } = useTheme();
 
-
     return (
         <DrawerContentScrollView
             {...props}
@@ -203,8 +202,10 @@ const CustomDrawer = React.memo((props: any) => {
 });
 
 export default function Layout() {
+    const { activeTheme } = useTheme();
+
     return (
-        <CustomSafeAreaView>
+        <CustomSafeAreaView style={{ backgroundColor: activeTheme.colors.surface.secondary }}>
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <Drawer
                     defaultStatus="closed"

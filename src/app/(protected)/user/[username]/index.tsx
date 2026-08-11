@@ -1,6 +1,19 @@
-import React from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
-import { Stack, router, useRoute, Link } from 'expo-router';
+import React, { useState } from 'react';
+import {
+    View,
+    StyleSheet,
+    Pressable,
+    useWindowDimensions,
+} from 'react-native';
+import Animated, {
+    Extrapolation,
+    interpolate,
+    useAnimatedProps,
+    useAnimatedScrollHandler,
+    useAnimatedStyle,
+    useSharedValue,
+} from 'react-native-reanimated';
+import { Stack, router, useRoute } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
@@ -12,11 +25,11 @@ import Grid from '#/Grid';
 import Text from '#/Text';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 import Button from '#/controls/Button';
-import ImageRatio from '#/display/ImageRatio';
+import ImageRatio, { RATIO_PRESETS } from '#/display/ImageRatio';
 import Avatar from '#/display/Avatar';
 import Divider from '#/display/Divider';
 
-import { Share, Location, Calendar, Star0, Star05, Star1, Chevronright, Preferences, Plus, Trocoin } from '#/icons';
+import { Share, Location, Calendar, Star0, Star05, Star1, Chevronright, Preferences, Plus, Plusvert, Trocoin } from '#/icons';
 
 const avatarImage = require('@/assets/icon.png');
 
@@ -65,14 +78,74 @@ const getStarValue = (rating: number, index: number) => {
     return 0
 }
 
+const USERNAME_SHOW_START_SCROLL = 24;
+const USERNAME_SHOW_END_SCROLL = 56;
+const USERNAME_START_OFFSET_Y = 24;
+
+const BLUR_MAX = 3
+const BLUR_END_SCROLL = 24;
+
+const BANNER_LIFT_PX = 24;
+const BANNER_LIFT_END_SCROLL = 56;
+
+
 export default function Profile() {
-
     const { activeTheme } = useTheme();
-
     const insets = useSafeAreaInsets();
 
     const route = useRoute();
     const { username } = route.params as { username: string };
+
+    const bannerHeight = useWindowDimensions().width / RATIO_PRESETS['banner'];
+    const scrollY = useSharedValue(0);
+    const onScroll = useAnimatedScrollHandler({
+        onScroll: (event) => {
+            scrollY.value = event.contentOffset.y;
+        },
+    });
+
+
+    const animatedProps = useAnimatedProps(() => ({
+        blurRadius: interpolate(
+            scrollY.value,
+            [0, BLUR_END_SCROLL],
+            [0, BLUR_MAX],
+            Extrapolation.CLAMP
+        ),
+    }));
+
+    const bannerStyle = useAnimatedStyle(() => ({
+        transform: [
+            {
+                translateY: interpolate(
+                    scrollY.value,
+                    [0, BANNER_LIFT_END_SCROLL],
+                    [0, -BANNER_LIFT_PX],
+                    Extrapolation.CLAMP,
+                ),
+            },
+        ],
+    }));
+
+    const headerUsernameStyle = useAnimatedStyle(() => ({
+        opacity: interpolate(
+            scrollY.value,
+            [USERNAME_SHOW_START_SCROLL, USERNAME_SHOW_END_SCROLL],
+            [0, 1],
+            Extrapolation.CLAMP,
+        ),
+        transform: [
+            {
+                translateY: interpolate(
+                    scrollY.value,
+                    [USERNAME_SHOW_START_SCROLL, USERNAME_SHOW_END_SCROLL],
+                    [USERNAME_START_OFFSET_Y, 0],
+                    Extrapolation.CLAMP,
+                ),
+            },
+        ],
+    }));
+
 
     // Config de la top app bar
     const canGoBack = router.canGoBack();
@@ -82,18 +155,23 @@ export default function Profile() {
         outlinedButtons: true,
         canGoBack,
         onBack,
-        label: '',
+        label: (
+            <Animated.View pointerEvents={'none'} style={headerUsernameStyle}>
+                <Text variant="title_Medium" type='invert'>{MOCK_USER.username}</Text>
+            </Animated.View>
+        ),
         rightArea: [
-            {
-                iconName: Share,
-                onPress: () => alert('Partage !'),
-            },
+            { iconName: Share, onPress: () => alert("Partage !"), },
+            ...(connectedUser !== username ? [
+                { iconName: Plusvert, onPress: () => alert("Plus !"), }
+            ] : []),
         ],
     });
 
     return (
         <CustomSafeAreaView
             edges={['bottom', 'left', 'right']}
+            style={{ backgroundColor: activeTheme.colors.surface.secondary }}
         >
             <View style={[styles.container, { backgroundColor: activeTheme.colors.surface.secondary }]}>
                 <Stack.Screen
@@ -108,30 +186,73 @@ export default function Profile() {
                                 left={left}
                                 center={center}
                                 right={right}
+
+                                onPress={() => {
+                                    router.push({
+                                        pathname: '/user/[username]/photo',
+                                        params: { username, kind: 'banner' },
+                                    })
+                                }}
                             />
                         ),
                     }}
                 />
 
+                {/* Bannière sticky */}
+                <Animated.View
+                    style={[
+                        {
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            zIndex: 1,
+                            height: bannerHeight,
+                            overflow: 'hidden',
+                            backgroundColor: activeTheme.colors.surface.divider,
+                        },
+                        bannerStyle,
+                    ]}
+                >
+                    <ImageRatio
+                        ratio="banner"
+                        source={MOCK_USER.banner}
+                        animatedProps={animatedProps}
+                        onPress={() => router.push({
+                            pathname: '/user/[username]/photo',
+                            params: { username, kind: 'banner' },
+                        })}
+                    />
+                </Animated.View>
+
                 {/* Page de profil */}
-                <Flex scroll gap={0} fullWidth style={{ padding: 0 }}>
+                <Animated.ScrollView
+                    onScroll={onScroll}
+                    scrollEventThrottle={16}
+                    style={{ padding: 0, gap: 0, width: '100%' }}
+                    bounces={false}
+                    contentContainerStyle={{
+                        paddingTop: bannerHeight,
+                    }}
+                >
                     {/* Infos du profil */}
                     <Flex fullWidth>
-                        {/* Bannière */}
-                        <Flex fullWidth style={{ backgroundColor: activeTheme.colors.surface.divider }}>
-                            <ImageRatio
-                                ratio={'banner'}
-                                source={MOCK_USER.banner}
-                            />
-                        </Flex>
-
                         {/* Infos */}
                         <Flex gap={activeTheme.spacing._100} style={{ padding: activeTheme.spacing._200 }}>
                             {/* Top */}
                             <Flex fullWidth gap={activeTheme.spacing._100}>
                                 {/* Avatar Boutons */}
                                 <Flex direction='row' fullWidth justifyContent='space-between'>
-                                    <Avatar size='veryLarge' customImage={MOCK_USER.avatar} />
+                                    <Avatar
+                                        size='veryLarge'
+                                        customImage={MOCK_USER.avatar}
+                                        onPress={() =>
+                                            router.push({
+                                                pathname: '/user/[username]/photo',
+                                                params: { username, kind: 'avatar' },
+                                            })
+                                        }
+                                    />
 
                                     {/* Boutons */}
                                     <Flex direction='row' gap={activeTheme.spacing._100}>
@@ -300,7 +421,7 @@ export default function Profile() {
                     </Flex>
 
                     <Flex style={{ height: activeTheme.spacing._600 }} />
-                </Flex>
+                </Animated.ScrollView>
             </View>
         </CustomSafeAreaView>
     );
@@ -313,5 +434,4 @@ const styles = StyleSheet.create({
         // justifyContent: 'center'
         // backgroundColor: 'red'
     },
-
 });

@@ -1,6 +1,6 @@
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import React from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle, Pressable } from 'react-native';
 
 // Composants
 import Flex from '#/Flex';
@@ -12,6 +12,8 @@ interface TopAppBarProps {
     right?: React.ReactNode;
     style?: ViewStyle;
     backgroundTransparent?: boolean;
+    invertedStyle?: boolean;
+    onPress?: () => void;
 }
 
 // Composant
@@ -21,6 +23,7 @@ const TopAppBar = ({
     right,
     style,
     backgroundTransparent,
+    onPress,
 }: TopAppBarProps) => {
 
     const { activeTheme } = useTheme();
@@ -34,23 +37,26 @@ const TopAppBar = ({
     const rightStyles = getNotNullStyles(right);
 
     return (
-        <Flex
-            direction='row'
-            justifyContent="space-between"
-            alignItems="center"
-            style={[styles.container, backgroundTransparent ? {} : { backgroundColor: activeTheme.colors.surface.secondary }, style || {}]}
-        >
-            {/* <View style={[styles.topBar, styles.topBarLeft, { flex: left ? 1 : 0 }]}> */}
-            <Flex style={[styles.topBar, styles.topBarLeft, leftStyles]}>
-                {left}
+        <Pressable onPress={onPress}>
+            <Flex
+                direction='row'
+                justifyContent="space-between"
+                alignItems="center"
+                style={[styles.container, backgroundTransparent ?
+                    {} : { backgroundColor: activeTheme.colors.surface.secondary }, style || {}]}
+            >
+                {/* <View style={[styles.topBar, styles.topBarLeft, { flex: left ? 1 : 0 }]}> */}
+                <Flex style={[styles.topBar, styles.topBarLeft, leftStyles]}>
+                    {left}
+                </Flex>
+                <Flex style={[styles.topBar, styles.topBarCenter, centerStyles]}>
+                    {center}
+                </Flex>
+                <Flex style={[styles.topBar, styles.topBarRight, rightStyles]}>
+                    {right}
+                </Flex>
             </Flex>
-            <Flex style={[styles.topBar, styles.topBarCenter, centerStyles]}>
-                {center}
-            </Flex>
-            <Flex style={[styles.topBar, styles.topBarRight, rightStyles]}>
-                {right}
-            </Flex>
-        </Flex>
+        </Pressable>
     );
 };
 

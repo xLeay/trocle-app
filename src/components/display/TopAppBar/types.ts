@@ -26,7 +26,7 @@ export interface TopAppBarProps {
     canGoBack?: boolean;
     onBack?: () => void;
 
-    label?: string;
+    label?: React.ReactNode;
 
     search?: string;
     setSearch?: (text: string) => void;

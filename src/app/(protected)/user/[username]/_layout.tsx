@@ -6,6 +6,12 @@ export default function UserLayout() {
             screenOptions={{
                 headerShown: false,
             }}
-        />
+        >
+            <Stack.Screen name='photo'
+                options={{
+                    presentation: 'fullScreenModal',
+                }}
+            />
+        </Stack>
     )
 }

@@ -1,6 +1,84 @@
-import React, { useState, useCallback } from "react";
-import { View, StyleSheet, LayoutChangeEvent, ActivityIndicator } from "react-native";
+// import React, { useState, useCallback } from "react";
+// import { View, StyleSheet, LayoutChangeEvent, ActivityIndicator } from "react-native";
+// import { Image, ImageProps } from "expo-image";
+
+// type RatioName =
+//     | "cover"
+//     | "1:1"
+//     | "3:2"
+//     | "4:3"
+//     | "2:3"
+//     | "3:4"
+//     | "9:16"
+//     | "16:9"
+//     | "banner";
+
+// export const RATIO_PRESETS: Record<RatioName, number> = {
+//     cover: 127 / 120,
+//     "1:1": 1,
+//     "3:2": 3 / 2,
+//     "4:3": 4 / 3,
+//     "2:3": 2 / 3,
+//     "3:4": 3 / 4,
+//     "9:16": 9 / 16,
+//     "16:9": 16 / 9,
+//     banner: 340 / 120,
+// };
+
+// type ImageRatioProps = {
+//     ratio?: RatioName;
+//     style?: any;
+// } & Omit<ImageProps, "style">;
+
+// const ImageRatio = ({ ratio, style, ...props }: ImageRatioProps) => {
+//     const [width, setWidth] = useState<number | null>(null);
+
+//     const onLayout = useCallback((e: LayoutChangeEvent) => {
+//         setWidth(e.nativeEvent.layout.width);
+//     }, []);
+
+//     const aspectRatio = RATIO_PRESETS[ratio ?? "cover"];
+
+//     // Si width n'est pas encore connu, on ne rend rien (ou un loader)
+//     return (
+//         <View style={[styles.container]} onLayout={onLayout}>
+//             {width !== null ? (
+//                 <Image
+//                     {...props}
+//                     style={{
+//                         width: "100%",
+//                         height: ratio ? width / aspectRatio : '100%',
+//                         borderRadius: style?.borderRadius,
+//                         ...StyleSheet.flatten(style),
+//                     }}
+//                 />
+//             ) : (
+//                 <ActivityIndicator />
+//             )}
+//         </View>
+//     );
+// };
+
+// export default ImageRatio;
+
+// const styles = StyleSheet.create({
+//     container: {
+//         width: "100%",
+//     },
+// });
+
+
+
+import React, { useCallback, useState } from "react";
+import {
+    View,
+    StyleSheet,
+    LayoutChangeEvent,
+    ActivityIndicator,
+    Pressable,
+} from "react-native";
 import { Image, ImageProps } from "expo-image";
+import Animated from "react-native-reanimated";
 
 type RatioName =
     | "cover"
@@ -13,7 +91,7 @@ type RatioName =
     | "16:9"
     | "banner";
 
-const RATIO_PRESETS: Record<RatioName, number> = {
+export const RATIO_PRESETS: Record<RatioName, number> = {
     cover: 127 / 120,
     "1:1": 1,
     "3:2": 3 / 2,
@@ -25,12 +103,36 @@ const RATIO_PRESETS: Record<RatioName, number> = {
     banner: 340 / 120,
 };
 
+
+const AnimatedImage = Animated.createAnimatedComponent(Image);
+
+type AnimatedImageProps = React.ComponentProps<typeof AnimatedImage>;
+
 type ImageRatioProps = {
     ratio?: RatioName;
     style?: any;
+
+    /**
+     * Si présent, ImageRatio utilise AnimatedImage.
+     */
+    animatedStyle?: AnimatedImageProps["style"];
+
+    /**
+     * Props animées Reanimated, ex: blurRadius.
+     */
+    animatedProps?: AnimatedImageProps["animatedProps"];
+
+    onPress?: () => void;
 } & Omit<ImageProps, "style">;
 
-const ImageRatio = ({ ratio, style, ...props }: ImageRatioProps) => {
+const ImageRatio = ({
+    ratio,
+    style,
+    animatedStyle,
+    animatedProps,
+    onPress,
+    ...props
+}: ImageRatioProps) => {
     const [width, setWidth] = useState<number | null>(null);
 
     const onLayout = useCallback((e: LayoutChangeEvent) => {
@@ -38,20 +140,33 @@ const ImageRatio = ({ ratio, style, ...props }: ImageRatioProps) => {
     }, []);
 
     const aspectRatio = RATIO_PRESETS[ratio ?? "cover"];
+    const imageStyle = {
+        width: "100%" as const,
+        height: ratio ? width! / aspectRatio : ("100%" as const),
+        ...StyleSheet.flatten(style),
+    };
 
-    // Si width n'est pas encore connu, on ne rend rien (ou un loader)
+    const isAnimated = !!animatedStyle || !!animatedProps;
+
     return (
-        <View style={[styles.container]} onLayout={onLayout}>
+        <View style={styles.container} onLayout={onLayout}>
             {width !== null ? (
-                <Image
-                    {...props}
-                    style={{
-                        width: "100%",
-                        height: ratio ? width / aspectRatio : '100%',
-                        borderRadius: style?.borderRadius,
-                        ...StyleSheet.flatten(style),
-                    }}
-                />
+                isAnimated ? (
+                    <Pressable onPress={onPress}>
+                        <AnimatedImage
+                            {...props}
+                            animatedProps={animatedProps}
+                            style={[imageStyle, animatedStyle]}
+                        />
+                    </Pressable>
+                ) : (
+                    <Pressable onPress={onPress}>
+                        <Image
+                            {...props}
+                            style={imageStyle}
+                        />
+                    </Pressable>
+                )
             ) : (
                 <ActivityIndicator />
             )}

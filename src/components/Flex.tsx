@@ -38,27 +38,26 @@ const Flex = forwardRef<any, Props>(({
 
     const baseContentStyle: ViewStyle = {
         flexDirection: direction,
-        justifyContent: justifyContent,
-        alignItems: alignItems,
-        gap: gap,
+        justifyContent,
+        alignItems,
+        gap,
     };
 
     const viewStyle: ViewStyle = {
-        overflow: overflow,
+        overflow,
         borderColor: border ? borderColor : 'transparent',
         borderWidth: border ? borderWidth : 0,
-        zIndex: zIndex,
+        zIndex,
         ...(fullWidth && { width: '100%' }),
     };
 
 
     if (scroll) {
-        const isHorizontal = direction === 'row';
 
         return (
             <ScrollView
                 ref={ref}
-                horizontal={isHorizontal}
+                horizontal={direction === 'row'}
                 showsHorizontalScrollIndicator={false}
                 showsVerticalScrollIndicator={true}
                 style={[viewStyle, style]}

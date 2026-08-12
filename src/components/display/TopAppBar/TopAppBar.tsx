@@ -12,7 +12,11 @@ interface TopAppBarProps {
     right?: React.ReactNode;
     style?: ViewStyle;
     backgroundTransparent?: boolean;
-    invertedStyle?: boolean;
+    border?: boolean;
+    borderColor?: string;
+    borderWidth?: number;
+    fullWidth?: boolean;
+    zIndex?: number;
     onPress?: () => void;
 }
 
@@ -23,6 +27,11 @@ const TopAppBar = ({
     right,
     style,
     backgroundTransparent,
+    border = false,
+    borderColor = '#000',
+    borderWidth = 1,
+    fullWidth = false,
+    zIndex = 100,
     onPress,
 }: TopAppBarProps) => {
 
@@ -37,11 +46,12 @@ const TopAppBar = ({
     const rightStyles = getNotNullStyles(right);
 
     return (
-        <Pressable onPress={onPress}>
+        <Pressable onPress={onPress} style={{ zIndex, ...(border ? { borderColor, borderWidth } : {}) }}>
             <Flex
                 direction='row'
                 justifyContent="space-between"
                 alignItems="center"
+                fullWidth={fullWidth}
                 style={[styles.container, backgroundTransparent ?
                     {} : { backgroundColor: activeTheme.colors.surface.secondary }, style || {}]}
             >

@@ -1,5 +1,6 @@
-import { ViewStyle, StyleProp } from 'react-native';
-import { SafeAreaView, Edge } from 'react-native-safe-area-context';
+import React from 'react';
+import { View, ViewStyle, StyleProp } from 'react-native';
+import { Edge, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type CustomSafeAreaViewProps = {
     children: React.ReactNode;
@@ -10,13 +11,26 @@ type CustomSafeAreaViewProps = {
 const CustomSafeAreaView = ({
     children,
     edges = ['top', 'left', 'right', 'bottom'],
-    style
+    style,
 }: CustomSafeAreaViewProps) => {
-    return (
-        <SafeAreaView edges={edges} style={[{ flex: 1 }, style]}>
-            {children}
-        </SafeAreaView>
-    );
-}
+    const insets = useSafeAreaInsets();
 
-export default CustomSafeAreaView
+    return (
+        <View
+            style={[
+                {
+                    flex: 1,
+                    paddingTop: edges.includes('top') ? insets.top : 0,
+                    paddingBottom: edges.includes('bottom') ? insets.bottom : 0,
+                    paddingLeft: edges.includes('left') ? insets.left : 0,
+                    paddingRight: edges.includes('right') ? insets.right : 0,
+                },
+                style,
+            ]}
+        >
+            {children}
+        </View>
+    );
+};
+
+export default CustomSafeAreaView;

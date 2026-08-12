@@ -52,7 +52,6 @@ function ProfilePhotoContent() {
 
     return (
         <CustomSafeAreaView
-            edges={['top', 'left', 'right', 'bottom']}
             style={{ backgroundColor: 'black' }}
         >
             <Stack.Screen
@@ -63,7 +62,6 @@ function ProfilePhotoContent() {
             />
 
             <TopAppBar
-                invertedStyle
                 backgroundTransparent
                 left={left}
                 center={center}

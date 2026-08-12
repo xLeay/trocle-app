@@ -46,34 +46,28 @@ export default function Tab() {
 
     return (
         <View style={[styles.container, { backgroundColor: activeTheme.colors.surface.secondary }]}>
-            <Stack.Screen
-                options={{
-                    title: 'Messages',
-                    header: () =>
-                        <Flex gap={activeTheme.spacing._0} direction="row" style={{
-                            backgroundColor: activeTheme.colors.surface.secondary,
-                            width: '100%',
-                            paddingLeft: activeTheme.spacing._200,
-                            paddingRight: activeTheme.spacing._100
-                        }}>
-                            <Flex direction='row' justifyContent='flex-start' style={{ flex: 1 }}>
-                                <TopAppBar
-                                    left={left}
-                                    center={center}
-                                    right={right}
-                                    style={{
-                                        paddingHorizontal: 0,
-                                    }}
-                                />
-                            </Flex>
-                            <Flex direction='row' style={{
-                                height: 60,
-                            }}>
-                                <Button icon={<Notification />} variant="ghost" size="large" onPress={() => router.push('/(protected)/notifications')} />
-                            </Flex>
-                        </Flex>,
-                }}
-            />
+
+            <Flex fullWidth gap={activeTheme.spacing._0} direction="row" alignItems='center' style={{
+                backgroundColor: activeTheme.colors.surface.secondary,
+                paddingLeft: activeTheme.spacing._200,
+                paddingRight: activeTheme.spacing._100
+            }}
+            >
+                <Flex fullWidth direction='row' justifyContent='flex-start' style={{ flex: 1 }}>
+                    <TopAppBar
+                        fullWidth
+                        left={left}
+                        center={center}
+                        right={right}
+                        style={{
+                            paddingHorizontal: 0,
+                        }}
+                    />
+                </Flex>
+                <Flex direction='row' style={{ height: 60 }}>
+                    <Button icon={<Notification />} variant="ghost" size="large" onPress={() => router.push('/(protected)/notifications')} />
+                </Flex>
+            </Flex>
 
             {isSearching && (
                 <Flex zIndex={10} style={{ paddingInline: activeTheme.spacing._200 }}>
@@ -96,5 +90,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+
     },
 });

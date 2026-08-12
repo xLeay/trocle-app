@@ -22,7 +22,7 @@ const HighlightedText: React.FC<HighlightedTextProps> = ({
     numberOfLines,
 }) => {
     const { activeTheme } = useTheme();
-    // ⚡ Mémorisation de la découpe pour éviter les recalculs inutiles
+    // Mémorisation de la découpe pour éviter les recalculs inutiles
     const parts = useMemo(() => {
         const trimmed = highlight ? highlight.trim() : '';
         if (!trimmed) return null;

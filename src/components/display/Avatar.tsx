@@ -22,6 +22,7 @@ const sizeMapping: Record<AvatarSize, number> = {
     small: 32,
     tiny: 24,
 };
+
 export interface AvatarProps {
     customImage?: ImageSourcePropType | string; // undefined => image par défaut
     squared?: boolean;
@@ -30,6 +31,7 @@ export interface AvatarProps {
     onPress?: () => void;
     touchable?: boolean;
     blurred?: number;
+    transition?: number;
 }
 
 const Avatar: React.FC<AvatarProps> = ({
@@ -40,13 +42,14 @@ const Avatar: React.FC<AvatarProps> = ({
     onPress,
     touchable = true,
     blurred = 0,
+    transition = 250
 }) => {
-
     const { activeTheme } = useTheme();
 
+    const DURATION = 100;
     const pressedValue = useSharedValue(0);
-    const handlePressIn = () => { pressedValue.value = withTiming(1, { duration: 100 }) };
-    const handlePressOut = () => { pressedValue.value = withTiming(0, { duration: 100 }) };
+    const handlePressIn = () => { pressedValue.value = withTiming(1, { duration: DURATION }) };
+    const handlePressOut = () => { pressedValue.value = withTiming(0, { duration: DURATION }) };
 
     const animatedStyle = useAnimatedStyle(() => {
         return {
@@ -80,13 +83,13 @@ const Avatar: React.FC<AvatarProps> = ({
                     style={styles.image}
                     source={customImage || defaultImage}
                     contentFit="cover"
-                    transition={250}
+                    transition={transition}
                     blurRadius={blurred}
                 />
                 {animatedView && (
                     <Animated.View
                         pointerEvents="none"
-                        style={[StyleSheet.absoluteFillObject, animatedStyle]}
+                        style={[StyleSheet.absoluteFill, animatedStyle]}
                     />
                 )}
             </View>

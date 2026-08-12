@@ -1,8 +1,9 @@
-import React from 'react';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { Drawer, DrawerContentScrollView } from 'expo-router/drawer';
-import { router, Link } from 'expo-router';
+import { router, Link, Href } from 'expo-router';
+import { Drawer, DrawerContentScrollView, useDrawerStatus } from 'expo-router/drawer';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Animated, { FadeInRight, Easing } from 'react-native-reanimated';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
 
@@ -18,188 +19,211 @@ import Fade from '#/miscellaneous/Fade';
 import { Profile, Subscription, Heart, Star0, Troc, History, Assistance, Settings, Sun, Moon } from '#/icons';
 
 
-const avatarImage = require('@/assets/icon.png');
+type DrawerItemProps = {
+    href: Href;
+    label: string;
+    icon: React.ReactNode;
+    rightProps?: React.ComponentProps<typeof Table>['rightProps'];
+};
 
+function DrawerItem({
+    href,
+    label,
+    icon,
+    rightProps = { variant: 'empty' },
+}: DrawerItemProps) {
+    return (
+        <Link href={href} asChild>
+            <Table
+                leftProps={{
+                    variant: 'icon',
+                    leftText: label,
+                    icon,
+                }}
+                rightProps={rightProps}
+            />
+        </Link>
+    );
+}
+
+const avatarImage = require('@/assets/icon.png');
 const userNameMock = 'xLeay';
 
+const mainItems = [
+    {
+        href: `/user/${userNameMock}`,
+        label: 'Mon profil',
+        icon: <Profile />,
+    },
+    {
+        href: '/shop/premium',
+        label: 'Premium',
+        icon: <Subscription />,
+    },
+    {
+        href: '/favorites',
+        label: 'Favoris',
+        icon: <Heart />,
+    },
+    {
+        href: '/evaluations',
+        label: 'Évaluations',
+        icon: <Star0 />,
+    },
+    {
+        href: '/trocs',
+        label: 'Mes trocs',
+        icon: <Troc />,
+        rightProps: {
+            variant: 'text',
+            active: true,
+            rightText: '14 nov.',
+            chevron: false,
+        },
+    },
+    {
+        href: '/history',
+        label: 'Historique',
+        icon: <History />,
+    },
+] satisfies DrawerItemProps[];
+
+const secondaryItems = [
+    {
+        href: '/help-center',
+        label: "Centre d'assistance",
+        icon: <Assistance />,
+    },
+    {
+        href: '/settings',
+        label: 'Paramètres',
+        icon: <Settings />,
+    },
+] satisfies DrawerItemProps[];
+
 const CustomDrawer = React.memo((props: any) => {
-    const { theme, activeTheme, toggleTheme } = useTheme();
+    const { activeTheme } = useTheme();
+
+    const drawerStatus = useDrawerStatus();
+    const [showContent, setShowContent] = useState(false);
+
+    useEffect(() => {
+        if (drawerStatus === 'open') {
+            const idleCallbackId = requestIdleCallback(() => {
+                setShowContent(true);
+            }, { timeout: 250 });
+
+            return () => cancelIdleCallback(idleCallbackId);
+        }
+
+        setShowContent(false);
+    }, [drawerStatus]);
 
     return (
         <DrawerContentScrollView
-            {...props}
             contentContainerStyle={[styles.drawerContentContainer, {}]}
             style={[styles.drawerContent, { backgroundColor: activeTheme.colors.surface.secondary }]}
+            {...props}
         >
-
-            <Flex gap={32} style={{ flex: 1 }}>
-                {/* Section */}
-                <Flex gap={16} style={{ flex: 1, width: '100%', paddingBottom: 16 }}>
-                    {/* Top */}
-                    <Flex gap={4} style={{ width: '100%', paddingTop: 16, paddingHorizontal: 16 }}>
-                        <Flex gap={4} alignItems='flex-start' style={{ width: '100%', paddingHorizontal: 16 }}>
-                            <Avatar size="medium" customImage={avatarImage} onPress={() => {
-                                router.push(`user/${userNameMock}`);
-                            }} />
-                            <Flex>
-                                <Text variant='title_Small'>{userNameMock}</Text>
-                            </Flex>
-                            <Flex direction='row' alignItems='center' gap={8}>
-                                <Link href={`/user/${userNameMock}/followers`}>
-                                    <Flex gap={4} direction='row'>
-                                        <Text variant='label_Large'>12</Text>
-                                        <Text variant='body_Medium' type='secondary'>Abonnés</Text>
-                                    </Flex>
-                                </Link>
-
-                                <Flex style={{ width: 3, height: 3, backgroundColor: activeTheme.colors.text.secondary, borderRadius: 3 }} />
-
-                                <Link href={`/user/${userNameMock}/following`}>
-                                    <Flex gap={4} direction='row'>
-                                        <Text variant='label_Large'>18</Text>
-                                        <Text variant='body_Medium' type='secondary'>Abonnements</Text>
-                                    </Flex>
-                                </Link>
-                            </Flex>
-                        </Flex>
-                        <Divider padding style={{ marginTop: 16 }} />
-                    </Flex>
-
-                    <Flex style={{ width: '100%', flex: 1, position: 'relative' }}>
-                        {/* Scrollable */}
-                        <Flex scroll gap={8} style={{ width: '100%', flex: 1, position: 'relative' }}>
-                            <Flex style={[styles.tableContainer]}>
-                                <Link href={`/user/${userNameMock}`} asChild>
-                                    <Table
-                                        leftProps={{
-                                            variant: 'icon',
-                                            leftText: 'Mon profil',
-                                            icon: <Profile />,
-                                        }}
-                                        rightProps={{
-                                            variant: 'empty',
-                                        }}
-                                    />
-                                </Link>
-                                <Link href='shop/premium' asChild>
-                                    <Table
-                                        leftProps={{
-                                            variant: 'icon',
-                                            leftText: 'Premium',
-                                            icon: <Subscription />,
-                                        }}
-                                        rightProps={{
-                                            variant: 'empty',
-                                        }}
-                                    />
-                                </Link>
-                                <Link href='favorites' asChild>
-                                    <Table
-                                        leftProps={{
-                                            variant: 'icon',
-                                            leftText: 'Favoris',
-                                            icon: <Heart />,
-                                        }}
-                                        rightProps={{
-                                            variant: 'empty',
-                                        }}
-                                    />
-                                </Link>
-                                <Link href='evaluations' asChild>
-                                    <Table
-                                        leftProps={{
-                                            variant: 'icon',
-                                            leftText: 'Évaluations',
-                                            icon: <Star0 />,
-                                        }}
-                                        rightProps={{
-                                            variant: 'empty',
-                                        }}
-                                    />
-                                </Link>
-                                <Link href='trocs' asChild>
-                                    <Table
-                                        leftProps={{
-                                            variant: 'icon',
-                                            leftText: 'Mes trocs',
-                                            icon: <Troc />,
-                                        }}
-                                        rightProps={{
-                                            variant: 'text',
-                                            active: true,
-                                            rightText: '14 nov.',
-                                            chevron: false,
-                                        }}
-                                    />
-                                </Link>
-                                <Link href='history' asChild>
-                                    <Table
-                                        leftProps={{
-                                            variant: 'icon',
-                                            leftText: 'Historique',
-                                            icon: <History />,
-                                        }}
-                                        rightProps={{
-                                            variant: 'empty',
-                                        }}
-                                    />
-                                </Link>
-                            </Flex>
-
-                            <Divider padding />
-
-                            <Flex style={[styles.tableContainer]}>
-                                <Link href='help_center' asChild>
-                                    <Table
-                                        leftProps={{
-                                            variant: 'icon',
-                                            leftText: 'Centre d\'assistance',
-                                            icon: <Assistance />,
-                                        }}
-                                        rightProps={{
-                                            variant: 'empty',
-                                        }}
-                                    />
-                                </Link>
-                                <Link href='settings/settings' asChild>
-                                    <Table
-                                        leftProps={{
-                                            variant: 'icon',
-                                            leftText: 'Paramètres',
-                                            icon: <Settings />,
-                                        }}
-                                        rightProps={{
-                                            variant: 'empty',
-                                        }}
-                                    />
-                                </Link>
-                            </Flex>
-                        </Flex>
-                        <Fade side="bottom" />
-                    </Flex>
-                </Flex>
-
-                <Flex style={{ paddingVertical: 16, width: '100%' }}>
-                    <Flex style={[styles.tableContainer]}>
-                        <Table
-                            leftProps={{
-                                variant: 'icon',
-                                leftText: theme === 'light' ? 'Mode clair' : 'Mode sombre',
-                                icon: theme === 'light' ? <Sun /> : <Moon filled />,
-                            }}
-                            rightProps={{
-                                variant: 'empty',
-                            }}
-                            onPress={() => {
-                                toggleTheme();
-                            }}
-                        />
-                    </Flex>
-                </Flex>
-            </Flex>
+            {showContent && (
+                <Animated.View
+                    entering={FadeInRight
+                        .duration(375)
+                        .easing(Easing.out(Easing.quad))}
+                    style={{ flex: 1 }}
+                >
+                    <DrawerContent />
+                </Animated.View>
+            )}
         </DrawerContentScrollView>
     );
 });
+
+const DrawerContent = React.memo(() => {
+    const { theme, activeTheme, toggleTheme } = useTheme();
+
+    return (
+        <Flex gap={32} style={{ flex: 1 }}>
+            {/* Section */}
+            <Flex gap={16} style={{ flex: 1, width: '100%', paddingBottom: 16 }}>
+                {/* Top */}
+                <Flex gap={4} style={{ width: '100%', paddingTop: 16, paddingHorizontal: 16 }}>
+                    <Flex gap={4} alignItems='flex-start' style={{ width: '100%', paddingHorizontal: 16 }}>
+                        <Avatar size="medium" customImage={avatarImage} transition={0} onPress={() => {
+                            router.push(`user/${userNameMock}`);
+                        }} />
+                        <Flex>
+                            <Text variant='title_Small'>{userNameMock}</Text>
+                        </Flex>
+                        <Flex direction='row' alignItems='center' gap={8}>
+                            <Link href={`/user/${userNameMock}/followers`}>
+                                <Flex gap={4} direction='row'>
+                                    <Text variant='label_Large'>12</Text>
+                                    <Text variant='body_Medium' type='secondary'>Abonnés</Text>
+                                </Flex>
+                            </Link>
+
+                            <Flex style={{ width: 3, height: 3, backgroundColor: activeTheme.colors.text.secondary, borderRadius: 3 }} />
+
+                            <Link href={`/user/${userNameMock}/following`}>
+                                <Flex gap={4} direction='row'>
+                                    <Text variant='label_Large'>18</Text>
+                                    <Text variant='body_Medium' type='secondary'>Abonnements</Text>
+                                </Flex>
+                            </Link>
+                        </Flex>
+                    </Flex>
+                    <Divider padding style={{ marginTop: 16 }} />
+                </Flex>
+
+                <Flex style={styles.container}>
+                    <Flex scroll gap={8} style={styles.scrollContainer}>
+                        <Flex style={styles.tableContainer}>
+                            {mainItems.map((item) => (
+                                <DrawerItem
+                                    key={item.href}
+                                    {...item}
+                                />
+                            ))}
+                        </Flex>
+
+                        <Divider padding />
+
+                        <Flex style={styles.tableContainer}>
+                            {secondaryItems.map((item) => (
+                                <DrawerItem
+                                    key={item.href}
+                                    {...item}
+                                />
+                            ))}
+                        </Flex>
+                    </Flex>
+
+                    <Fade side="bottom" />
+                </Flex>
+            </Flex>
+
+            <Flex style={{ paddingVertical: 16, width: '100%' }}>
+                <Flex style={[styles.tableContainer]}>
+                    <Table
+                        leftProps={{
+                            variant: 'icon',
+                            leftText: theme === 'light' ? 'Mode clair' : 'Mode sombre',
+                            icon: theme === 'light' ? <Sun /> : <Moon filled />,
+                        }}
+                        rightProps={{
+                            variant: 'empty',
+                        }}
+                        onPress={() => {
+                            toggleTheme();
+                        }}
+                    />
+                </Flex>
+            </Flex>
+        </Flex>
+    );
+});
+
 
 export default function Layout() {
     const { activeTheme } = useTheme();
@@ -219,7 +243,6 @@ export default function Layout() {
                         overlayColor: 'rgba(0,0,0,0.6)',
                         swipeEdgeWidth: 40,
                         swipeMinDistance: 40,
-                        freezeOnBlur: true,
                     }}
                     drawerContent={(props) => <CustomDrawer {...props} />}
                 />
@@ -230,7 +253,6 @@ export default function Layout() {
 
 const styles = StyleSheet.create({
     drawer: {
-
     },
     drawerContentContainer: {
         flex: 1,
@@ -245,17 +267,18 @@ const styles = StyleSheet.create({
         // borderWidth: 2,
         // borderColor: 'green',
     },
-    drawerItem: {
-        backgroundColor: 'tomato',
+    container: {
+        width: '100%',
+        flex: 1,
+        position: 'relative',
+    },
+    scrollContainer: {
+        width: '100%',
+        flex: 1,
+        position: 'relative',
     },
     tableContainer: {
         width: '100%',
         paddingInline: 16,
-    },
-
-
-    tableList: {
-        paddingHorizontal: 16,
-        gap: 8,
     },
 });

@@ -108,7 +108,8 @@ export default function TabLayout() {
                     height: TAB_BAR_HEIGHT - 10, // 10 pour compenser le padding de 5 natif
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '100%'
+                    width: '100%',
+
                 },
             }}
         >
@@ -165,6 +166,7 @@ export default function TabLayout() {
                             {children}
                         </Pressable>
                     ),
+                    headerShown: false,
                 }}
             />
             <Tabs.Screen

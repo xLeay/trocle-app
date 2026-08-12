@@ -3,6 +3,7 @@ import React from 'react';
 import { ImageSourcePropType, StyleSheet } from 'react-native';
 
 // Composants
+import Text from '#/Text';
 import Flex from '#/Flex';
 import Avatar, { AvatarSize } from '#/display/Avatar';
 import HighlightedText from '#/display/HighlightedText';
@@ -82,14 +83,26 @@ const TableLeft: React.FC<TableLeftProps> = ({
                         >
                             {leftText}
                         </Text> */}
-                        <HighlightedText
-                            text={leftText}
-                            highlight={searchQuery ?? ''}
-                            variant="body_Large"
-                            type={leftTextType}
-                            weight={!read ? 'bold' : 'regular'}
-                            numberOfLines={numberOfLines}
-                        />
+
+                        {searchQuery ? (
+                            <HighlightedText
+                                text={leftText}
+                                highlight={searchQuery ?? ''}
+                                variant="body_Large"
+                                type={leftTextType}
+                                weight={!read ? 'bold' : 'regular'}
+                                numberOfLines={numberOfLines}
+                            />
+                        ) : (
+                            <Text
+                                variant="body_Large"
+                                type={leftTextType}
+                                weight={!read ? 'bold' : 'regular'}
+                                numberOfLines={numberOfLines}
+                            >
+                                {leftText}
+                            </Text>
+                        )}
                         {certified && <Certification filled size={24} color={certificationColor} />}
                     </Flex>
                     {legendText && (
@@ -101,13 +114,35 @@ const TableLeft: React.FC<TableLeftProps> = ({
                         // >
                         //     {legendText}
                         // </Text>
-                        <HighlightedText
-                            text={legendText}
-                            highlight={searchQuery ?? ''}
-                            variant="body_Medium"
-                            weight={!read ? 'bold' : 'regular'}
-                            numberOfLines={numberOfLines}
-                        />
+                        // <HighlightedText
+                        //     text={legendText}
+                        //     highlight={searchQuery ?? ''}
+                        //     variant="body_Medium"
+                        //     weight={!read ? 'bold' : 'regular'}
+                        //     numberOfLines={numberOfLines}
+                        // />
+
+                        <>
+                            {searchQuery ? (
+                                <HighlightedText
+                                    text={legendText}
+                                    highlight={searchQuery ?? ''}
+                                    variant="body_Medium"
+                                    weight={!read ? 'bold' : 'regular'}
+                                    numberOfLines={numberOfLines}
+                                />
+                            ) : (
+                                <Text
+                                    variant="body_Medium"
+                                    type={!read ? 'primary' : 'secondary'}
+                                    weight={!read ? 'bold' : 'regular'}
+                                    numberOfLines={numberOfLines}
+                                >
+                                    {legendText}
+                                </Text>
+                            )}
+                        </>
+
                     )}
                 </Flex>
             )}

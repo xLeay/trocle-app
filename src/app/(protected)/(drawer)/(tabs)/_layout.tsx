@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Pressable } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import { Link, Tabs, useNavigation } from 'expo-router';
-
-import { useDrawerStatus } from 'expo-router/drawer';
-import type { DrawerNavigationProp } from 'expo-router/drawer';
-
+import { useDrawerStatus, DrawerNavigationProp } from 'expo-router/drawer';
+import Animated, {
+    Easing,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
+    interpolateColor,
+} from 'react-native-reanimated';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
+import Flex from '#/Flex';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 import Avatar from '#/display/Avatar';
 
@@ -18,26 +23,22 @@ import { Bubble, Compass, Plus, Preferences, Troc } from '#/icons';
 const avatarImage = require('@/assets/icon.png');
 
 const TAB_BAR_HEIGHT = 56;
-
+const ICON_SIZE = 36;
 
 const CreationTabButton = () => {
     const { activeTheme } = useTheme();
 
     return (
         <Link href="/modal/creation" asChild>
-            <Pressable style={{
-                height: TAB_BAR_HEIGHT,
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}>
-                <Plus size={36} color={activeTheme.colors.icon.primary} />
+            <Pressable style={styles.tabBarButtonOdd}>
+                <Plus size={ICON_SIZE} color={activeTheme.colors.icon.primary} />
             </Pressable>
         </Link>
     );
 };
 
 const AvatarTabButton = () => {
-    const navigation = useNavigation<DrawerNavigationProp<ReactNavigation.RootParamList>>();
+    const navigation = useNavigation<DrawerNavigationProp<ReactNavigation.RootParamList>>('/(protected)/(drawer)');
     const drawerStatus = useDrawerStatus();
     const isDrawerOpen = drawerStatus === 'open';
     const [isAvatarPressed, setIsAvatarPressed] = useState(false);
@@ -56,11 +57,7 @@ const AvatarTabButton = () => {
     return (
         <Pressable
             onPress={handlePress}
-            style={{
-                height: TAB_BAR_HEIGHT,
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}
+            style={styles.tabBarButtonOdd}
         >
             <Avatar
                 size="tiny"
@@ -69,6 +66,70 @@ const AvatarTabButton = () => {
                 customImage={avatarImage}
             />
         </Pressable>
+    );
+};
+
+const TabBarButton = ({
+    children,
+    style,
+    onPress,
+    onPressIn,
+    onPressOut,
+    ...props
+}: React.ComponentProps<typeof Pressable>) => {
+    const { activeTheme } = useTheme();
+
+    const scale = useSharedValue(1);
+    const pressed = useSharedValue(0);
+
+    const scaleStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: scale.value }],
+    }));
+
+    const backgroundStyle = useAnimatedStyle(() => ({
+        backgroundColor: interpolateColor(
+            pressed.value,
+            [0, 1],
+            ['transparent', activeTheme.colors.surface.neutralLight],
+        ),
+    }));
+
+    return (
+        <Animated.View style={[styles.tabBarButtonContainer, scaleStyle]}>
+            <Animated.View style={[styles.tabBarButton, backgroundStyle]}>
+                <Pressable
+                    {...props}
+                    android_ripple={null}
+                    onPress={(event) => {
+                        onPress?.(event);
+                    }}
+                    onPressIn={(event) => {
+                        scale.value = withTiming(0.9, {
+                            duration: 100,
+                            easing: Easing.out(Easing.quad),
+                        });
+                        pressed.value = withTiming(1, {
+                            duration: 100,
+                            easing: Easing.out(Easing.quad),
+                        });
+                        onPressIn?.(event);
+                    }}
+                    onPressOut={(event) => {
+                        scale.value = withTiming(1, {
+                            duration: 100,
+                            easing: Easing.out(Easing.quad),
+                        });
+                        pressed.value = withTiming(0, {
+                            duration: 100,
+                            easing: Easing.out(Easing.quad),
+                        });
+                        onPressOut?.(event);
+                    }}
+                >
+                    {children}
+                </Pressable>
+            </Animated.View>
+        </Animated.View>
     );
 };
 
@@ -102,31 +163,21 @@ export default function TabLayout() {
                     borderColor: activeTheme.colors.surface.divider,
                     backgroundColor: activeTheme.colors.surface.secondary,
                     shadowColor: 'transparent',
+                    padding: 0,
                 },
-                tabBarShowLabel: false,
-                tabBarIconStyle: {
-                    height: TAB_BAR_HEIGHT - 10, // 10 pour compenser le padding de 5 natif
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-
-                },
+                tabBarShowLabel: false, // TODO, afficher les labels ou pas selon les settings d'accessibilité
             }}
         >
             <Tabs.Screen
                 name="index"
                 options={{
                     title: 'Home',
-                    tabBarIcon: ({ color, focused }) => <Troc filled={focused} size={36} color={color} />,
+                    tabBarIcon: ({ color, focused }) => <Troc filled={focused} size={ICON_SIZE} color={color} />,
                     header: () => <HomeHeader />,
                     tabBarButton: ({ children, onPress, style }) => (
-                        <Pressable
-                            onPress={onPress}
-                            style={style}
-                            android_ripple={null}
-                        >
+                        <TabBarButton style={style} onPress={onPress}>
                             {children}
-                        </Pressable>
+                        </TabBarButton>
                     ),
                 }}
             />
@@ -134,15 +185,11 @@ export default function TabLayout() {
                 name="discover"
                 options={{
                     title: 'Discover',
-                    tabBarIcon: ({ color, focused }) => <Compass filled={focused} size={36} color={color} />,
+                    tabBarIcon: ({ color, focused }) => <Compass filled={focused} size={ICON_SIZE} color={color} />,
                     tabBarButton: ({ children, onPress, style }) => (
-                        <Pressable
-                            onPress={onPress}
-                            style={style}
-                            android_ripple={null}
-                        >
+                        <TabBarButton style={style} onPress={onPress}>
                             {children}
-                        </Pressable>
+                        </TabBarButton>
                     ),
                 }}
             />
@@ -156,15 +203,11 @@ export default function TabLayout() {
                 name="messages"
                 options={{
                     title: 'Messages',
-                    tabBarIcon: ({ color, focused }) => <Bubble filled={focused} size={36} color={color} />,
+                    tabBarIcon: ({ color, focused }) => <Bubble filled={focused} size={ICON_SIZE} color={color} />,
                     tabBarButton: ({ children, onPress, style }) => (
-                        <Pressable
-                            onPress={onPress}
-                            style={style}
-                            android_ripple={null}
-                        >
+                        <TabBarButton style={style} onPress={onPress}>
                             {children}
-                        </Pressable>
+                        </TabBarButton>
                     ),
                     headerShown: false,
                 }}
@@ -179,3 +222,37 @@ export default function TabLayout() {
         </Tabs>
     );
 }
+
+const styles = StyleSheet.create({
+    tabBarButtonContainer: {
+        width: '100%',
+        height: TAB_BAR_HEIGHT,
+        alignItems: 'stretch',
+        justifyContent: 'center',
+        paddingHorizontal: 4,
+
+        // borderWidth: 1,
+        // backgroundColor: 'red',
+        // zIndex: -1,
+
+    },
+
+    tabBarButton: {
+        height: TAB_BAR_HEIGHT - 16,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: TAB_BAR_HEIGHT / 2,
+
+        // borderWidth: 1,
+        // backgroundColor: 'green',
+    },
+
+    tabBarButtonOdd: {
+        height: TAB_BAR_HEIGHT,
+        justifyContent: 'center',
+        alignItems: 'center',
+
+        // borderWidth: 1,
+        // borderColor: 'red',
+    }
+});

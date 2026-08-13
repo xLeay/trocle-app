@@ -230,23 +230,23 @@ export default function Layout() {
 
     return (
         <CustomSafeAreaView style={{ backgroundColor: activeTheme.colors.surface.secondary }}>
-            <GestureHandlerRootView style={{ flex: 1 }}>
-                <Drawer
-                    defaultStatus="closed"
-                    screenOptions={{
-                        headerShown: false,
-                        drawerStyle: {
-                            backgroundColor: 'transparent',
-                            width: '85%',
-                        },
-                        drawerPosition: 'right',
-                        overlayColor: 'rgba(0,0,0,0.6)',
-                        swipeEdgeWidth: 40,
-                        swipeMinDistance: 40,
-                    }}
-                    drawerContent={(props) => <CustomDrawer {...props} />}
-                />
-            </GestureHandlerRootView>
+            {/* <GestureHandlerRootView style={{ flex: 1 }}> */}
+            <Drawer
+                defaultStatus="closed"
+                screenOptions={{
+                    headerShown: false,
+                    drawerStyle: {
+                        backgroundColor: 'transparent',
+                        width: '85%',
+                    },
+                    drawerPosition: 'right',
+                    overlayColor: 'rgba(0,0,0,0.6)',
+                    swipeEdgeWidth: 40,
+                    swipeMinDistance: 40,
+                }}
+                drawerContent={(props) => <CustomDrawer {...props} />}
+            />
+            {/* </GestureHandlerRootView> */}
         </CustomSafeAreaView>
     );
 }

@@ -75,7 +75,7 @@ export default function ProductImageModal() {
 
     const handleCrop = () => {
         router.push({
-            pathname: '/modal/cropImage',
+            pathname: '/modal/crop-image',
             params: {
                 index: String(idx),
             },

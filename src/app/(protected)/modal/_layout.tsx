@@ -1,14 +1,16 @@
-import { useState } from 'react';
 import { Stack } from 'expo-router';
+import { useState } from 'react';
 
-import CustomSafeAreaView from '#/CustomSafeAreaView';
 import { PhotoContext } from '#/context/PhotoContext';
+import CustomSafeAreaView from '#/CustomSafeAreaView';
+import { useTheme } from '@/src/lib/hooks/useTheme';
 
 export default function ModalLayout() {
+    const { activeTheme } = useTheme();
     const [photos, setPhotos] = useState<any[]>([]);
 
     return (
-        <CustomSafeAreaView>
+        <CustomSafeAreaView style={{ backgroundColor: activeTheme.colors.surface.secondary }}>
             <PhotoContext.Provider value={{ photos, setPhotos }}>
                 <Stack>
                     <Stack.Screen name="creation" />

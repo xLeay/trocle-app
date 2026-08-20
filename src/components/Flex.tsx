@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { ScrollView, ScrollViewProps, View, ViewProps, ViewStyle } from 'react-native';
 
 interface Props extends ViewProps {
@@ -72,9 +72,7 @@ const Flex = forwardRef<any, Props>(({
     }
 
     return (
-        <View ref={ref} style={[viewStyle, baseContentStyle, style]} {...props}>
-            {children}
-        </View>
+        <View ref={ref} style={[viewStyle, baseContentStyle, style]} {...props}>{children}</View>
     );
 });
 

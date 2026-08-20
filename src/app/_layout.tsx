@@ -63,27 +63,27 @@ function InnerApp() {
                         {/* <SafeAreaView
                             style={{ flex: 1, backgroundColor: activeTheme.colors.surface.secondary }}
                         > */}
-                        <BottomSheetModalProvider>
-                            <SystemBars style={theme === 'dark' ? 'light' : 'dark'} />
-                            <Stack>
-                                <Stack.Screen
-                                    name='(protected)'
-                                    options={{
-                                        headerShown: false,
-                                        animation: 'none',
-                                        statusBarStyle: theme === 'dark' ? 'light' : 'dark'
-                                    }}
-                                />
-                                <Stack.Screen
-                                    name="(auth)"
-                                    options={{
-                                        headerShown: false,
-                                        statusBarStyle: theme === 'dark' ? 'light' : 'dark'
-                                    }}
-                                />
-                            </Stack>
-                            <Snackbar />
-                        </BottomSheetModalProvider>
+                        {/* <BottomSheetModalProvider> */}
+                        <SystemBars style={theme === 'dark' ? 'light' : 'dark'} />
+                        <Stack>
+                            <Stack.Screen
+                                name='(protected)'
+                                options={{
+                                    headerShown: false,
+                                    animation: 'none',
+                                    statusBarStyle: theme === 'dark' ? 'light' : 'dark'
+                                }}
+                            />
+                            <Stack.Screen
+                                name="(auth)"
+                                options={{
+                                    headerShown: false,
+                                    statusBarStyle: theme === 'dark' ? 'light' : 'dark'
+                                }}
+                            />
+                        </Stack>
+                        <Snackbar />
+                        {/* </BottomSheetModalProvider> */}
                         {/* </SafeAreaView> */}
                     </KeyboardProvider>
                 </GestureHandlerRootView>

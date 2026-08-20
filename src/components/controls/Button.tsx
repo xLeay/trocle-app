@@ -1,5 +1,5 @@
 import React, { forwardRef, useState } from 'react';
-import { Pressable, View, ViewStyle, StyleSheet, ActivityIndicator } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import Animated, {
     interpolateColor,
     useAnimatedStyle,
@@ -176,8 +176,8 @@ const Button = forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>(({
         size === 'FAB' && styles.FABShadow,
 
         variant === 'outlined' && !disabled && {
-            borderWidth: 1,
-            borderColor: activeTheme.colors.component.button.outlined,
+            outlineWidth: 1,
+            outlineColor: activeTheme.colors.component.button.outlined,
         },
     ];
 
@@ -194,10 +194,15 @@ const Button = forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>(({
 
 
     return (
-        <Animated.View style={[styles.animatedView, animatedStyle, variantButtonStyles]}>
+        <Animated.View style={[
+            styles.animatedView,
+            fullWidth && { flex: 1, width: '100%' },
+            animatedStyle,
+            variantButtonStyles
+        ]}>
             <Pressable
                 ref={ref}
-                style={baseButtonStyles}
+                style={[baseButtonStyles, fullWidth && styles.fullWidth]}
                 onPress={onPress}
                 onLongPress={onLongPress}
                 onPressIn={handlePressIn}

@@ -1,4 +1,3 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
@@ -18,14 +17,15 @@ import Text from '#/Text';
 import Button from '#/controls/Button';
 import Radio from '#/controls/Radio';
 import TextField from '#/controls/TextField';
+import BottomSheet, { BottomSheetRef } from '#/display/BottomSheet';
 import Divider from '#/display/Divider';
 import ImageRatio from '#/display/ImageRatio';
-import ModularBottomSheet from '#/display/ModularBottomSheet';
+
 import Table from '#/display/Table';
 import Tooltip from '#/display/Tooltip';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
-import { Arrowleft, Close, Image, Mylocation, Photo, Plus } from '#/icons';
+import { Close, Image, Mylocation, Photo, Plus } from '#/icons';
 
 
 // Exemple de données
@@ -53,7 +53,13 @@ import { Arrowleft, Close, Image, Mylocation, Photo, Plus } from '#/icons';
 //     { id: 21, name: 'Divers', parentId: null },
 // ];
 
-const categories = [
+interface Category {
+    id: number;
+    name: string;
+    parentId: number | null;
+}
+
+const categories: Category[] = [
     { id: 1, name: 'Informatique', parentId: null },
     { id: 2, name: 'Jeux-vidéos', parentId: 1 },
     { id: 3, name: 'PC Gamer', parentId: 2 },
@@ -78,10 +84,11 @@ const categories = [
     { id: 18, name: 'Maison', parentId: null },
     { id: 19, name: 'Meubles', parentId: 18 },
     { id: 20, name: 'Déco', parentId: 18 },
+    { id: 21, name: 'Commodes', parentId: 19 },
 
-    { id: 21, name: 'Culture', parentId: null },
-    { id: 22, name: 'Livres', parentId: 21 },
-    { id: 23, name: 'BD / Manga', parentId: 21 },
+    { id: 22, name: 'Culture', parentId: null },
+    { id: 23, name: 'Livres', parentId: 22 },
+    { id: 24, name: 'BD / Manga', parentId: 22 },
 ];
 
 const productStates = [
@@ -94,10 +101,9 @@ const productStates = [
 
 
 export default function CreationModal() {
-    const { theme, activeTheme } = useTheme();
+    const { activeTheme } = useTheme();
     const router = useRouter();
     const { addSnackbar } = useSnackbarStore();
-
 
 
     // Config de la top app bar
@@ -112,6 +118,7 @@ export default function CreationModal() {
         label: 'Poste ton article',
     });
 
+
     // Section 1
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -119,14 +126,34 @@ export default function CreationModal() {
     // Section 2
     const [tempSelectedCategory, setTempSelectedCategory] = useState<any>(null);
     const [selectedCategory, setSelectedCategory] = useState<any>(null);
-    const categorySheetRef = useRef<BottomSheetModal>(null);
-    const [categoryStack, setCategoryStack] = useState<any[][]>([categories.filter((cat) => cat.parentId == null)]);
-    const [categoryPath, setCategoryPath] = useState<any[]>([]);
+    const categorySheetRef = useRef<BottomSheetRef>(null);
+
+    const [categoryPath, setCategoryPath] = useState<Category[]>([]);
+    const currentParent = categoryPath.at(-1);
+    const visibleCategories = categories.filter(
+        (category) =>
+            category.parentId === (currentParent?.id ?? null),
+    );
+
+    const handleCategoryPress = (category: Category) => {
+        const children = categories.filter(
+            (item) => item.parentId === category.id,
+        );
+
+        if (children.length > 0) {
+            setCategoryPath((current) => [...current, category]);
+            return;
+        }
+
+        setTempSelectedCategory(category);
+    };
+
+    const handleBack = () => {
+        setCategoryPath((current) => current.slice(0, -1));
+    };
 
     const [selectedProductState, setSelectedProductState] = useState<any>(null);
-    const productStateSheetRef = useRef<BottomSheetModal>(null);
-    const [productStateStack, setProductStateStack] = useState<any[][]>([productStates]);
-    const [productStatePath, setProductStatePath] = useState<any[]>([]);
+    const productStateSheetRef = useRef<BottomSheetRef>(null);
 
     // Section 3
     const [estimatedPrice, setEstimatedPrice] = useState('');
@@ -142,7 +169,7 @@ export default function CreationModal() {
     const maxPhotos = 10;
     const gotPhotos = photos.length > 0;
     const [selectedPhotoType, setSelectedPhotoType] = useState<'camera' | 'library' | null>(null);
-    const addPhotoSheetRef = useRef<BottomSheetModal>(null);
+    const photoSheetRef = useRef<BottomSheetRef>(null);
 
     // Section 5 (Validation)
     const [loading, setLoading] = useState(false);
@@ -262,12 +289,6 @@ export default function CreationModal() {
             setLoadingPhotos(false);
         }
     };
-
-
-
-    const getChildren = (item: any, allData: any[]) =>
-        allData.filter((cat: any) => cat.parentId === item.id);
-
 
     return (
         <Flex style={[styles.container, { backgroundColor: activeTheme.colors.surface.secondary }]}>
@@ -432,48 +453,44 @@ export default function CreationModal() {
                                             gap={activeTheme.spacing._200}
                                         >
                                             {photos.map((photo, index) => (
-                                                <Flex key={index}>
-                                                    <Pressable
+                                                <Flex key={index} style={{ width: 127 }}>
+
+                                                    <ImageRatio
+                                                        ratio='cover'
+                                                        source={{ uri: photo.uri }}
+                                                        style={{
+                                                            borderRadius: activeTheme.radius.default,
+                                                        }}
+                                                        contentFit="cover"
+                                                        transition={1000}
+
                                                         onPress={() => {
                                                             router.push({
-                                                                pathname: '/modal/productImage',
+                                                                pathname: '/modal/product-image',
                                                                 params: { uri: photo.uri, index }
                                                             });
                                                         }}
+                                                    />
+
+                                                    <Flex
+                                                        alignItems='center'
+                                                        justifyContent='center'
                                                         style={{
-                                                            width: 127,
+                                                            position: 'absolute',
+                                                            top: activeTheme.spacing._100,
+                                                            right: activeTheme.spacing._100,
+                                                            backgroundColor: activeTheme.colors.icon.invert,
+                                                            height: 24,
+                                                            width: 24,
+                                                            borderRadius: 12,
                                                         }}
                                                     >
-                                                        <ImageRatio
-                                                            ratio='cover'
-                                                            source={{ uri: photo.uri }}
-                                                            style={{
-                                                                borderRadius: activeTheme.radius.default,
-                                                            }}
-                                                            contentFit="cover"
-                                                            transition={1000}
-                                                        />
-
-                                                        <Flex
-                                                            alignItems='center'
-                                                            justifyContent='center'
-                                                            style={{
-                                                                position: 'absolute',
-                                                                top: activeTheme.spacing._100,
-                                                                right: activeTheme.spacing._100,
-                                                                backgroundColor: activeTheme.colors.icon.invert,
-                                                                height: 24,
-                                                                width: 24,
-                                                                borderRadius: 12,
-                                                            }}
-                                                        >
-                                                            <Pressable onPress={() => {
-                                                                setPhotos(photos.filter((_, i) => i !== index));
-                                                            }}>
-                                                                <Close color={activeTheme.colors.icon.primary} />
-                                                            </Pressable>
-                                                        </Flex>
-                                                    </Pressable>
+                                                        <Pressable onPress={() => {
+                                                            setPhotos(photos.filter((_, i) => i !== index));
+                                                        }}>
+                                                            <Close color={activeTheme.colors.icon.primary} />
+                                                        </Pressable>
+                                                    </Flex>
                                                 </Flex>
                                             ))}
                                         </Flex>
@@ -487,7 +504,7 @@ export default function CreationModal() {
                                                 icon={<Plus />}
                                                 onPress={() => {
                                                     Keyboard.dismiss();
-                                                    addPhotoSheetRef.current?.present();
+                                                    photoSheetRef.current?.present();
                                                 }}
                                                 disabled={photos.length >= maxPhotos}
                                             />
@@ -511,7 +528,7 @@ export default function CreationModal() {
                                 icon={<Photo />}
                                 onPress={() => {
                                     Keyboard.dismiss();
-                                    addPhotoSheetRef.current?.present();
+                                    photoSheetRef.current?.present();
                                 }}
                             />
                         )}
@@ -559,103 +576,175 @@ export default function CreationModal() {
 
 
             {/* Sheet de sélection de catégorie */}
-            <ModularBottomSheet
+            <BottomSheet
                 ref={categorySheetRef}
-                data={categories.filter((cat) => cat.parentId == null)}
-                allData={categories}
-                onClose={() => categorySheetRef.current?.dismiss()}
-                onSelect={(item) => {
-                    setTempSelectedCategory(item);
-                }}
-                getChildren={getChildren}
-                renderRight={(item, selected, rightText) => {
-                    const isLeaf = getChildren(item, categories).length === 0;
-                    return {
-                        variant: isLeaf ? 'radio' : 'text',
-                        rightText: isLeaf ? '' : rightText,
-                        active: isLeaf ? false : true,
-                        radio: isLeaf ? (
-                            <Radio
-                                checked={tempSelectedCategory?.id === item.id}
-                                onValueChange={() => {
-                                    setTempSelectedCategory(item);
-                                }}
-                            />
-                        ) : undefined,
-                    };
-                }}
-                selectedId={tempSelectedCategory?.id}
+                headerVariant="text + icon"
+                title={currentParent?.name ?? 'Catégorie'}
+                canGoBack={categoryPath.length > 0}
+                onBack={handleBack}
+                onClose={() => setCategoryPath([])}
+                actions={
+                    <>
+                        <Button
+                            label="Réinitialiser"
+                            variant="outlined"
+                            size="large"
+                            fullWidth
+                            disabled={!tempSelectedCategory}
+                            onPress={() => {
+                                setTempSelectedCategory(null);
+                                setSelectedCategory(null);
+                            }}
+                        />
 
-                snapPoints={['50%']}
-                enableDynamicSizing={false}
-                topVariant='text + icon'
-                initialTitle='Catégorie'
-                iconPosition='right'
-                showButtons
-                buttons={[
-                    <Button key="réinitialiser" label="Réinitialiser" variant="outlined" disabled={tempSelectedCategory == null} size='large' fullWidth onPress={() => {
-                        setTempSelectedCategory(null);
-                        setSelectedCategory(null);
-                        categorySheetRef.current?.dismiss();
-                    }} />,
-                    <Button key="appliquer" label="Appliquer" variant="secondary" size='large' fullWidth onPress={() => {
-                        setSelectedCategory(tempSelectedCategory);
-                        categorySheetRef.current?.dismiss();
-                        // TODO : Appliquer la catégorie
-                    }} />,
-                ]}
-                onStackChange={(stack, path) => {
-                    setCategoryStack(stack);
-                    setCategoryPath(path);
-                }}
-            />
+                        <Button
+                            label="Appliquer"
+                            variant="secondary"
+                            size="large"
+                            fullWidth
+                            onPress={() => {
+                                setSelectedCategory(tempSelectedCategory);
+                                categorySheetRef.current?.dismiss();
+                            }}
+                        />
+                    </>
+                }
+            >
+                {visibleCategories.map((category) => {
+                    const hasChildren = categories.some(
+                        (item) => item.parentId === category.id,
+                    );
+
+                    return (
+                        <Table
+                            key={category.id}
+                            leftProps={{
+                                leftText: category.name,
+                            }}
+                            rightProps={
+                                hasChildren
+                                    ? {
+                                        variant: 'text',
+                                        active: true,
+                                        rightText: '',
+                                    }
+                                    : {
+                                        variant: 'radio',
+                                        radio: (
+                                            <Radio
+                                                checked={
+                                                    tempSelectedCategory?.id ===
+                                                    category.id
+                                                }
+                                                onValueChange={() =>
+                                                    setTempSelectedCategory(category)
+                                                }
+                                            />
+                                        ),
+                                    }
+                            }
+                            onPress={() => handleCategoryPress(category)}
+                        />
+                    );
+                })}
+            </BottomSheet>
+
+
 
             {/* Sheet de sélection d'état de l'article */}
-            <ModularBottomSheet
+            <BottomSheet
                 ref={productStateSheetRef}
-                data={productStates}
-                allData={productStates}
-                onClose={() => productStateSheetRef.current?.dismiss()}
-                onSelect={(item) => {
-                    setSelectedProductState(item);
-                    productStateSheetRef.current?.dismiss();
-                }}
-                renderRight={(item, selected) => ({
-                    variant: 'radio',
-                    radio: <Radio checked={selected} onValueChange={() => { }} />,
+                headerVariant="text + icon"
+                title={'État de l\'article'}
+                actions={
+                    <>
+                        <Button
+                            label="Réinitialiser"
+                            variant="outlined"
+                            size="large"
+                            fullWidth
+                            disabled={!selectedProductState}
+                            onPress={() => {
+                                setSelectedProductState(null);
+                            }}
+                        />
+
+                        <Button
+                            label="Appliquer"
+                            variant="secondary"
+                            size="large"
+                            fullWidth
+                            onPress={() => {
+                                productStateSheetRef.current?.dismiss();
+                            }}
+                        />
+                    </>
+                }
+            >
+                {productStates.map((state) => {
+                    return (
+                        <Table
+                            key={state.id}
+                            leftProps={{
+                                leftText: state.name,
+                            }}
+                            rightProps={
+                                {
+                                    variant: 'radio',
+                                    radio: (
+                                        <Radio
+                                            checked={
+                                                selectedProductState?.id ===
+                                                state.id
+                                            }
+                                            onValueChange={() =>
+                                                setSelectedProductState(state)
+                                            }
+                                        />
+                                    )
+                                }
+                            }
+                            onPress={() => setSelectedProductState(state)}
+                        />
+                    );
                 })}
-                snapPoints={[]}
-                topVariant='text + icon'
-                initialTitle="État de l'article"
-                icon={productStateStack.length > 1 ? <Arrowleft /> : <Close />}
-                iconPosition='right'
-                selectedId={selectedProductState?.id}
-            />
+            </BottomSheet>
+
+
 
             {/* Sheet de sélection de photos */}
-            <ModularBottomSheet
-                ref={addPhotoSheetRef}
-                data={[
-                    { id: 'camera', name: 'Prendre une photo', leftIcon: <Photo />, leftVariant: 'icon' },
-                    { id: 'library', name: 'Choisir une photo', leftIcon: <Image />, leftVariant: 'icon' },
-                ]}
-                allData={[]}
-                onSelect={(item) => {
-                    setSelectedPhotoType(item.id as 'camera' | 'library');
-                    addPhotoSheetRef.current?.dismiss();
-                    handleAddPhoto(item.id as 'camera' | 'library');
-                }}
-                renderRight={() => ({ variant: 'empty' })}
-                selectedId={selectedPhotoType}
-                snapPoints={['25%']}
-                topVariant='handle'
-                initialTitle=''
-                iconPosition='left'
-                onClose={() => {
-                    setSelectedPhotoType(null);
-                    addPhotoSheetRef.current?.dismiss();
-                }}
-            />
+            <BottomSheet
+                ref={photoSheetRef}
+                headerVariant="handle"
+            >
+                <Table
+                    leftProps={{
+                        leftText: 'Prendre une photo',
+                        icon: <Photo />,
+                        variant: 'icon',
+                    }}
+                    rightProps={{ variant: 'empty' }}
+                    onPress={() => {
+                        setSelectedPhotoType('camera');
+                        photoSheetRef.current?.dismiss();
+                        handleAddPhoto('camera');
+                    }}
+                />
+
+                <Table
+                    leftProps={{
+                        leftText: 'Choisir une photo',
+                        icon: <Image />,
+                        variant: 'icon',
+                    }}
+                    rightProps={{ variant: 'empty' }}
+                    onPress={() => {
+                        setSelectedPhotoType('library');
+                        photoSheetRef.current?.dismiss();
+                        handleAddPhoto('library');
+                    }}
+                />
+            </BottomSheet>
         </Flex>
     );
 }

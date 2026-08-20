@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { router, Stack } from 'expo-router';
+import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 import { useAuthStore } from '@/src/state/authStore';
 
-import Text from '#/Text';
+import CustomSafeAreaView from '#/CustomSafeAreaView';
 import Flex from '#/Flex';
-import TextField from '#/controls/TextField';
 import Button from '#/controls/Button';
+import TextField from '#/controls/TextField';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
 // [[[[[[[[[]]]]]]]]]
 // Icones
-import { Circle, Home, Search, Arrowleft, Arrowright } from '#/icons';
+// import { Circle, Home, Search, Arrowleft, Arrowright } from '#/icons';
 // [[[[[[[[[]]]]]]]]]
 
 import { useSnackbarStore } from '@/src/state/snackbarStore';
@@ -24,11 +24,10 @@ export default function SignInScreen() {
     const { addSnackbar } = useSnackbarStore();
 
     // Config de la top app bar
-    const topAppBarConfig = "_small";
     const canGoBack = router.canGoBack();
     const onBack = () => { canGoBack && router.back() };
 
-    const { left, center, right } = useTopAppBar(topAppBarConfig, {
+    const { left, center, right } = useTopAppBar("_medium", {
         canGoBack,
         onBack,
         label: 'Page de connexion',
@@ -75,53 +74,51 @@ export default function SignInScreen() {
     }
 
     return (
-        <Flex
-            style={[styles.container, {
-                backgroundColor: activeTheme.colors.surface.primary,
-                paddingTop: activeTheme.spacing._800,
-                paddingHorizontal: activeTheme.spacing._200,
-            }]}
-            justifyContent='space-between'
-        >
-            <Stack.Screen
-                options={{
-                    header: () => (
-                        <TopAppBar
-                            left={left}
-                            center={center}
-                            right={right}
-                        />
-                    ),
-                }}
+        <CustomSafeAreaView style={{ backgroundColor: activeTheme.colors.surface.secondary }}>
+            <TopAppBar
+                fullWidth
+                left={left}
+                center={center}
+                right={right}
             />
+            <Flex
+                style={[styles.container, {
+                    // backgroundColor: activeTheme.colors.surface.primary,
+                    paddingTop: activeTheme.spacing._800,
+                    paddingHorizontal: activeTheme.spacing._200,
+                }]}
+                justifyContent='space-between'
+            >
 
-            <Flex gap={activeTheme.spacing._200} alignItems='center' style={{ width: '100%' }}>
-                <Flex gap={activeTheme.spacing._200} style={{ width: '100%' }}>
-                    <TextField
-                        placeholder={'Pseudonyme ou adresse email'}
-                        value={email}
-                        onChangeText={(text) => setEmail(text)}
-                        autoCapitalize={'none'}
-                        keyboardType={'email-address'}
-                    />
-                    <TextField
-                        placeholder={'Mot de passe'}
-                        value={password}
-                        onChangeText={(text) => setPassword(text)}
-                        type='password'
-                        autoCapitalize={'none'}
-                    />
+                <Flex gap={activeTheme.spacing._200} alignItems='center' style={{ width: '100%' }}>
+                    <Flex gap={activeTheme.spacing._200} style={{ width: '100%' }}>
+                        <TextField
+                            placeholder={'Pseudonyme ou adresse email'}
+                            value={email}
+                            onChangeText={(text) => setEmail(text)}
+                            autoCapitalize={'none'}
+                            keyboardType={'email-address'}
+                        />
+                        <TextField
+                            placeholder={'Mot de passe'}
+                            value={password}
+                            onChangeText={(text) => setPassword(text)}
+                            type='password'
+                            autoCapitalize={'none'}
+                        />
+                    </Flex>
+
+                    <Flex gap={activeTheme.spacing._100} style={{ width: '100%' }}>
+                        <Button label="Connexion" variant='primary' size='large' disabled={loading} loading={loading} onPress={() => handleSignIn()} fullWidth />
+                    </Flex>
                 </Flex>
 
-                <Flex gap={activeTheme.spacing._100} style={{ width: '100%' }}>
-                    <Button label="Connexion" variant='primary' size='large' disabled={loading} loading={loading} onPress={() => handleSignIn()} fullWidth />
+                <Flex style={{ width: '100%', paddingVertical: activeTheme.spacing._200 }}>
+                    <Button label="Créer un nouveau compte" variant='outlined' size='large' onPress={() => router.replace('/sign-up')} fullWidth />
                 </Flex>
             </Flex>
 
-            <Flex style={{ width: '100%', paddingVertical: activeTheme.spacing._200 }}>
-                <Button label="Créer un nouveau compte" variant='outlined' size='large' onPress={() => router.replace('/sign-up')} fullWidth />
-            </Flex>
-        </Flex>
+        </CustomSafeAreaView>
 
     );
 }

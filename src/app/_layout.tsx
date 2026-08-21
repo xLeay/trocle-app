@@ -1,14 +1,13 @@
-import React, { useEffect } from 'react';
-import { Stack } from 'expo-router';
 import { useFonts } from 'expo-font';
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import React, { useEffect } from 'react';
 
-import { SafeAreaProvider, SafeAreaView, initialWindowMetrics } from 'react-native-safe-area-context';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { SystemBars } from 'react-native-edge-to-edge';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from "react-native-keyboard-controller";
-import { SystemBars } from 'react-native-edge-to-edge';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import { useThemeStore } from '@/src/state/themeStore';
@@ -60,10 +59,6 @@ function InnerApp() {
             <QueryClientProvider client={queryClient}>
                 <GestureHandlerRootView style={{ flex: 1 }}>
                     <KeyboardProvider>
-                        {/* <SafeAreaView
-                            style={{ flex: 1, backgroundColor: activeTheme.colors.surface.secondary }}
-                        > */}
-                        {/* <BottomSheetModalProvider> */}
                         <SystemBars style={theme === 'dark' ? 'light' : 'dark'} />
                         <Stack>
                             <Stack.Screen
@@ -83,8 +78,6 @@ function InnerApp() {
                             />
                         </Stack>
                         <Snackbar />
-                        {/* </BottomSheetModalProvider> */}
-                        {/* </SafeAreaView> */}
                     </KeyboardProvider>
                 </GestureHandlerRootView>
             </QueryClientProvider>

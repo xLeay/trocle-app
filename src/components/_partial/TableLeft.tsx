@@ -3,11 +3,10 @@ import React from 'react';
 import { ImageSourcePropType, StyleSheet } from 'react-native';
 
 // Composants
-import Text from '#/Text';
-import Flex from '#/Flex';
 import Avatar, { AvatarSize } from '#/display/Avatar';
 import HighlightedText from '#/display/HighlightedText';
-import { TextType } from '#/Text';
+import Flex from '#/Flex';
+import Text, { TextType } from '#/Text';
 
 // Icônes
 import { Certification, Circle } from '#/icons';
@@ -27,6 +26,7 @@ export interface TableLeftProps {
     certified?: boolean;
     certificationColor?: string;
     searchQuery?: string;
+    onAvatarPress?: () => void;
 }
 
 const TableLeft: React.FC<TableLeftProps> = ({
@@ -41,7 +41,8 @@ const TableLeft: React.FC<TableLeftProps> = ({
     read = true,
     certified = false,
     certificationColor,
-    searchQuery
+    searchQuery,
+    onAvatarPress
 }) => {
 
     const { activeTheme } = useTheme();
@@ -50,7 +51,7 @@ const TableLeft: React.FC<TableLeftProps> = ({
     const getVariantComponent = () => {
         switch (variant) {
             case 'avatar':
-                return <Avatar size={avatarSize} customImage={src} />;
+                return <Avatar size={avatarSize} customImage={src} onPress={onAvatarPress} />;
             case 'icon': {
                 if (icon === undefined) return <Circle size={24} color={iconColor} />;
                 if (!React.isValidElement(icon)) return icon;

@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { Link, Stack, router, useRoute } from 'expo-router';
+import React from 'react';
 import {
-    View,
-    StyleSheet,
     Pressable,
-    useWindowDimensions,
+    StyleSheet,
+    useWindowDimensions
 } from 'react-native';
 import Animated, {
     Extrapolation,
@@ -13,7 +13,6 @@ import Animated, {
     useAnimatedStyle,
     useSharedValue,
 } from 'react-native-reanimated';
-import { Stack, router, useRoute, Link } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
@@ -23,13 +22,13 @@ import CustomSafeAreaView from '#/CustomSafeAreaView';
 import Flex from '#/Flex';
 import Grid from '#/Grid';
 import Text from '#/Text';
-import TopAppBar from '#/display/TopAppBar/TopAppBar';
 import Button from '#/controls/Button';
-import ImageRatio, { RATIO_PRESETS } from '#/display/ImageRatio';
 import Avatar from '#/display/Avatar';
 import Divider from '#/display/Divider';
+import ImageRatio, { RATIO_PRESETS } from '#/display/ImageRatio';
+import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
-import { Share, Location, Calendar, Star0, Star05, Star1, Chevronright, Preferences, Plus, Plusvert, Trocoin } from '#/icons';
+import { Calendar, Chevronright, Heart, Location, Plus, Plusvert, Preferences, Share, Star0, Star05, Star1, Trocoin } from '#/icons';
 
 const avatarImage = require('@/assets/icon.png');
 
@@ -55,18 +54,21 @@ const ARTICLES = [
         title: 'Xbox 360',
         brand: 'Microsoft',
         trocValue: 5000,
+        isLiked: true,
     },
     {
         image: 'https://m.media-amazon.com/images/I/914DXSZgJ7L._AC_UF1000,1000_QL80_.jpg',
         title: 'PS Vita',
         brand: 'Sony',
         trocValue: 8000,
+        isLiked: false,
     },
     {
         image: 'https://m.media-amazon.com/images/I/61GcXE9lJ4L._AC_UF1000,1000_QL80_.jpg',
         title: 'Piano électrique petite taille',
         brand: 'Sans marque',
         trocValue: 7000,
+        isLiked: true,
     },
 ]
 
@@ -231,7 +233,7 @@ export default function Profile() {
                 contentContainerStyle={{ marginTop: BANNER_LIFT_PX }}
             >
                 {/* Infos du profil */}
-                <Flex fullWidth border>
+                <Flex fullWidth>
                     {/* Infos */}
                     <Flex gap={activeTheme.spacing._100} style={{ padding: activeTheme.spacing._200 }}>
                         {/* Top */}
@@ -389,8 +391,20 @@ export default function Profile() {
                             // Article
                             <Flex gap={activeTheme.spacing._50} key={article.title}>
                                 {/* Image */}
-                                <Flex fullWidth overflow='hidden' style={{ borderRadius: activeTheme.radius.default }}>
+                                <Flex fullWidth overflow='hidden' style={{ borderRadius: activeTheme.radius.default, position: 'relative' }}>
                                     <ImageRatio ratio='cover' source={article.image} />
+
+
+                                    {username !== connectedUser ? (
+                                        <Flex style={{ position: 'absolute', right: activeTheme.spacing._100, bottom: activeTheme.spacing._100, zIndex: 999 }}>
+                                            <Button
+                                                variant={article.isLiked ? 'gradient' : 'transparent'}
+                                                size='small'
+                                                icon={<Heart filled={article.isLiked} />}
+                                                onPress={() => alert('J\'aime')}
+                                            />
+                                        </Flex>
+                                    ) : null}
                                 </Flex>
 
                                 {/* Infos */}

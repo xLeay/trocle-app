@@ -1,6 +1,5 @@
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
-import { FlatList, StyleSheet } from 'react-native';
-import { router, useLocalSearchParams, Stack } from 'expo-router';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -11,15 +10,15 @@ import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
 import Flex from '#/Flex';
 import Text from '#/Text';
-import Button from '#/controls/Button';
-import TopAppBar from '#/display/TopAppBar/TopAppBar';
 import MessageBar from '#/bars/MessageBar';
-import MessageBubble from '#/display/MessageBubble';
-import ImageRatio from '#/display/ImageRatio';
-import Divider from '#/display/Divider';
+import Button from '#/controls/Button';
 import Avatar from '#/display/Avatar';
+import Divider from '#/display/Divider';
+import ImageRatio from '#/display/ImageRatio';
+import MessageBubble from '#/display/MessageBubble';
+import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
-import { Troc, Certification, Star0, Star05, Star1 } from '#/icons';
+import { Certification, Star1, Troc } from '#/icons';
 
 import { MOCK_CONVERSATIONS } from '@/src/mock/dms.mock';
 import { User } from '@/src/types/user';

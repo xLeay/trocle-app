@@ -2,7 +2,7 @@ import { useTheme } from '@/src/lib/hooks/useTheme';
 import { supabase } from '@/src/lib/supabase';
 import { useAuthStore } from '@/src/state/authStore';
 import { Redirect, Stack } from 'expo-router';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { AppState, } from 'react-native';
 
 export default function ProtectedLayout() {
@@ -37,7 +37,7 @@ export default function ProtectedLayout() {
 
     return (
         <Stack
-            screenOptions={{ headerShown: true, }}
+            screenOptions={{ headerShown: false, }}
         >
             <Stack.Screen
                 name="(drawer)"

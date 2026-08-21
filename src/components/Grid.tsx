@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import { View, ViewProps, ViewStyle, ScrollView, ScrollViewProps } from 'react-native';
+import { ScrollView, ScrollViewProps, View, ViewProps, ViewStyle } from 'react-native';
 
 interface GridProps extends ViewProps {
     style?: ViewStyle | ViewStyle[];
@@ -16,6 +16,7 @@ interface GridProps extends ViewProps {
     scroll?: boolean;
     scrollProps?: ScrollViewProps;
     overflow?: 'visible' | 'hidden';
+    fullWidth?: boolean;
 }
 
 const Grid = forwardRef<any, GridProps>(({
@@ -33,6 +34,7 @@ const Grid = forwardRef<any, GridProps>(({
     scroll = false,
     scrollProps = {},
     overflow = 'visible',
+    fullWidth = false,
     children,
     ...props
 }, ref) => {
@@ -48,6 +50,7 @@ const Grid = forwardRef<any, GridProps>(({
         overflow: overflow,
         borderColor: border ? borderColor : 'transparent',
         borderWidth: border ? borderWidth : 0,
+        ...(fullWidth && { width: '100%' }),
     };
 
     // Style pour le contenu de la grille
@@ -62,7 +65,7 @@ const Grid = forwardRef<any, GridProps>(({
         const gridRows = [];
 
         for (let i = 0; i < rows_count; i++) {
-            const rowItems = itemsArray.slice(i * columns, (i + 1) * columns);
+            const rowItems: (React.ReactNode)[] = itemsArray.slice(i * columns, (i + 1) * columns);
 
             // Si la dernière rangée n'est pas complète, ajouter des espaces vides
             while (rowItems.length < columns) {

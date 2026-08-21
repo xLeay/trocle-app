@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, View, ViewStyle } from 'react-native';
 import { useTheme } from '@/src/lib/hooks/useTheme';
+import { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, View, ViewStyle } from 'react-native';
 
 interface ProgressBarProps {
     progress: number; // de 0 à 1
@@ -37,9 +37,10 @@ const ProgressBar = ({
         outputRange: ['0%', '100%'],
     });
 
-    const outerColorx = outerColor ?? type === 'mono' ? activeTheme.colors.border.primary35 : activeTheme.colors.surface.divider;
-    const innerColorx = innerColor ?? type === 'mono' ? activeTheme.colors.surface.primary : activeTheme.colors.surface.brand;
-    
+    const outerColorx = outerColor ?? (type === 'mono' ? activeTheme.colors.border.primary35 : activeTheme.colors.surface.divider);
+    const innerColorx = innerColor ?? (type === 'mono' ? activeTheme.colors.surface.primary : activeTheme.colors.surface.brand);
+
+
     return (
         <View style={[styles.outerBar, { height, borderRadius: height / 2, backgroundColor: outerColorx }, style]}>
             <Animated.View
@@ -59,7 +60,8 @@ export default ProgressBar;
 
 const styles = StyleSheet.create({
     outerBar: {
-        width: '100%',
+        // width: '100%',
+        flex: 1,
         borderRadius: 50,
         overflow: 'hidden',
     },

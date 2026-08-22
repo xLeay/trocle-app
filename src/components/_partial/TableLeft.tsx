@@ -6,7 +6,7 @@ import { ImageSourcePropType, StyleSheet } from 'react-native';
 import Avatar, { AvatarSize } from '#/display/Avatar';
 import HighlightedText from '#/display/HighlightedText';
 import Flex from '#/Flex';
-import Text, { TextType } from '#/Text';
+import Text, { TextType, TextVariant } from '#/Text';
 
 // Icônes
 import { Certification, Circle } from '#/icons';
@@ -17,7 +17,10 @@ export interface TableLeftProps {
     variant?: LeftVariant;
     leftText?: string;
     leftTextType?: TextType;
+    leftTextVariant?: TextVariant;
     legendText?: string;
+    legendTextType?: TextType;
+    legendTextVariant?: TextVariant;
     numberOfLines?: number;
     icon?: React.ReactNode;
     src?: ImageSourcePropType | string;
@@ -26,14 +29,18 @@ export interface TableLeftProps {
     certified?: boolean;
     certificationColor?: string;
     searchQuery?: string;
+    keepIconColor?: boolean;
     onAvatarPress?: () => void;
 }
 
 const TableLeft: React.FC<TableLeftProps> = ({
     variant = 'empty',
     leftText = 'Texte',
-    leftTextType,
+    leftTextType = 'primary',
+    leftTextVariant = 'body_Large',
     legendText = '',
+    legendTextType = 'secondary',
+    legendTextVariant = 'body_Medium',
     numberOfLines,
     icon,
     src,
@@ -42,6 +49,7 @@ const TableLeft: React.FC<TableLeftProps> = ({
     certified = false,
     certificationColor,
     searchQuery,
+    keepIconColor = false,
     onAvatarPress
 }) => {
 
@@ -53,8 +61,10 @@ const TableLeft: React.FC<TableLeftProps> = ({
             case 'avatar':
                 return <Avatar size={avatarSize} customImage={src} onPress={onAvatarPress} />;
             case 'icon': {
+                if (icon == null) return null;
                 if (icon === undefined) return <Circle size={24} color={iconColor} />;
-                if (!React.isValidElement(icon)) return icon;
+                if (!React.isValidElement(icon)) return <Text>{icon}</Text>;
+                if (keepIconColor) return icon;
                 const typedIcon = icon as React.ReactElement<{ color?: string; fill?: string }>;
                 return React.cloneElement(typedIcon, {
                     color: typedIcon.props.color ?? iconColor,
@@ -69,34 +79,28 @@ const TableLeft: React.FC<TableLeftProps> = ({
     return (
         <Flex
             // border borderColor='purple' borderWidth={2} 
-            direction='row' gap={activeTheme.spacing._100} style={styles.container}>
+            direction='row' gap={activeTheme.spacing._100} style={styles.container}
+        >
             {getVariantComponent()}
 
             {leftText && (
                 <Flex
                     // border borderColor='red'
-                    style={styles.leftText}>
+                    style={styles.leftText}
+                >
                     <Flex direction='row'>
-                        {/* <Text
-                            variant="body_Large"
-                            weight={!read ? 'bold' : 'regular'}
-                            numberOfLines={numberOfLines}
-                        >
-                            {leftText}
-                        </Text> */}
-
                         {searchQuery ? (
                             <HighlightedText
                                 text={leftText}
                                 highlight={searchQuery ?? ''}
-                                variant="body_Large"
+                                variant={leftTextVariant}
                                 type={leftTextType}
                                 weight={!read ? 'bold' : 'regular'}
                                 numberOfLines={numberOfLines}
                             />
                         ) : (
                             <Text
-                                variant="body_Large"
+                                variant={leftTextVariant}
                                 type={leftTextType}
                                 weight={!read ? 'bold' : 'regular'}
                                 numberOfLines={numberOfLines}
@@ -107,35 +111,20 @@ const TableLeft: React.FC<TableLeftProps> = ({
                         {certified && <Certification filled size={24} color={certificationColor} />}
                     </Flex>
                     {legendText && (
-                        // <Text
-                        //     variant="body_Medium"
-                        //     type={!read ? 'primary' : 'secondary'}
-                        //     weight={!read ? 'bold' : 'regular'}
-                        //     numberOfLines={numberOfLines}
-                        // >
-                        //     {legendText}
-                        // </Text>
-                        // <HighlightedText
-                        //     text={legendText}
-                        //     highlight={searchQuery ?? ''}
-                        //     variant="body_Medium"
-                        //     weight={!read ? 'bold' : 'regular'}
-                        //     numberOfLines={numberOfLines}
-                        // />
-
                         <>
                             {searchQuery ? (
                                 <HighlightedText
                                     text={legendText}
                                     highlight={searchQuery ?? ''}
-                                    variant="body_Medium"
+                                    variant={legendTextVariant}
+                                    type={legendTextType}
                                     weight={!read ? 'bold' : 'regular'}
                                     numberOfLines={numberOfLines}
                                 />
                             ) : (
                                 <Text
-                                    variant="body_Medium"
-                                    type={!read ? 'primary' : 'secondary'}
+                                    variant={legendTextVariant}
+                                    type={read ? (legendTextType ?? 'secondary') : 'primary'}
                                     weight={!read ? 'bold' : 'regular'}
                                     numberOfLines={numberOfLines}
                                 >

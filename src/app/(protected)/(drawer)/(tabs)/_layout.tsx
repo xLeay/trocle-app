@@ -1,21 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
 import { Link, Tabs, useNavigation } from 'expo-router';
-import { useDrawerStatus, DrawerNavigationProp } from 'expo-router/drawer';
+import { DrawerNavigationProp, useDrawerStatus } from 'expo-router/drawer';
+import React, { useEffect, useState } from 'react';
+import { Pressable, StyleSheet } from 'react-native';
 import Animated, {
     Easing,
+    interpolateColor,
     useAnimatedStyle,
     useSharedValue,
     withTiming,
-    interpolateColor,
 } from 'react-native-reanimated';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
-import Flex from '#/Flex';
-import TopAppBar from '#/display/TopAppBar/TopAppBar';
 import Avatar from '#/display/Avatar';
+import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
 import { Bubble, Compass, Plus, Preferences, Troc } from '#/icons';
 
@@ -141,6 +140,7 @@ const HomeHeader = () => {
 
     return (
         <TopAppBar
+            hasSafeAreaTop={false}
             left={left}
             center={center}
             right={right}

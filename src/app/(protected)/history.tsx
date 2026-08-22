@@ -1,7 +1,7 @@
 import { FlashList } from '@shopify/flash-list';
-import { router } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, StyleSheet } from 'react-native';
+import { Alert, Pressable, StyleSheet } from 'react-native';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
@@ -20,80 +20,95 @@ import { Arrowleft, Close, Heart } from '#/icons';
 const MOCK_HISTORY = [
     {
         id: '1',
+        productId: '1',
         image: 'https://www.cdiscount.com/pdt2/8/0/1/1/700x700/aaaap45801/rw/console-xbox-360-blanche--3.jpg',
         isLiked: true,
         isUser: false
     },
     {
         id: '2',
+        productId: '2',
         image: 'https://images1.vinted.net/t/05_0188b_Pdri63RThMRyXVduoVEeR1TK/f800/1787319318.webp?s=2c71abc91cc2e16a08a0d57cc9ffb59cb9774c5b',
         isLiked: true,
         isUser: false
     },
     {
         id: '3',
+        productId: '3',
         image: 'https://m.media-amazon.com/images/I/61GcXE9lJ4L._AC_UF1000,1000_QL80_.jpg',
         isLiked: true,
         isUser: false
     },
     {
         id: '4',
+        username: 'rose',
         image: 'https://api.dicebear.com/10.x/dylan/svg?seed=rose',
         isUser: true
     },
     {
         id: '5',
+        username: 'flora',
         image: 'https://api.dicebear.com/10.x/dylan/svg?seed=flora',
         isUser: true
     },
     {
         id: '6',
+        username: 'amelia',
         image: 'https://api.dicebear.com/10.x/dylan/svg?seed=amelia',
         isUser: true
     },
     {
         id: '7',
+        username: 'chloe',
         image: 'https://api.dicebear.com/10.x/dylan/svg?seed=chloe',
         isUser: true
     },
     {
         id: '8',
+        username: 'emma',
         image: 'https://api.dicebear.com/10.x/dylan/svg?seed=emma',
         isUser: true
     },
     {
         id: '9',
+        username: 'mia',
         image: 'https://api.dicebear.com/10.x/dylan/svg?seed=mia',
         isUser: true
     },
     {
         id: '10',
+        username: 'olivia',
         image: 'https://api.dicebear.com/10.x/dylan/svg?seed=olivia',
         isUser: true
     },
     {
         id: '11',
+        username: 'ava',
         image: 'https://api.dicebear.com/10.x/dylan/svg?seed=ava',
         isUser: true
     },
     {
         id: '12',
+        username: 'isla',
         image: 'https://api.dicebear.com/10.x/dylan/svg?seed=isla',
         isUser: true
     },
     {
         id: '13',
+        username: 'lucy',
         image: 'https://api.dicebear.com/10.x/dylan/svg?seed=lucy',
         isUser: true
     },
     {
         id: '14',
+        username: 'lily',
         image: 'https://api.dicebear.com/10.x/dylan/svg?seed=lily',
         isUser: true
     },
     {
         id: '15',
-        image: 'https://api.dicebear.com/10.x/dylan/svg?seed=ava',
+        username: 'sophie',
+        image: 'https://api.dicebear.com/10.x/dylan/svg?seed=sophie',
         isUser: true
     },
 ]
@@ -167,25 +182,33 @@ export default function History() {
                                 marginBottom: activeTheme.spacing._200
                             }}
                         >
+
                             {/* Image */}
                             <Flex fullWidth overflow='hidden' style={{ borderRadius: activeTheme.radius.default, position: 'relative' }}>
                                 {item.isUser ? (
-                                    <Flex
-                                        border
-                                        borderColor={activeTheme.colors.border.primary}
-                                        borderWidth={2}
-                                        fullWidth
-                                        alignItems='center'
-                                        justifyContent='center'
-                                        style={{ aspectRatio: RATIO_PRESETS.cover, borderRadius: activeTheme.radius.default }}
-                                    >
-                                        <Avatar
-                                            size='enormous'
-                                            customImage={item.image}
-                                        />
-                                    </Flex>
+                                    <Pressable
+                                        onPress={() => router.push(`/(protected)/user/${item.username}`)}
+                                        style={({ pressed }) => ({ backgroundColor: pressed ? activeTheme.colors.surface.neutralLight : 'transparent' })}>
+                                        <Flex
+                                            border
+                                            borderColor={activeTheme.colors.border.primary}
+                                            borderWidth={2}
+                                            fullWidth
+                                            alignItems='center'
+                                            justifyContent='center'
+                                            style={{ aspectRatio: RATIO_PRESETS.cover, borderRadius: activeTheme.radius.default }}
+                                        >
+                                            <Avatar
+                                                size='enormous'
+                                                customImage={item.image}
+                                                touchable={false}
+                                            />
+                                        </Flex>
+                                    </Pressable>
                                 ) : (
-                                    <ImageRatio ratio='cover' source={item.image} />
+                                    <Link href={`/(protected)/product/${item.productId}`} asChild>
+                                        <ImageRatio ratio='cover' source={item.image} />
+                                    </Link>
                                 )}
                                 <Flex style={{ position: 'absolute', right: activeTheme.spacing._100, top: activeTheme.spacing._100, zIndex: 999 }}>
                                     <Button

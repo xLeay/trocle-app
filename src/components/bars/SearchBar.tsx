@@ -1,6 +1,6 @@
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import React, { useRef } from 'react';
-import { Pressable, TextInput as RNTextInput, StyleSheet } from 'react-native';
+import { Pressable, TextInput as RNTextInput, StyleSheet, ViewStyle } from 'react-native';
 
 // Composants
 import Button from '#/controls/Button';
@@ -18,6 +18,7 @@ interface SearchBarProps {
     disabled?: boolean;
     onFocus?: () => void;
     onBlur?: () => void;
+    style?: ViewStyle;
 }
 
 const SearchBar = ({
@@ -27,6 +28,7 @@ const SearchBar = ({
     disabled = false,
     onFocus,
     onBlur,
+    style = {}
 }: SearchBarProps) => {
     const { activeTheme } = useTheme();
     const inputRef = useRef<RNTextInput>(null);
@@ -67,8 +69,8 @@ const SearchBar = ({
         : activeTheme.colors.text.placeholder;
 
     return (
-        <Flex direction='row' gap={0} style={[styles.container]}>
-            <Pressable style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}
+        <Flex direction='row' gap={0} style={[styles.container, style]}>
+            <Pressable style={{ flex: 1, flexDirection: 'row', alignItems: 'center', height: '100%' }}
                 onPress={() => {
                     if (inputRef.current) {
                         inputRef.current.focus();
@@ -85,7 +87,7 @@ const SearchBar = ({
                             value={value}
                             onChangeText={onChangeText}
                             style={[styles.input]}
-                            containerStyle={{ flex: 1 }}
+                            containerStyle={{ flex: 1, }}
                             onFocus={handleFocus}
                             onBlur={handleBlur}
                             editable={!disabled}
@@ -118,7 +120,8 @@ export default SearchBar;
 const styles = StyleSheet.create({
     container: {
         height: 45,
-        flex: 1,
+        width: "100%",
+        // flex: 1,
         alignContent: 'center',
     },
     inputContainer: {
@@ -133,5 +136,6 @@ const styles = StyleSheet.create({
     },
     input: {
         // flex: 1,
+        // height: '100%'
     },
 });

@@ -60,8 +60,7 @@ export default ProgressBar;
 
 const styles = StyleSheet.create({
     outerBar: {
-        // width: '100%',
-        flex: 1,
+        width: '100%',
         borderRadius: 50,
         overflow: 'hidden',
     },

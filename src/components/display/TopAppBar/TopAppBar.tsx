@@ -1,6 +1,7 @@
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import React from 'react';
-import { StyleSheet, View, ViewStyle, Pressable } from 'react-native';
+import { Pressable, StyleSheet, ViewStyle } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Composants
 import Flex from '#/Flex';
@@ -17,6 +18,7 @@ interface TopAppBarProps {
     borderWidth?: number;
     fullWidth?: boolean;
     zIndex?: number;
+    hasSafeAreaTop?: boolean;
     onPress?: () => void;
 }
 
@@ -32,10 +34,12 @@ const TopAppBar = ({
     borderWidth = 1,
     fullWidth = false,
     zIndex = 100,
+    hasSafeAreaTop = true,
     onPress,
 }: TopAppBarProps) => {
 
     const { activeTheme } = useTheme();
+    const insets = useSafeAreaInsets();
 
     const getNotNullStyles = (element: React.ReactNode = null) => {
         return element ? styles.isNotNull : styles.isNull;
@@ -47,15 +51,26 @@ const TopAppBar = ({
 
     return (
         <Pressable onPress={onPress} style={{ zIndex, ...(border ? { borderColor, borderWidth } : {}) }}>
+
+            {hasSafeAreaTop ? (
+                <Flex style={{
+                    paddingTop: insets.top,
+                    backgroundColor: backgroundTransparent ? 'transparent' : activeTheme.colors.surface.secondary,
+                }}
+                />
+            ) : null}
+
             <Flex
                 direction='row'
                 justifyContent="space-between"
                 alignItems="center"
                 fullWidth={fullWidth}
-                style={[styles.container, backgroundTransparent ?
-                    {} : { backgroundColor: activeTheme.colors.surface.secondary }, style || {}]}
+                style={[
+                    styles.container,
+                    backgroundTransparent ? {} : { backgroundColor: activeTheme.colors.surface.secondary },
+                    style || {}
+                ]}
             >
-                {/* <View style={[styles.topBar, styles.topBarLeft, { flex: left ? 1 : 0 }]}> */}
                 <Flex style={[styles.topBar, styles.topBarLeft, leftStyles]}>
                     {left}
                 </Flex>

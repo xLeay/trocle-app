@@ -1,4 +1,4 @@
-import { Stack, router } from 'expo-router';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -55,6 +55,7 @@ export default function Tab() {
             >
                 <Flex fullWidth direction='row' justifyContent='flex-start' style={{ flex: 1 }}>
                     <TopAppBar
+                        hasSafeAreaTop={false}
                         fullWidth
                         left={left}
                         center={center}

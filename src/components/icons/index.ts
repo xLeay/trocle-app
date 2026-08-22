@@ -3,10 +3,8 @@ export { default as Accessibility } from './AccessibilityRounded';
 export { default as Ad } from './AdRounded';
 export { default as Alert2 } from './Alert2Rounded';
 export { default as Alert } from './AlertRounded';
-export { default as Android } from './AndroidRounded';
 export { default as Animation } from './AnimationRounded';
 export { default as Appearance } from './AppearanceRounded';
-export { default as Apple } from './AppleRounded';
 export { default as Arrowbottom } from './ArrowbottomRounded';
 export { default as Arrowleft } from './ArrowleftRounded';
 export { default as Arrowright } from './ArrowrightRounded';
@@ -142,3 +140,15 @@ export { default as Undo } from './UndoRounded';
 export { default as Unfollow } from './UnfollowRounded';
 export { default as Upload } from './UploadRounded';
 export { default as Wallet } from './WalletRounded';
+
+// Marques
+export { default as Android } from './brand/Android';
+export { default as Apple } from './brand/Apple';
+export { default as Facebook } from './brand/Facebook';
+export { default as Google } from './brand/Google';
+export { default as Instagram } from './brand/Instagram';
+export { default as MondialRelay } from './brand/MondialRelay';
+export { default as TikTok } from './brand/Tiktok';
+export { default as TwitterX } from './brand/TwitterX';
+export { default as UPS } from './brand/UPS';
+

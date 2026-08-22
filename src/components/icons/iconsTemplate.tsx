@@ -1,7 +1,7 @@
 
 import React, { useMemo } from 'react';
 import type { ColorValue } from 'react-native';
-import Svg, { Path, Defs, LinearGradient, Stop } from 'react-native-svg';
+import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';
 
 interface GradientProps {
     colors: string[]; // Liste des couleurs du dégradé
@@ -13,6 +13,12 @@ interface IconProps {
     color?: ColorValue;
     filled?: boolean;
     gradient?: GradientProps;
+    style?: object;
+}
+
+export interface BrandIconProps {
+    size?: number;
+    color?: ColorValue; // Si fourni, remplace la couleur/fill par défaut
     style?: object;
 }
 
@@ -117,4 +123,26 @@ export function createMultiPathSVG({
     };
 
     return React.memo(MultiPathSVG);
+}
+
+// Fonction pour les logos de marque
+export function createBrandSVG({
+    viewBox = '0 0 24 24',
+    renderContent,
+}: {
+    viewBox?: string;
+    renderContent: (color?: ColorValue) => React.ReactNode;
+}) {
+    const BrandSVG: React.FC<BrandIconProps> = ({
+        size = 24,
+        color,
+        style,
+    }) => {
+        return (
+            <Svg width={size} height={size} viewBox={viewBox} fill="none" style={style}>
+                {renderContent(color)}
+            </Svg>
+        );
+    };
+    return React.memo(BrandSVG);
 }

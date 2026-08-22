@@ -55,6 +55,10 @@ export default function ProtectedLayout() {
                 name="chat/[id]"
                 options={{ headerShown: false, }}
             />
+            <Stack.Screen
+                name="settings"
+                options={{ headerShown: false, }}
+            />
         </Stack>
     );
 }

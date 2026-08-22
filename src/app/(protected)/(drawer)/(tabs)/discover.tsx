@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
 import { Stack } from 'expo-router';
+import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
@@ -22,7 +22,7 @@ export default function Tab() {
             <Stack.Screen
                 options={{
                     title: 'Discover',
-                    header: () => <TopAppBar left={left} center={center} right={right} />,
+                    header: () => <TopAppBar hasSafeAreaTop={false} left={left} center={center} right={right} />,
                 }}
             />
             {/* <Feed /> */}

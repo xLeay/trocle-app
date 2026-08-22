@@ -23,7 +23,7 @@ const Flex = forwardRef<any, Props>(({
     gap = 0,
     direction = 'column',
     justifyContent = 'flex-start',
-    alignItems = 'flex-start',
+    alignItems = "flex-start",
     border = false,
     borderColor = '#000',
     borderWidth = 1,
@@ -51,9 +51,7 @@ const Flex = forwardRef<any, Props>(({
         ...(fullWidth && { width: '100%' }),
     };
 
-
     if (scroll) {
-
         return (
             <ScrollView
                 ref={ref}
@@ -72,7 +70,9 @@ const Flex = forwardRef<any, Props>(({
     }
 
     return (
-        <View ref={ref} style={[viewStyle, baseContentStyle, style]} {...props}>{children}</View>
+        <View ref={ref} style={[viewStyle, baseContentStyle, style]} {...props}>
+            {children}
+        </View>
     );
 });
 

@@ -109,8 +109,8 @@ export default function Tab() {
                         }}
                     />
 
-                    <Flex pointerEvents="box-none" gap={activeTheme.spacing._100} style={{ width: '100%', padding: activeTheme.spacing._200 }}>
-                        <Flex direction='row' gap={activeTheme.spacing._100} style={{ width: '100%' }}>
+                    <Flex fullWidth pointerEvents="box-none" gap={activeTheme.spacing._100} style={{ padding: activeTheme.spacing._200 }}>
+                        <Flex fullWidth direction='row' gap={activeTheme.spacing._100}>
                             {imagesList.map((_, index) => {
                                 let value = 0;
                                 if (index < currentIndex) value = 1;
@@ -121,7 +121,6 @@ export default function Tab() {
                                             type='mono'
                                             progress={value}
                                             isActive={index === currentIndex}
-                                            style={{ width: '100%' }}
                                         />
                                     </Flex>
                                 );

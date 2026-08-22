@@ -1,22 +1,21 @@
+import { Href, Link, router } from 'expo-router';
+import { Drawer, DrawerContentScrollView, useDrawerStatus } from 'expo-router/drawer';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { router, Link, Href } from 'expo-router';
-import { Drawer, DrawerContentScrollView, useDrawerStatus } from 'expo-router/drawer';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Animated, { FadeInRight, Easing } from 'react-native-reanimated';
+import Animated, { Easing, FadeInRight } from 'react-native-reanimated';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
 
 import CustomSafeAreaView from '#/CustomSafeAreaView';
 
-import Text from '#/Text';
 import Flex from '#/Flex';
+import Text from '#/Text';
 import Avatar from '#/display/Avatar';
-import Table from '#/display/Table';
 import Divider from '#/display/Divider';
+import Table from '#/display/Table';
 import Fade from '#/miscellaneous/Fade';
 
-import { Profile, Subscription, Heart, Star0, Troc, History, Assistance, Settings, Sun, Moon } from '#/icons';
+import { Assistance, Heart, History, Moon, Profile, Settings, Star0, Subscription, Sun, Troc } from '#/icons';
 
 
 type DrawerItemProps = {
@@ -177,7 +176,7 @@ const DrawerContent = React.memo(() => {
                 </Flex>
 
                 <Flex style={styles.container}>
-                    <Flex scroll gap={8} style={styles.scrollContainer}>
+                    <Flex scroll gap={activeTheme.spacing._100} style={styles.scrollContainer}>
                         <Flex style={styles.tableContainer}>
                             {mainItems.map((item) => (
                                 <DrawerItem
@@ -229,7 +228,7 @@ export default function Layout() {
     const { activeTheme } = useTheme();
 
     return (
-        <CustomSafeAreaView style={{ backgroundColor: activeTheme.colors.surface.secondary }}>
+        <CustomSafeAreaView edges={['bottom', 'left', 'right', 'top']} style={{ backgroundColor: activeTheme.colors.surface.secondary }}>
             {/* <GestureHandlerRootView style={{ flex: 1 }}> */}
             <Drawer
                 defaultStatus="closed"

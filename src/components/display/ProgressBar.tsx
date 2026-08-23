@@ -1,55 +1,73 @@
 import { useTheme } from '@/src/lib/hooks/useTheme';
-import { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+import Animated, {
+    SharedValue,
+    useAnimatedStyle,
+} from 'react-native-reanimated';
 
 interface ProgressBarProps {
-    progress: number; // de 0 à 1
+    progress?: number;
+    animatedProgress?: SharedValue<number>;
     type?: 'primary' | 'mono';
     height?: number;
     innerColor?: string;
     outerColor?: string;
     style?: ViewStyle;
-    isActive?: boolean;
 }
 
 const ProgressBar = ({
     progress = 0,
+    animatedProgress,
     type = 'primary',
     height = 4,
     innerColor,
     outerColor,
     style,
-    isActive = false,
 }: ProgressBarProps) => {
     const { activeTheme } = useTheme();
-    const animatedWidth = useRef(new Animated.Value(0)).current;
 
-    useEffect(() => {
-        Animated.timing(animatedWidth, {
-            toValue: progress,
-            duration: 50,
-            useNativeDriver: false,
-        }).start();
-    }, [progress]);
+    const animatedStyle = useAnimatedStyle(() => {
+        const value = animatedProgress?.value ?? progress;
+        const clampedValue = Math.min(Math.max(value, 0), 1);
 
-    const widthInterpolated = animatedWidth.interpolate({
-        inputRange: [0, 1],
-        outputRange: ['0%', '100%'],
-    });
+        return {
+            width: `${clampedValue * 100}%`,
+        };
+    }, [progress, animatedProgress]);
 
-    const outerColorx = outerColor ?? (type === 'mono' ? activeTheme.colors.border.primary35 : activeTheme.colors.surface.divider);
-    const innerColorx = innerColor ?? (type === 'mono' ? activeTheme.colors.surface.primary : activeTheme.colors.surface.brand);
+    const resolvedOuterColor =
+        outerColor ??
+        (type === 'mono'
+            ? activeTheme.colors.border.primary35
+            : activeTheme.colors.surface.divider);
 
+    const resolvedInnerColor =
+        innerColor ??
+        (type === 'mono'
+            ? activeTheme.colors.surface.primary
+            : activeTheme.colors.surface.brand);
 
     return (
-        <View style={[styles.outerBar, { height, borderRadius: height / 2, backgroundColor: outerColorx }, style]}>
-            <Animated.View
-                style={[styles.innerBar,
+        <View
+            style={[
+                styles.outerBar,
                 {
                     height,
-                    backgroundColor: innerColorx,
-                    width: widthInterpolated,
+                    borderRadius: height / 2,
+                    backgroundColor: resolvedOuterColor,
                 },
+                style,
+            ]}
+        >
+            <Animated.View
+                style={[
+                    styles.innerBar,
+                    {
+                        height,
+                        borderRadius: height / 2,
+                        backgroundColor: resolvedInnerColor,
+                    },
+                    animatedStyle,
                 ]}
             />
         </View>
@@ -61,10 +79,9 @@ export default ProgressBar;
 const styles = StyleSheet.create({
     outerBar: {
         width: '100%',
-        borderRadius: 50,
         overflow: 'hidden',
     },
     innerBar: {
-        borderRadius: 50,
+        width: 0,
     },
 });

@@ -1,4 +1,4 @@
-import React, { act, forwardRef, useState } from 'react';
+import React, { forwardRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, {
     interpolateColor,
@@ -10,7 +10,7 @@ import Animated, {
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
 
-import { Close, Heart, Refresh, Troclike, Trocpass, Trocreroll } from '#/icons';
+import { Troclike, Trocpass, Trocreroll } from '#/icons';
 
 export type ButtonType = 'pass' | 'like' | 'reroll';
 export type ButtonColor = 'mono' | 'default';
@@ -38,15 +38,15 @@ const ButtonTroc = forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>
     const handlePressIn = () => {
         if (!disabled) {
             setIsPressed(true);
-            pressedValue.value = withTiming(1, { duration: 250 });
-            scale.value = withSpring(0.985, { stiffness: 800 });
+            pressedValue.value = withTiming(1, { duration: 150 });
+            scale.value = withSpring(0.98, { stiffness: 800 });
         }
     };
 
     const handlePressOut = () => {
         if (!disabled) {
             setIsPressed(false);
-            pressedValue.value = withTiming(0, { duration: 250 });
+            pressedValue.value = withTiming(0, { duration: 150 });
             scale.value = withSpring(1, { stiffness: 800 });
         }
     };

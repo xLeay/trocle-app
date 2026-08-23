@@ -58,8 +58,18 @@ const Flex = forwardRef<any, Props>(({
                 horizontal={direction === 'row'}
                 showsHorizontalScrollIndicator={false}
                 showsVerticalScrollIndicator={true}
-                style={[viewStyle, style]}
-                contentContainerStyle={baseContentStyle}
+                style={[
+                    viewStyle,
+                    direction === 'row' && {
+                        flexGrow: 0,
+                        flexShrink: 0,
+                    },
+                    style,
+                ]}
+                contentContainerStyle={[
+                    baseContentStyle,
+                    scrollProps.contentContainerStyle,
+                ]}
                 overScrollMode='never'
                 bounces={true}
                 {...scrollProps}

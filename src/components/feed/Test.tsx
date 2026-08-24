@@ -1,4 +1,5 @@
 import { FlashList } from '@shopify/flash-list';
+import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
 
@@ -75,6 +76,7 @@ export default function Feed() {
                                 item={product}
                                 liked={!!likedPosts[product.id]}
                                 onToggleLike={() => toggleLike(product.id)}
+                                onPressProduct={() => router.push(`/product/${product.id}`)}
                             />
                         ))}
                     </Flex>
@@ -147,6 +149,7 @@ export default function Feed() {
     };
 
     const [selectedFilters, setSelectedFilters] = useState<Record<FilterKey, FilterId[]>>(EMPTY_FILTERS);
+    const [tempSelectedFilters, setTempSelectedFilters] = useState<Record<FilterKey, FilterId[]>>(EMPTY_FILTERS);
     const [filterPage, setFilterPage] = useState<FilterKey | null>(null);
 
     const currentSection = FILTER_SECTIONS.find(
@@ -160,7 +163,7 @@ export default function Feed() {
         id: FilterId,
         multiple: boolean,
     ) => {
-        setSelectedFilters((previous) => {
+        setTempSelectedFilters((previous) => {
             const values = previous[key];
             const alreadySelected = values.includes(id);
 
@@ -178,11 +181,19 @@ export default function Feed() {
     };
 
     const openFilterPage = (key: FilterKey) => {
+        setTempSelectedFilters(selectedFilters);
         setFilterPage(key);
         filterSheetRef.current?.present();
     };
 
 
+    const handleNewFilters = () => {
+        console.log('handleNewFilters', tempSelectedFilters);
+        // TODO: On update le feed avec les nouveaux filtres et on scroll en haut
+        setSelectedFilters(tempSelectedFilters)
+        listRef.current?.scrollToOffset({ offset: 0, animated: true });
+        filterSheetRef.current?.dismiss();
+    }
 
 
 
@@ -233,13 +244,13 @@ export default function Feed() {
                     }}
                 />
                 {FILTER_SECTIONS
-                    .filter((section) => selectedFilters[section.key].length > 0)
+                    .filter((section) => selectedCount > 0)
                     .map((section) => (
                         <Chip
                             key={section.key}
                             chipStyle="mono"
                             label={section.title}
-                            selected
+                            selected={selectedFilters[section.key].length > 0}
                             iconPosition="right"
                             icon={<Chevronbottom />}
                             onPress={() => openFilterPage(section.key)}
@@ -247,6 +258,10 @@ export default function Feed() {
                     ))}
             </Flex>
             <FlashList
+                refreshing={isFetchingNextPage}
+                onRefresh={() => {
+                    fetchNextPage();
+                }}
                 ref={listRef}
                 data={feedData}
                 renderItem={renderItem}
@@ -289,7 +304,7 @@ export default function Feed() {
                             fullWidth
                             disabled={!selectedCount}
                             onPress={() => {
-                                setSelectedFilters(EMPTY_FILTERS)
+                                setTempSelectedFilters(EMPTY_FILTERS)
                             }}
                         />
 
@@ -299,7 +314,7 @@ export default function Feed() {
                             size="large"
                             fullWidth
                             onPress={() => {
-                                filterSheetRef.current?.dismiss();
+                                handleNewFilters();
                             }}
                         />
                     </>
@@ -307,7 +322,7 @@ export default function Feed() {
             >
                 {currentSection ? (
                     currentSection.options.map((option) => {
-                        const checked = selectedFilters[currentSection.key].includes(option.id);
+                        const checked = tempSelectedFilters[currentSection.key].includes(option.id);
 
                         return (
                             <Table
@@ -372,7 +387,7 @@ export default function Feed() {
                     })
                 ) : (
                     FILTER_SECTIONS.map((section) => {
-                        const selectedIds = selectedFilters[section.key] ?? [];
+                        const selectedIds = tempSelectedFilters[section.key] ?? [];
                         const count = selectedIds.length;
 
                         const selectedOption = section.options.find(

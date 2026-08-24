@@ -1,5 +1,5 @@
-import React, { act } from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
+import React from 'react';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
 
@@ -30,14 +30,14 @@ const ImagePagination: React.FC<ImagePaginationProps> = ({
 
     activeColor = activeColor || activeTheme.colors.surface.primary;
     inactiveColor = inactiveColor || activeTheme.colors.surface.field;
-    
+
     if (total <= 1) return null;
 
     if (type === 'text') {
         return (
-            <View style={[styles.textBox, { 
-                backgroundColor: activeTheme.colors.surface.transparent, 
-                paddingHorizontal: activeTheme.spacing._100, 
+            <View style={[styles.textBox, {
+                backgroundColor: activeTheme.colors.surface.transparent,
+                paddingHorizontal: activeTheme.spacing._100,
                 paddingVertical: activeTheme.spacing._50,
                 borderRadius: activeTheme.radius.default,
             }, textBoxStyle]}>
@@ -56,7 +56,7 @@ const ImagePagination: React.FC<ImagePaginationProps> = ({
                         height: dotSize,
                         borderRadius: dotSize / 2,
                         backgroundColor: currentIndex === index ? activeColor : inactiveColor,
-                        boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.25)',
+                        boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.2)',
                     }}
                 />
             ))}
@@ -67,12 +67,12 @@ const ImagePagination: React.FC<ImagePaginationProps> = ({
 const styles = StyleSheet.create({
     dotContainer: {
         flexDirection: 'row',
-        gap: 5,
+        gap: 6,
         justifyContent: 'center',
         alignItems: 'center',
     },
     textBox: {
-        alignSelf: 'center',
+        // alignSelf: 'center',
     },
 });
 

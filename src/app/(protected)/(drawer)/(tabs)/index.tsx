@@ -1,8 +1,5 @@
 import { useCallback } from 'react';
-import {
-    StyleSheet,
-    useWindowDimensions,
-} from 'react-native';
+import { StyleSheet, useWindowDimensions } from 'react-native';
 
 import Flex from '#/Flex';
 import Text from '#/Text';
@@ -15,6 +12,7 @@ import {
     CardLayer,
     SwipeAction,
 } from '@/src/features/home/deck/deck.config';
+
 import { useProductDeck } from '@/src/features/home/deck/useProductDeck';
 import { useTheme } from '@/src/lib/hooks/useTheme';
 

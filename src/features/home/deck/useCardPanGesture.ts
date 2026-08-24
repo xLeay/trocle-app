@@ -20,13 +20,14 @@ import {
     SwipeAction,
     WIDTH_MULTIPLIER,
 } from './deck.config';
-import { CardMotion } from './useCardMotion';
+// import { CardMotion } from './useCardMotion';
 
 interface UseCardPanGestureParams {
     layer: CardLayer;
     enabled: boolean;
     screenWidth: number;
-    motion: CardMotion;
+    // motion: CardMotion;
+    translateX: SharedValue<number>;
     nextCardScale: SharedValue<number>;
     imageProgress: SharedValue<number>;
     isCardExiting: SharedValue<boolean>;
@@ -41,7 +42,8 @@ export const useCardPanGesture = ({
     layer,
     enabled,
     screenWidth,
-    motion,
+    // motion,
+    translateX,
     nextCardScale,
     imageProgress,
     isCardExiting,
@@ -68,7 +70,8 @@ export const useCardPanGesture = ({
                         return;
                     }
 
-                    motion.translateX.value = event.translationX;
+                    // motion.translateX.value = event.translationX;
+                    translateX.value = event.translationX;
 
                     const swipeProgress = interpolate(
                         Math.abs(event.translationX),
@@ -105,7 +108,8 @@ export const useCardPanGesture = ({
                         isVelocitySwipe || isDistanceSwipe;
 
                     if (!didSwipe) {
-                        motion.translateX.value = withSpring(0);
+                        // motion.translateX.value = withSpring(0);
+                        translateX.value = withSpring(0);
 
                         nextCardScale.value = withSpring(
                             NEXT_CARD_SCALE
@@ -132,7 +136,8 @@ export const useCardPanGesture = ({
                         duration: SCALE_DURATION,
                     });
 
-                    motion.translateX.value = withTiming(
+                    // motion.translateX.value = withTiming(
+                    translateX.value = withTiming(
                         exitPosition,
                         { duration: SWIPE_DURATION },
                         finished => {
@@ -156,7 +161,8 @@ export const useCardPanGesture = ({
             layer,
             enabled,
             screenWidth,
-            motion,
+            // motion,
+            translateX,
             nextCardScale,
             imageProgress,
             isCardExiting,

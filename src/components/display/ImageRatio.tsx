@@ -3,11 +3,12 @@ import React, { useCallback, useState } from "react";
 import {
     ActivityIndicator,
     LayoutChangeEvent,
-    Pressable,
     StyleSheet,
-    View,
+    View
 } from "react-native";
 import Animated from "react-native-reanimated";
+
+import PressableOverlay from "#/controls/PressableOverlay";
 
 type RatioName =
     | "cover"
@@ -53,6 +54,8 @@ type ImageRatioProps = {
     animatedProps?: AnimatedImageProps["animatedProps"];
 
     onPress?: () => void;
+    onPressIn?: () => void;
+    onPressOut?: () => void;
 } & Omit<ImageProps, "style">;
 
 const ImageRatio = ({
@@ -62,6 +65,8 @@ const ImageRatio = ({
     animatedStyle,
     animatedProps,
     onPress,
+    onPressIn,
+    onPressOut,
     ...props
 }: ImageRatioProps) => {
     const [width, setWidth] = useState<number | null>(null);
@@ -83,21 +88,21 @@ const ImageRatio = ({
         <View style={styles.container} onLayout={onLayout}>
             {width !== null ? (
                 isAnimated ? (
-                    <Pressable onPress={onPress}>
+                    <PressableOverlay onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut}>
                         <AnimatedImage
                             {...props}
                             animatedProps={animatedProps}
                             style={[imageStyle, animatedStyle]}
                         />
-                    </Pressable>
+                    </PressableOverlay>
                 ) : (
-                    <Pressable onPress={onPress}>
+                    <PressableOverlay onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut}>
                         <Image
                             {...props}
                             transition={transition}
                             style={imageStyle}
                         />
-                    </Pressable>
+                    </PressableOverlay>
                 )
             ) : (
                 <ActivityIndicator />

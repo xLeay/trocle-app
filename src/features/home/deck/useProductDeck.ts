@@ -184,7 +184,8 @@ export const useProductDeck = ({
             state.frontLayer === 'a' &&
             products.length > 0,
         screenWidth,
-        motion: cardA,
+        // motion: cardA,
+        translateX: cardA.translateX,
         nextCardScale: cardB.scale,
         imageProgress: carousel.progress,
         isCardExiting,
@@ -198,7 +199,8 @@ export const useProductDeck = ({
             state.frontLayer === 'b' &&
             products.length > 0,
         screenWidth,
-        motion: cardB,
+        // motion: cardB,
+        translateX: cardB.translateX,
         nextCardScale: cardA.scale,
         imageProgress: carousel.progress,
         isCardExiting,

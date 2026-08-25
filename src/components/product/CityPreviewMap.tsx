@@ -163,7 +163,6 @@ export const CityPreviewMap: React.FC<CityPreviewMapProps> = ({
 const styles = StyleSheet.create({
     container: {
         width: '100%',
-        borderRadius: 16,
         overflow: 'hidden',
     },
     loadingContainer: {
@@ -171,6 +170,5 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#F2F2F7',
-        borderRadius: 16,
     },
 });

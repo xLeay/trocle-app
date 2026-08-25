@@ -18,7 +18,7 @@ import Button from '#/controls/Button';
 import Table from '#/display/Table';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
-import { Arrowleft, Instagram, Openinnew, Plus, Remove, TikTok, TwitterX } from '#/icons';
+import { Arrowleft, Arrowright, Instagram, Openinnew, Plus, Remove, Thumbup, TikTok, TwitterX } from '#/icons';
 
 
 const FAQ_ITEMS = [
@@ -78,6 +78,23 @@ export default function HelpCenter() {
 
             {/* Sections */}
             <Flex scroll fullWidth style={styles.container} gap={activeTheme.spacing._200}>
+                {/* Donner son avis*/}
+                <Flex fullWidth gap={activeTheme.spacing._200} style={{ paddingHorizontal: activeTheme.spacing._200, paddingBottom: activeTheme.spacing._100 }}>
+                    <Text variant='title_Medium' type='primary'>Tu veux donner ton avis ?</Text>
+                    <Table
+                        leftProps={{
+                            variant: 'icon',
+                            leftText: "Faire un retour",
+                            icon: <Thumbup />,
+                        }}
+                        rightProps={{
+                            variant: 'icon',
+                            icon: <Arrowright />,
+                        }}
+                        onPress={() => router.push('/support/feedback')}
+                    />
+                </Flex>
+
                 {/* FAQ */}
                 <Flex fullWidth gap={activeTheme.spacing._200} style={{ paddingHorizontal: activeTheme.spacing._200, paddingBottom: activeTheme.spacing._100 }}>
                     <Text variant='title_Medium' type='primary'>Foire aux questions</Text>

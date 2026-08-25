@@ -17,7 +17,17 @@ export type TextVariant =
     | 'label_Small'
     | 'button_Large';
 
-export type TextType = 'primary' | 'secondary' | 'placeholder' | 'invert' | 'brand' | 'danger';
+export type TextType =
+    | 'primary'
+    | 'secondary'
+    | 'placeholder'
+    | 'invert'
+    | 'brand'
+    | 'success'
+    | 'danger'
+    | 'warning'
+    | 'info'
+    | 'neutral';
 
 interface Props extends RNTextProps {
     children: React.ReactNode;

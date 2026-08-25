@@ -15,7 +15,7 @@ import Divider from '#/display/Divider';
 import Table from '#/display/Table';
 import Fade from '#/miscellaneous/Fade';
 
-import { Assistance, Heart, History, Moon, Profile, Settings, Star0, Subscription, Sun, Troc } from '#/icons';
+import { Assistance, Donate, Heart, History, Moon, Profile, Settings, Star0, Sun, Troc } from '#/icons';
 
 
 type DrawerItemProps = {
@@ -54,11 +54,12 @@ const mainItems = [
         label: 'Mon profil',
         icon: <Profile />,
     },
-    {
-        href: '/shop/premium',
-        label: 'Premium',
-        icon: <Subscription />,
-    },
+    // FEATURE FLAG : Premium/Shop/Abonnement
+    // {
+    //     href: '/shop/premium',
+    //     label: 'Premium',
+    //     icon: <Subscription />,
+    // },
     {
         href: '/favorites',
         label: 'Favoris',
@@ -89,9 +90,15 @@ const mainItems = [
 
 const secondaryItems = [
     {
-        href: '/help-center',
+        href: '/support/help-center',
         label: "Centre d'assistance",
         icon: <Assistance />,
+    },
+    // TODO: Faire un système de donation
+    {
+        href: '/support/support-us',
+        label: 'Nous soutenir',
+        icon: <Donate />,
     },
     {
         href: '/settings',

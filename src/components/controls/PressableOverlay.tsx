@@ -7,14 +7,16 @@ import Animated, {
 
 type PressableOverlayProps = {
     children: React.ReactNode;
-    style?: StyleProp<ViewStyle>;
     overlayColor?: string;
+    borderRadius?: number;
+    style?: StyleProp<ViewStyle>;
 } & Omit<PressableProps, 'children' | 'style'>;
 
 export default function PressableOverlay({
     children,
-    style,
     overlayColor = 'rgba(0, 0, 0, 0.10)',
+    borderRadius = 0,
+    style,
     onPressIn,
     onPressOut,
     android_ripple,
@@ -29,7 +31,7 @@ export default function PressableOverlay({
     return (
         <Pressable
             {...props}
-            style={style}
+            style={[style, { borderRadius }]}
             android_ripple={
                 android_ripple ?? {
                     color: 'rgba(255, 255, 255, 0.10)',
@@ -55,6 +57,7 @@ export default function PressableOverlay({
                         position: 'absolute',
                         inset: 0,
                         backgroundColor: overlayColor,
+                        borderRadius,
                     },
                     overlayStyle,
                 ]}

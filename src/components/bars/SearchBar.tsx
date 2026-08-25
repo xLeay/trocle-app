@@ -11,7 +11,7 @@ import TextInput from '#/TextInput';
 import { Closecircle, Search } from '#/icons';
 
 
-interface SearchBarProps {
+export interface SearchBarProps {
     value?: string;
     onChangeText: (text: string) => void;
     placeholder?: string;
@@ -28,7 +28,7 @@ const SearchBar = ({
     disabled = false,
     onFocus,
     onBlur,
-    style = {}
+    style = {},
 }: SearchBarProps) => {
     const { activeTheme } = useTheme();
     const inputRef = useRef<RNTextInput>(null);

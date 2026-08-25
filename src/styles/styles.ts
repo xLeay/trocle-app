@@ -1,6 +1,6 @@
 import { getFontScale, getTextSize } from "./fonts";
 import { color } from "./primitives";
-import { fontSize, lineHeight, spacing, radius } from './tokens';
+import { fontSize, lineHeight, radius, spacing } from './tokens';
 
 type Theme = 'light' | 'dark';
 
@@ -101,7 +101,11 @@ const text = {
         placeholder: color.neutral._60,
         invert: color.neutral._100,
         brand: surface.light.brand,
+        success: surface.light.success,
         danger: surface.light.danger,
+        warning: surface.light.alert,
+        info: surface.light.blue,
+        neutral: surface.light.neutral,
     },
     dark: {
         primary: color.neutral._90,
@@ -109,7 +113,11 @@ const text = {
         placeholder: color.neutral._50,
         invert: color.neutral._0,
         brand: surface.dark.brand,
+        success: surface.dark.success,
         danger: surface.dark.danger,
+        warning: surface.dark.alert,
+        info: surface.dark.blue,
+        neutral: surface.dark.neutral,
     }
 }
 

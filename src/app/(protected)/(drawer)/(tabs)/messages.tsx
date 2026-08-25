@@ -50,7 +50,8 @@ export default function Tab() {
             <Flex fullWidth gap={activeTheme.spacing._0} direction="row" alignItems='center' style={{
                 backgroundColor: activeTheme.colors.surface.secondary,
                 paddingLeft: activeTheme.spacing._200,
-                paddingRight: activeTheme.spacing._100
+                paddingRight: activeTheme.spacing._100,
+                zIndex: 2,
             }}
             >
                 <Flex fullWidth direction='row' justifyContent='flex-start' style={{ flex: 1 }}>

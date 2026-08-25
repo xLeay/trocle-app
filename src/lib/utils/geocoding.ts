@@ -67,3 +67,19 @@ export async function reverseGeocode(
         return null;
     }
 }
+
+export function formatLocationAddress(location: LocationAddress) {
+    const street =
+        location.name && location.name !== location.city
+            ? location.name
+            : null;
+
+    return [
+        street,
+        [location.postcode, location.city]
+            .filter(Boolean)
+            .join(', '),
+    ]
+        .filter(Boolean)
+        .join(', ');
+}

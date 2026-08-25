@@ -79,7 +79,22 @@ export default function ChatScreen() {
         tableRight: {
             variant: 'button',
             button: (
-                <Button label="Troc" variant="outlined" size="small" icon={<Troc filled size={24} color={activeTheme.colors.surface.contrast} />} iconPosition='right' onPress={() => console.log('Proposer le Troc à ' + recipientName)} />
+                <Button
+                    label="Troc"
+                    variant="outlined"
+                    size="small"
+                    icon={<Troc filled size={24} color={activeTheme.colors.surface.contrast} />}
+                    iconPosition='right'
+                    onPress={() => router.push({
+                        pathname: `/(protected)/trocs/proposition`,
+                        params: {
+                            id: conversation?.id,
+                            username: conversation?.name,
+                            profile_picture: conversation?.avatarSeed,
+                            certified: conversation?.certified ? 'true' : 'false',
+                            certificationColor: conversation?.certificationColor,
+                        }
+                    })} />
             ),
         },
         onPress: () => router.push({

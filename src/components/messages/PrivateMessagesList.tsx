@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
 import { router } from 'expo-router';
+import React, { useMemo } from 'react';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
 
@@ -65,6 +65,7 @@ const PrivateMessagesList: React.FC<PrivateMessagesListProps> = ({
                             onPress={() => router.push(`/chat/${item.id}`)}
                             leftProps={{
                                 variant: 'avatar',
+                                onAvatarPress: () => router.push(`/user/${item.name}`),
                                 avatarSize: 'large',
                                 leftText: item.name,
                                 legendText: item.lastMessage,

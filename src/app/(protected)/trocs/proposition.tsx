@@ -17,8 +17,11 @@ import PropositionArticle, { PropositionArticleItem } from '#/troc/PropositionAr
 import PropositionDelivery, { PropositionDeliveryMethod } from '#/troc/PropositionDelivery';
 import PropositionSummary from '#/troc/PropositionSummary';
 
+import { CATEGORY, PRODUCT_STATE } from '@/src/lib/utils/product';
+
 import { Arrowleft } from '#/icons';
 
+const myUsername = 'xLeay';
 
 const STEPS = [
     'initiator_article',
@@ -35,18 +38,24 @@ const MY_ARTICLES: PropositionArticleItem[] = [
         image: 'https://www.cdiscount.com/pdt2/8/0/1/1/700x700/aaaap45801/rw/console-xbox-360-blanche--3.jpg',
         title: 'Xbox 360',
         brand: 'Microsoft',
+        category: CATEGORY.gaming,
+        state: PRODUCT_STATE.very_good,
     },
     {
         id: 'mine-2',
         image: 'https://m.media-amazon.com/images/I/61GcXE9lJ4L._AC_UF1000,1000_QL80_.jpg',
         title: 'Piano électrique petite taille',
         brand: 'Sans marque',
+        category: CATEGORY.household_appliances,
+        state: PRODUCT_STATE.good,
     },
     {
         id: 'mine-3',
         image: 'https://m.media-amazon.com/images/I/61GcXE9lJ4L._AC_UF1000,1000_QL80_.jpg',
         title: 'Clavier maître',
         brand: 'Akai',
+        category: CATEGORY.gaming,
+        state: PRODUCT_STATE.good,
     },
 ];
 
@@ -56,12 +65,16 @@ const RECEIVER_ARTICLES: PropositionArticleItem[] = [
         image: 'https://www.cdiscount.com/pdt2/8/0/1/1/700x700/aaaap45801/rw/console-xbox-360-blanche--3.jpg',
         title: 'Console Xbox 360',
         brand: 'Microsoft',
+        category: CATEGORY.gaming,
+        state: PRODUCT_STATE.very_good,
     },
     {
         id: 'receiver-2',
         image: 'https://m.media-amazon.com/images/I/61GcXE9lJ4L._AC_UF1000,1000_QL80_.jpg',
         title: 'Piano électrique',
         brand: 'Yamaha',
+        category: CATEGORY.household_appliances,
+        state: PRODUCT_STATE.good,
     },
 ];
 
@@ -75,13 +88,16 @@ export default function TrocProposition() {
     };
 
 
-    const { clearTrocPropositionSelectedAddress } = useLocationStore();
+    const { trocPropositionSelectedAddress, clearTrocPropositionSelectedAddress } = useLocationStore();
+    const [deliveryDate, setDeliveryDate] = useState<Date | null>(null);
+    const [deliveryTime, setDeliveryTime] = useState<Date | null>(null);
+    const [additionalInfos, setAdditionalInfos] = useState('');
 
     const {
-        id,
+        id_conversation,
         username = 'cet utilisateur',
     } = useLocalSearchParams<{
-        id: string;
+        id_conversation: string;
         username: string;
         profile_picture: string;
         certified: string;
@@ -92,7 +108,9 @@ export default function TrocProposition() {
     const [initiatorArticleId, setInitiatorArticleId] = useState<string | null>(null);
     const [receiverArticleId, setReceiverArticleId] = useState<string | null>(null);
     const [deliveryMethod, setDeliveryMethod] = useState<PropositionDeliveryMethod | null>(null);
-    const [additionalInfos, setAdditionalInfos] = useState('');
+
+    const [hasReadTheSummary, setHasReadTheSummary] = useState(false);
+
     const [loading, setLoading] = useState(false);
 
     const currentStep: PropositionStep = STEPS[stepIndex];
@@ -101,14 +119,21 @@ export default function TrocProposition() {
 
     const receiverArticle = RECEIVER_ARTICLES.find((article) => article.id === receiverArticleId) ?? null;
 
+    const hasAllDeliveryDetails =
+        trocPropositionSelectedAddress !== null &&
+        deliveryDate !== null &&
+        deliveryTime !== null;
+
     const canContinue =
         (currentStep === 'initiator_article' &&
             initiatorArticle !== null) ||
         (currentStep === 'receiver_article' &&
             receiverArticle !== null) ||
         (currentStep === 'delivery' &&
-            deliveryMethod !== null) ||
-        currentStep === 'summary';
+            // TODO: Quand y'a le point relais, revérifier le !== null
+            deliveryMethod === 'hand_delivery' &&
+            hasAllDeliveryDetails) ||
+        (currentStep === 'summary' && hasReadTheSummary);
 
     const handleBack = () => {
         if (stepIndex > 0) {
@@ -127,7 +152,8 @@ export default function TrocProposition() {
         if (
             !initiatorArticle ||
             !receiverArticle ||
-            !deliveryMethod
+            !deliveryMethod ||
+            !hasReadTheSummary
         ) {
             return;
         }
@@ -136,17 +162,23 @@ export default function TrocProposition() {
             setLoading(true);
 
             const proposition = {
-                conversationId: id,
+                conversationId: id_conversation,
                 receiverUsername: username,
                 initiatorArticleId: initiatorArticle.id,
                 receiverArticleId: receiverArticle.id,
                 deliveryMethod,
+                deliveryDate,
+                deliveryTime,
+                additionalInfos,
             };
 
             console.log('Proposition de troc :', proposition);
 
-            // Remplace ce console.log par ton INSERT Supabase.
-            // Puis fais un router.replace vers /trocs/[id_troc].
+            // TODO: Mettre en place l'INSERT de la proposition et du message
+            // 1. Créer le Troc avec status = "pending"
+            // 2. Créer le Message avec type = "troc_proposal" et id_troc
+            // 3. Créer l’entrée initiale dans Troc_status_history
+            router.dismissTo(`/chat/${id_conversation}`)
         } finally {
             setLoading(false);
         }
@@ -219,11 +251,7 @@ export default function TrocProposition() {
 
             <KeyboardStickyView
                 offset={offset}
-                style={{
-                    flex: 1,
-                    // borderWidth: 1,
-                    // borderColor: 'blue'
-                }}
+                style={{ flex: 1 }}
             >
                 <Flex fullWidth style={styles.container}>
                     <ScrollView
@@ -232,7 +260,6 @@ export default function TrocProposition() {
                         contentContainerStyle={[
                             styles.content,
                             {
-                                paddingHorizontal: activeTheme.spacing._200,
                                 paddingTop: activeTheme.spacing._100,
                                 paddingBottom: insets.bottom + activeTheme.spacing._800,
                             },
@@ -266,6 +293,10 @@ export default function TrocProposition() {
                             <PropositionDelivery
                                 value={deliveryMethod}
                                 onChange={setDeliveryMethod}
+                                selectedDate={deliveryDate}
+                                onChangeDate={setDeliveryDate}
+                                selectedTime={deliveryTime}
+                                onChangeTime={setDeliveryTime}
                                 additionalInfos={additionalInfos}
                                 onChangeAdditionalInfos={setAdditionalInfos}
                             />
@@ -274,12 +305,20 @@ export default function TrocProposition() {
                         {currentStep === 'summary' &&
                             initiatorArticle &&
                             receiverArticle &&
+                            hasAllDeliveryDetails &&
                             deliveryMethod && (
                                 <PropositionSummary
-                                    username={username}
+                                    myUsername={myUsername}
+                                    targetUsername={username}
                                     initiatorArticle={initiatorArticle}
                                     receiverArticle={receiverArticle}
                                     deliveryMethod={deliveryMethod}
+                                    selectedAddress={trocPropositionSelectedAddress}
+                                    deliveryDate={deliveryDate}
+                                    deliveryTime={deliveryTime}
+                                    additionalInfos={additionalInfos}
+                                    hasReadTheSummary={hasReadTheSummary}
+                                    onReadTheSummaryChange={setHasReadTheSummary}
                                 />
                             )}
                     </ScrollView>

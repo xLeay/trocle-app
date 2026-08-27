@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Pressable, StyleSheet, ViewStyle } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Pressable, ViewStyle } from 'react-native';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
 
@@ -7,11 +7,12 @@ import Flex from '#/Flex';
 import Text from '#/Text';
 import MessageLabel, { MessageLabelType } from '#/_partial/MessageLabel';
 
-type MessageBubbleType = 'me' | 'someone_else' | 'reply';
+type MessageBubbleType = 'me' | 'someone_else';
 
 interface MessageBubbleProps {
     content?: string;
     type: MessageBubbleType;
+    isReply?: boolean;
     latest?: boolean;
     label?: string;
     messageLabelType?: MessageLabelType;
@@ -22,6 +23,7 @@ interface MessageBubbleProps {
 export function MessageBubble({
     content,
     type = 'me',
+    isReply = false,
     latest = false,
     label,
     messageLabelType = 'hour',
@@ -31,8 +33,6 @@ export function MessageBubble({
     const { activeTheme } = useTheme();
 
     const isMe = type === 'me';
-    const isReply = type === 'reply';
-
 
 
     const [showLabel, setShowLabel] = useState(latest);
@@ -83,7 +83,7 @@ export function MessageBubble({
         <Pressable onPress={handlePress} onLongPress={onLongPress}>
             <Flex
                 direction={isReply ? 'column-reverse' : 'column'}
-                alignItems={isMe || isReply ? 'flex-end' : 'flex-start'}
+                alignItems={isMe ? 'flex-end' : 'flex-start'}
                 justifyContent='center'
                 gap={activeTheme.spacing._50}>
                 <Flex style={finalStyle}>

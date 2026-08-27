@@ -1,7 +1,7 @@
 import * as Location from 'expo-location';
 import { Stack, router } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, AppState, Linking, StyleSheet } from 'react-native';
+import { ActivityIndicator, AppState, Keyboard, Linking, StyleSheet } from 'react-native';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -72,6 +72,14 @@ export default function LocationMap() {
     const [checkingPermission, setCheckingPermission] = useState(true);
 
     const previousAppState = useRef(AppState.currentState);
+
+
+    const handleMapInteraction = () => {
+        Keyboard.dismiss();
+        setShowPredictions(false);
+    };
+
+
 
     const checkPermission = useCallback(async () => {
         setCheckingPermission(true);
@@ -205,94 +213,100 @@ export default function LocationMap() {
                 }}
             />
 
-            <Flex fullWidth style={{
-                position: "relative",
-                paddingHorizontal: activeTheme.spacing._200,
-                paddingBottom: activeTheme.spacing._100,
-                backgroundColor: activeTheme.colors.surface.secondary,
-                zIndex: 100,
-            }}>
-                <SearchBar
-                    value={searchValue}
-                    onChangeText={(text) => {
-                        setSearchValue(text);
-                        setSelectedLocation(null);
-                    }}
-                    onFocus={() => {
-                        if (searchValue.trim().length >= 3) {
-                            setShowPredictions(true);
-                        }
-                    }}
-                    placeholder="Ville, code postal"
-                />
-
-
-                {showPredictions &&
-                    searchValue.trim().length >= 3 && (
-                        <Flex
-                            fullWidth
-                            style={{
-                                position: "absolute",
-                                top: '100%',
-                                marginTop: activeTheme.spacing._100,
-                                left: activeTheme.spacing._200,
-                                right: activeTheme.spacing._200,
-                                backgroundColor: activeTheme.colors.surface.primary,
-                                borderRadius: activeTheme.radius.card,
-                                zIndex: 20,
-                                elevation: 2,
-                                padding: activeTheme.spacing._100,
+            {!checkingPermission &&
+                permissionStatus === 'granted' &&
+                servicesEnabled === true &&
+                latitude !== null &&
+                longitude !== null && (
+                    <Flex fullWidth style={{
+                        position: "relative",
+                        paddingHorizontal: activeTheme.spacing._200,
+                        paddingBottom: activeTheme.spacing._100,
+                        backgroundColor: activeTheme.colors.surface.secondary,
+                        zIndex: 100,
+                    }}>
+                        <SearchBar
+                            value={searchValue}
+                            onChangeText={(text) => {
+                                setSearchValue(text);
+                                setSelectedLocation(null);
                             }}
-                        >
-                            {isLoadingResults && (
+                            onFocus={() => {
+                                if (searchValue.trim().length >= 3) {
+                                    setShowPredictions(true);
+                                }
+                            }}
+                            onBlur={() => setShowPredictions(false)}
+                            placeholder="Ville, code postal"
+                        />
+
+
+                        {showPredictions &&
+                            searchValue.trim().length >= 3 && (
                                 <Flex
                                     fullWidth
-                                    alignItems="center"
-                                    style={{ padding: 16 }}
+                                    style={{
+                                        position: "absolute",
+                                        top: '100%',
+                                        marginTop: activeTheme.spacing._100,
+                                        left: activeTheme.spacing._200,
+                                        right: activeTheme.spacing._200,
+                                        backgroundColor: activeTheme.colors.surface.primary,
+                                        borderRadius: activeTheme.radius.card,
+                                        zIndex: 20,
+                                        elevation: 2,
+                                        padding: activeTheme.spacing._100,
+                                    }}
                                 >
-                                    <ActivityIndicator color={activeTheme.colors.icon.brand} />
+                                    {isLoadingResults && (
+                                        <Flex
+                                            fullWidth
+                                            alignItems="center"
+                                            style={{ padding: 16 }}
+                                        >
+                                            <ActivityIndicator color={activeTheme.colors.icon.brand} />
+                                        </Flex>
+                                    )}
+
+                                    {!isLoadingResults &&
+                                        predictions.map((prediction) => (
+                                            <PressableOverlay
+                                                key={`${prediction.latitude}-${prediction.longitude}-${prediction.label}`}
+                                                onPress={() => {
+                                                    setSearchValue(prediction.label);
+                                                    setSelectedLocation(prediction);
+                                                    setPredictions([]);
+                                                    setShowPredictions(false);
+                                                }}
+                                                borderRadius={activeTheme.radius.default}
+                                                style={{
+                                                    padding: activeTheme.spacing._100,
+                                                    width: '100%',
+                                                }}
+                                            >
+                                                <Text variant="body_Medium" type="primary">
+                                                    {prediction.name}
+                                                </Text>
+
+                                                <Text variant="body_Small" type="secondary">
+                                                    {prediction.postcode} {prediction.city}
+                                                </Text>
+                                            </PressableOverlay>
+                                        ))}
+
+                                    {!isLoadingResults && predictions.length === 0 && (
+                                        <Text
+                                            variant="body_Small"
+                                            type="secondary"
+                                            style={{ padding: 16 }}
+                                        >
+                                            Aucun résultat trouvé
+                                        </Text>
+                                    )}
                                 </Flex>
                             )}
-
-                            {!isLoadingResults &&
-                                predictions.map((prediction) => (
-                                    <PressableOverlay
-                                        key={`${prediction.latitude}-${prediction.longitude}-${prediction.label}`}
-                                        onPress={() => {
-                                            setSearchValue(prediction.label);
-                                            setSelectedLocation(prediction);
-                                            setPredictions([]);
-                                            setShowPredictions(false);
-                                        }}
-                                        borderRadius={activeTheme.radius.default}
-                                        style={{
-                                            padding: activeTheme.spacing._100,
-                                            width: '100%',
-                                        }}
-                                    >
-                                        <Text variant="body_Medium" type="primary">
-                                            {prediction.name}
-                                        </Text>
-
-                                        <Text variant="body_Small" type="secondary">
-                                            {prediction.postcode} {prediction.city}
-                                        </Text>
-                                    </PressableOverlay>
-                                ))}
-
-                            {!isLoadingResults && predictions.length === 0 && (
-                                <Text
-                                    variant="body_Small"
-                                    type="secondary"
-                                    style={{ padding: 16 }}
-                                >
-                                    Aucun résultat trouvé
-                                </Text>
-                            )}
-                        </Flex>
-                    )}
-            </Flex>
-
+                    </Flex>
+                )}
 
             {checkingPermission && (
                 <Flex
@@ -368,6 +382,7 @@ export default function LocationMap() {
 
                                 // console.log(location);
                             }}
+                            onInteraction={handleMapInteraction}
                         />
                     </Flex>
                 )}

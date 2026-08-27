@@ -12,6 +12,7 @@ interface LocationPickerMapProps {
     initialLongitude: number | null;
     selectedLocation?: LocationAddress | null;
     onLocationSelect: (location: LocationAddress) => void;
+    onInteraction?: () => void;
 }
 
 export const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
@@ -19,6 +20,7 @@ export const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
     initialLongitude,
     selectedLocation,
     onLocationSelect,
+    onInteraction
 }) => {
     const { activeTheme } = useTheme();
 
@@ -98,7 +100,12 @@ export const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
                     latitudeDelta: 0.01,
                     longitudeDelta: 0.01,
                 }}
-                onRegionChangeStart={() => setIsMoving(true)}
+                onPress={onInteraction}
+                onPanDrag={onInteraction}
+                onRegionChangeStart={() => {
+                    onInteraction?.();
+                    setIsMoving(true);
+                }}
                 onRegionChangeComplete={handleRegionChangeComplete}
             />
 

@@ -9,6 +9,8 @@ import Text from '#/Text';
 
 import { Plus } from '#/icons';
 
+import { CATEGORY, PRODUCT_STATE } from '@/src/lib/utils/product';
+
 export type PropositionArticleOwner = 'initiator' | 'receiver';
 
 export interface PropositionArticleItem {
@@ -16,6 +18,8 @@ export interface PropositionArticleItem {
     image: string;
     title: string;
     brand: string;
+    state: PRODUCT_STATE;
+    category: CATEGORY;
 }
 
 interface PropositionArticleProps {
@@ -48,7 +52,7 @@ export default function PropositionArticle({
         : `Maintenant, choisis un des articles de ${username ?? "l'utilisateur"} que tu veux échanger avec celui que tu as sélectionné juste avant. Réalise ta sélection de la même façon.`;
 
     return (
-        <Flex fullWidth gap={activeTheme.spacing._400}>
+        <Flex fullWidth gap={activeTheme.spacing._400} style={{ paddingHorizontal: activeTheme.spacing._200 }}>
             <Flex fullWidth gap={activeTheme.spacing._100}>
                 <Text variant="display_Small" type="primary">
                     {title}

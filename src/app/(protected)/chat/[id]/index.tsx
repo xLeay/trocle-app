@@ -11,6 +11,7 @@ import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 import Flex from '#/Flex';
 import Text from '#/Text';
 import MessageBar from '#/bars/MessageBar';
+import PropositionMessage from '#/chat/PropositionMessage';
 import Button from '#/controls/Button';
 import Avatar from '#/display/Avatar';
 import Divider from '#/display/Divider';
@@ -24,6 +25,8 @@ import { MOCK_CONVERSATIONS } from '@/src/mock/dms.mock';
 import { User } from '@/src/types/user';
 
 
+const myUsername = 'xLeay';
+
 export interface MessageAttachment {
     id: number;
     created_at: string;
@@ -35,6 +38,7 @@ export interface MessageAttachment {
 
 export interface Message {
     id: number;           // int8 dans Supabase
+    message_type: 'text' | 'troc_proposal';
     message_content: string;       // text dans Supabase
     sent_at: string;              // timestamptz (ex: "2026-08-08T15:08:00Z")
     read_at?: string | null;       // timetz / timestamptz (null si non lu)
@@ -43,6 +47,7 @@ export interface Message {
     reply_to_id_message?: number | null; // int8
     id_conversation: number;       // int8
     id_sender: string;             // uuid de l'expéditeur
+    id_troc?: number;           // int8 (optionnel, pour les messages de troc)
 }
 
 export default function ChatScreen() {
@@ -88,7 +93,7 @@ export default function ChatScreen() {
                     onPress={() => router.push({
                         pathname: `/(protected)/trocs/proposition`,
                         params: {
-                            id: conversation?.id,
+                            id_conversation: conversation?.id,
                             username: conversation?.name,
                             profile_picture: conversation?.avatarSeed,
                             certified: conversation?.certified ? 'true' : 'false',
@@ -100,7 +105,6 @@ export default function ChatScreen() {
         onPress: () => router.push({
             pathname: `/(protected)/chat/${id}/details`,
             params: {
-                id: conversation?.id,
                 username: conversation?.name,
                 profile_picture: conversation?.avatarSeed,
                 certified: conversation?.certified ? 'true' : 'false',
@@ -125,6 +129,7 @@ export default function ChatScreen() {
     const [messages, setMessages] = useState<Message[]>([
         {
             id: 1,
+            message_type: 'text',
             message_content: 'Salut ! Ton offre de troc pour la guitare est toujours disponible ?',
             sent_at: '2026-07-08T09:15:00Z',
             read_at: '2026-08-08T09:16:00Z',
@@ -135,6 +140,7 @@ export default function ChatScreen() {
         },
         {
             id: 2,
+            message_type: 'text',
             message_content: 'Oui tout à fait ! Tu proposais ton clavier maître en échange c\'est ça ?',
             sent_at: '2026-08-08T09:18:00Z',
             read_at: '2026-08-08T09:20:00Z',
@@ -145,6 +151,7 @@ export default function ChatScreen() {
         },
         {
             id: 3,
+            message_type: 'text',
             message_content: 'Exactement ! Un Akai MPK Mini en parfait état.',
             sent_at: '2026-08-08T09:22:00Z',
             read_at: '2026-08-08T09:23:00Z',
@@ -155,6 +162,7 @@ export default function ChatScreen() {
         },
         {
             id: 4,
+            message_type: 'text',
             message_content: 'Je peux t\'envoyer des photos si tu veux.',
             sent_at: '2026-08-08T09:23:30Z',
             read_at: '2026-08-08T09:25:00Z',
@@ -166,6 +174,7 @@ export default function ChatScreen() {
         // Pause de +30 min -> séparateur au centre
         {
             id: 5,
+            message_type: 'text',
             message_content: 'Carrément, je veux bien des photos !',
             sent_at: '2026-08-08T10:15:00Z',
             read_at: '2026-08-08T10:16:00Z',
@@ -176,6 +185,7 @@ export default function ChatScreen() {
         },
         {
             id: 6,
+            message_type: 'text',
             message_content: 'Et de mon côté la guitare est une Fender Squier, comme neuve.',
             sent_at: '2026-08-08T10:16:30Z',
             read_at: '2026-08-08T10:17:00Z',
@@ -186,6 +196,7 @@ export default function ChatScreen() {
         },
         {
             id: 7,
+            message_type: 'text',
             message_content: 'Top ! Voilà la photo du clavier.',
             sent_at: '2026-08-08T10:20:00Z',
             read_at: '2026-08-08T10:22:00Z',
@@ -206,6 +217,7 @@ export default function ChatScreen() {
         },
         {
             id: 8,
+            message_type: 'text',
             message_content: 'Il est fourni avec la boîte d\'origine et le câble USB.',
             sent_at: '2026-08-08T10:21:00Z',
             read_at: '2026-08-08T10:22:00Z',
@@ -217,6 +229,7 @@ export default function ChatScreen() {
         // Autre pause de +30 min -> séparateur au centre
         {
             id: 9,
+            message_type: 'text',
             message_content: 'Franchement il a l\'air en super état !',
             sent_at: '2026-08-08T14:00:00Z',
             read_at: '2026-08-08T14:05:00Z',
@@ -227,6 +240,7 @@ export default function ChatScreen() {
         },
         {
             id: 10,
+            message_type: 'text',
             message_content: 'On peut se capter en main propre pour faire l\'échange ?',
             sent_at: '2026-08-08T14:01:00Z',
             read_at: '2026-08-08T14:05:00Z',
@@ -237,6 +251,7 @@ export default function ChatScreen() {
         },
         {
             id: 11,
+            message_type: 'text',
             message_content: 'Carrément ! Tu es dans quel quartier ?',
             sent_at: '2026-08-08T14:10:00Z',
             read_at: '2026-08-08T14:12:00Z',
@@ -247,6 +262,7 @@ export default function ChatScreen() {
         },
         {
             id: 12,
+            message_type: 'text',
             message_content: 'Je suis vers République, et toi ?',
             sent_at: '2026-08-08T14:15:00Z',
             read_at: '2026-08-08T14:16:00Z',
@@ -257,6 +273,7 @@ export default function ChatScreen() {
         },
         {
             id: 13,
+            message_type: 'text',
             message_content: 'Pas loin du tout, je suis vers Bastille !',
             sent_at: '2026-08-08T14:18:00Z',
             read_at: '2026-08-08T14:20:00Z',
@@ -267,6 +284,7 @@ export default function ChatScreen() {
         },
         {
             id: 14,
+            message_type: 'text',
             message_content: 'Super, tu serais dispo demain dans l\'après-midi ?',
             sent_at: '2026-08-08T14:20:00Z',
             read_at: '2026-08-08T14:22:00Z',
@@ -277,9 +295,21 @@ export default function ChatScreen() {
         },
         {
             id: 15,
+            message_type: 'text',
             message_content: 'À partir de 15h je dirais !',
             sent_at: '2026-08-08T14:22:00Z',
-            read_at: '2026-08-08T14:23:00Z', // Mettre `null` si tu veux tester l'état "Sent" non lu
+            read_at: null, // Mettre `null` si tu veux tester l'état "Sent" non lu
+            has_attachment: false,
+            reply_to_id_message: null,
+            id_conversation: 1,
+            id_sender: currentUserId,
+        },
+        {
+            id: 16,
+            message_type: 'troc_proposal',
+            message_content: 'Proposition de troc : Xbox 360 contre Clavier maître',
+            sent_at: '2026-08-09T10:00:00Z',
+            read_at: null,
             has_attachment: false,
             reply_to_id_message: null,
             id_conversation: 1,
@@ -332,6 +362,7 @@ export default function ChatScreen() {
 
         const newMessage: Message = {
             id: Date.now(),
+            message_type: 'text',
             message_content: inputText.trim(),
             sent_at: new Date().toISOString(),
             read_at: null,
@@ -344,6 +375,7 @@ export default function ChatScreen() {
         setMessages((prev) => [...prev, newMessage]);
         setInputText('');
     };
+
 
 
     return (
@@ -467,43 +499,66 @@ export default function ChatScreen() {
                                         </Flex>
                                     )}
 
-                                    {/* Bulle de message */}
-                                    {/* Si item.reply_to_id_message est non null, on affiche une bulle en mode reply en plus*/}
+                                    {(() => {
 
-                                    {/* <Flex border fullWidth> */}
-                                    {
-                                        repliedMessage && (
-                                            <MessageBubble
-                                                content={repliedMessage?.message_content}
-                                                type={'reply'}
-                                                label={`En réponse à ${repliedSenderName}`}
-                                                messageLabelType={'hour'}
-                                                latest
-                                            />
-                                        )
-                                    }
-                                    {
-                                        item.attachments && item.attachments.length > 0 && (
-                                            <Flex direction='row' style={{ width: 150, marginBottom: -activeTheme.spacing._100 }}>
-                                                {item.attachments.map((attachment) => (
-                                                    <ImageRatio
-                                                        key={attachment.id}
-                                                        ratio='2:3'
-                                                        source={{ uri: attachment.file_path }}
-                                                        style={{ borderRadius: activeTheme.radius.card }}
+                                        switch (item.message_type) {
+                                            case 'troc_proposal':
+                                                return (
+                                                    <PropositionMessage
+                                                        type={isMe ? 'me' : 'someone_else'}
+                                                        // type='someone_else'
+                                                        // status={'pending'}
+                                                        // status={'accepted'}
+                                                        status={'rejected'}
+                                                        latest={isLatest}
+                                                        label={formattedTime}
+                                                        messageLabelType={messageLabelType}
+                                                        myUsername={myUsername}
+                                                        otherUsername={recipientName}
+                                                        onPress={() => {
+                                                            router.push(`/(protected)/trocs/${item.id_troc}/troc-details`)
+                                                        }}
                                                     />
-                                                ))}
-                                            </Flex>
-                                        )
-                                    }
-                                    {/* </Flex> */}
-                                    <MessageBubble
-                                        content={item.message_content}
-                                        type={isMe ? 'me' : 'someone_else'}
-                                        latest={isLatest}
-                                        label={formattedTime}
-                                        messageLabelType={messageLabelType}
-                                    />
+                                                );
+                                            case 'text':
+                                            default:
+                                                return (
+                                                    <>
+                                                        {Boolean(repliedMessage) && (
+                                                            <MessageBubble
+                                                                content={repliedMessage?.message_content}
+                                                                isReply
+                                                                type={isMe ? 'me' : 'someone_else'}
+                                                                label={`En réponse à ${repliedSenderName}`}
+                                                                messageLabelType="hour"
+                                                                latest
+                                                            />
+                                                        )}
+
+                                                        {Boolean(item.attachments && item.attachments.length > 0) && (
+                                                            <Flex direction="row" style={{ width: 150, marginBottom: -activeTheme.spacing._100 }}>
+                                                                {item.attachments?.map((attachment) => (
+                                                                    <ImageRatio
+                                                                        key={attachment.id}
+                                                                        ratio="2:3"
+                                                                        source={{ uri: attachment.file_path }}
+                                                                        style={{ borderRadius: activeTheme.radius.card }}
+                                                                    />
+                                                                ))}
+                                                            </Flex>
+                                                        )}
+
+                                                        <MessageBubble
+                                                            content={item.message_content}
+                                                            type={isMe ? 'me' : 'someone_else'}
+                                                            latest={isLatest}
+                                                            label={formattedTime}
+                                                            messageLabelType={messageLabelType}
+                                                        />
+                                                    </>
+                                                );
+                                        }
+                                    })()}
                                 </Flex>
                             );
                         }}

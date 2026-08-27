@@ -1,4 +1,7 @@
+import DateTimePicker from '@expo/ui/community/datetime-picker';
 import { router } from 'expo-router';
+import { useState } from 'react';
+import { Alert } from 'react-native';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import { useLocationStore } from '@/src/state/locationStore';
@@ -23,6 +26,10 @@ export type PropositionDeliveryMethod =
 interface PropositionDeliveryProps {
     value: PropositionDeliveryMethod | null;
     onChange: (method: PropositionDeliveryMethod) => void;
+    selectedDate: Date | null;
+    onChangeDate: (date: Date) => void;
+    selectedTime: Date | null;
+    onChangeTime: (time: Date) => void;
     additionalInfos: string;
     onChangeAdditionalInfos: (value: string) => void;
 }
@@ -236,17 +243,40 @@ function DeliveryDetail({
 export default function PropositionDelivery({
     value,
     onChange,
+    selectedDate,
+    onChangeDate,
+    selectedTime,
+    onChangeTime,
     additionalInfos,
     onChangeAdditionalInfos,
 }: PropositionDeliveryProps) {
-    const { activeTheme } = useTheme();
+    const { theme, activeTheme } = useTheme();
 
     const { trocPropositionSelectedAddress } = useLocationStore();
+    const [pickerMode, setPickerMode] = useState<'date' | 'time' | null>(null);
 
-    console.log(trocPropositionSelectedAddress);
+    const pickerValue =
+        pickerMode === 'date'
+            ? (selectedDate ?? new Date())
+            : (selectedTime ?? new Date());
+
+    const now = new Date();
+
+    const isDeliveryToday =
+        selectedDate?.getFullYear() === now.getFullYear() &&
+        selectedDate?.getMonth() === now.getMonth() &&
+        selectedDate?.getDate() === now.getDate();
+
+    const minimumPickerDate =
+        pickerMode === 'date'
+            ? now
+            : pickerMode === 'time' && isDeliveryToday
+                ? now
+                : undefined;
+
 
     return (
-        <Flex fullWidth gap={activeTheme.spacing._400}>
+        <Flex fullWidth gap={activeTheme.spacing._400} style={{ paddingHorizontal: activeTheme.spacing._200 }}>
             <Flex fullWidth gap={activeTheme.spacing._100}>
                 <Text variant="display_Small" type="primary">
                     Comment tu veux faire l’échange ?
@@ -327,13 +357,18 @@ export default function PropositionDelivery({
                                 />
                                 <DeliveryDetail
                                     type='date'
-                                    emptyDetail={true}
-                                    detailOnPress={() => { }}
+                                    emptyDetail={!selectedDate}
+                                    valueDate={selectedDate?.toLocaleDateString('fr-FR')}
+                                    detailOnPress={() => setPickerMode('date')}
                                 />
                                 <DeliveryDetail
-                                    type='time'
-                                    emptyDetail={true}
-                                    detailOnPress={() => { }}
+                                    type="time"
+                                    emptyDetail={!selectedTime}
+                                    valueTime={selectedTime?.toLocaleTimeString('fr-FR', {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                    })}
+                                    detailOnPress={() => setPickerMode('time')}
                                 />
                                 <DeliveryDetail
                                     type='additional_infos'
@@ -348,6 +383,61 @@ export default function PropositionDelivery({
                 )}
 
             </Flex>
+
+
+            {pickerMode && (
+                <DateTimePicker
+                    key={pickerMode}
+                    value={pickerValue}
+                    mode={pickerMode}
+                    is24Hour={true}
+                    minimumDate={minimumPickerDate}
+                    onDismiss={() => setPickerMode(null)}
+                    onValueChange={(_, value) => {
+                        if (pickerMode === 'date') {
+                            const date = new Date(value);
+                            date.setHours(0, 0, 0, 0);
+                            onChangeDate(date);
+                        }
+
+                        if (pickerMode === 'time') {
+                            const time = new Date(value);
+
+                            // Toujours arrondir vers le prochain créneau de 15 min.
+                            const roundedMinutes = Math.ceil(time.getMinutes() / 15) * 15;
+                            time.setMinutes(roundedMinutes, 0, 0);
+
+                            // On combine la date choisie et l'heure choisie.
+                            const selectedDateTime = new Date(selectedDate ?? new Date());
+
+                            selectedDateTime.setHours(
+                                time.getHours(),
+                                time.getMinutes(),
+                                0,
+                                0,
+                            );
+
+                            // Refuse une heure déjà passée.
+                            if (selectedDateTime <= new Date()) {
+                                // TODO: Tous les Alertes, mettre mon composant
+                                Alert.alert(
+                                    'Horaire indisponible',
+                                    'Tu ne peux pas choisir une heure déjà passée.',
+                                );
+                                setPickerMode(null);
+                                return;
+                            }
+
+                            onChangeTime(time);
+                            setPickerMode(null);
+                        }
+
+                        setPickerMode(null);
+                    }}
+
+                    themeVariant={theme}
+                />
+            )}
         </Flex>
     );
 }

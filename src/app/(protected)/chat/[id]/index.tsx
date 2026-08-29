@@ -508,8 +508,8 @@ export default function ChatScreen() {
                                                         type={isMe ? 'me' : 'someone_else'}
                                                         // type='someone_else'
                                                         // status={'pending'}
-                                                        // status={'accepted'}
-                                                        status={'rejected'}
+                                                        status={'accepted'}
+                                                        // status={'rejected'}
                                                         latest={isLatest}
                                                         label={formattedTime}
                                                         messageLabelType={messageLabelType}

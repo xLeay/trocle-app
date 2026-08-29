@@ -121,7 +121,9 @@ export default function Settings() {
         label: 'Paramètres',
     });
 
-    const { signOut, loading } = useAuthStore()
+    // const { signOut, loading } = useAuthStore()
+    const signOut = useAuthStore((state) => state.signOut)
+    const loading = useAuthStore((state) => state.loading)
 
     const [search, setSearch] = useState('');
 

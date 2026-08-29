@@ -88,7 +88,9 @@ export default function TrocProposition() {
     };
 
 
-    const { trocPropositionSelectedAddress, clearTrocPropositionSelectedAddress } = useLocationStore();
+    // const { trocPropositionSelectedAddress, clearTrocPropositionSelectedAddress } = useLocationStore();
+    const trocPropositionSelectedAddress = useLocationStore((state) => state.trocPropositionSelectedAddress)
+    const clearTrocPropositionSelectedAddress = useLocationStore((state) => state.clearTrocPropositionSelectedAddress)
     const [deliveryDate, setDeliveryDate] = useState<Date | null>(null);
     const [deliveryTime, setDeliveryTime] = useState<Date | null>(null);
     const [additionalInfos, setAdditionalInfos] = useState('');

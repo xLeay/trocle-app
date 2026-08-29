@@ -1,6 +1,6 @@
 import { Link, Tabs, useNavigation } from 'expo-router';
 import { DrawerNavigationProp, useDrawerStatus } from 'expo-router/drawer';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import Animated, {
     Easing,
@@ -36,37 +36,37 @@ const CreationTabButton = () => {
     );
 };
 
-const AvatarTabButton = () => {
+const AvatarTabButton = React.memo(() => {
     const navigation = useNavigation<DrawerNavigationProp<ReactNavigation.RootParamList>>('/(protected)/(drawer)');
     const drawerStatus = useDrawerStatus();
-    const isDrawerOpen = drawerStatus === 'open';
-    const [isAvatarPressed, setIsAvatarPressed] = useState(false);
 
-    useEffect(() => {
-        if (!isDrawerOpen && isAvatarPressed) {
-            setIsAvatarPressed(false);
-        }
-    }, [isDrawerOpen, isAvatarPressed]);
+    const isFocused = drawerStatus === 'open';
 
     const handlePress = () => {
+
+        // 1. Top départ au moment exact du tap utilisateur
+        (globalThis as any).__drawerStartTime = performance.now();
+        console.log('[PERF] Tap Avatar...');
+
         navigation.openDrawer();
-        setIsAvatarPressed(true);
     };
 
     return (
         <Pressable
             onPress={handlePress}
             style={styles.tabBarButtonOdd}
+            android_ripple={null}
         >
             <Avatar
                 size="tiny"
-                focused={isAvatarPressed}
+                focused={isFocused}
                 touchable={false}
                 customImage={avatarImage}
+                transition={0}
             />
         </Pressable>
     );
-};
+});
 
 const TabBarButton = ({
     children,
@@ -166,6 +166,8 @@ export default function TabLayout() {
                     padding: 0,
                 },
                 tabBarShowLabel: false, // TODO, afficher les labels ou pas selon les settings d'accessibilité
+                lazy: false,
+                freezeOnBlur: true,
             }}
         >
             <Tabs.Screen

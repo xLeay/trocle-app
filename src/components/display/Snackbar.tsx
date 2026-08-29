@@ -1,18 +1,17 @@
 import React, { useEffect } from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
-import Animated, {
-    useSharedValue,
-    useAnimatedStyle,
-    withTiming,
-    Easing,
-    withSpring,
-    runOnJS
-} from 'react-native-reanimated';
+import { StyleSheet } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, {
+    Easing,
+    runOnJS,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
+    withTiming
+} from 'react-native-reanimated';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
-import { useSnackbarStore } from '@/src/state/snackbarStore';
-import { SnackbarInterface } from '@/src/state/snackbarStore';
+import { SnackbarInterface, useSnackbarStore } from '@/src/state/snackbarStore';
 
 import Flex from '#/Flex';
 import Text from '#/Text';
@@ -20,7 +19,9 @@ import Button from '#/controls/Button';
 
 const Snackbar: React.FC = () => {
     const { activeTheme } = useTheme();
-    const { snackbars, removeSnackbar } = useSnackbarStore();
+    // const { snackbars, removeSnackbar } = useSnackbarStore();
+    const snackbars = useSnackbarStore((state) => state.snackbars)
+    const removeSnackbar = useSnackbarStore((state) => state.removeSnackbar)
 
     return (
         <>

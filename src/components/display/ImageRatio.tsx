@@ -1,5 +1,5 @@
 import { Image, ImageProps } from "expo-image";
-import React, { useCallback, useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 import {
     ActivityIndicator,
     LayoutChangeEvent,
@@ -111,7 +111,7 @@ const ImageRatio = ({
     );
 };
 
-export default ImageRatio;
+export default memo(ImageRatio);
 
 const styles = StyleSheet.create({
     container: {

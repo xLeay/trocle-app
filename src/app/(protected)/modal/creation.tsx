@@ -103,7 +103,8 @@ const productStates = [
 export default function CreationModal() {
     const { activeTheme } = useTheme();
     const router = useRouter();
-    const { addSnackbar } = useSnackbarStore();
+    // const { addSnackbar } = useSnackbarStore();
+    const addSnackbar = useSnackbarStore((state) => state.addSnackbar)
 
 
     // Config de la top app bar
@@ -157,7 +158,12 @@ export default function CreationModal() {
 
     // Section 3
     const [estimatedPrice, setEstimatedPrice] = useState('');
-    const { latitude, longitude, plainLocation, error, fetchLocation } = useLocationStore();
+    // const { latitude, longitude, plainLocation, error, fetchLocation } = useLocationStore();
+    const latitude = useLocationStore((state) => state.latitude)
+    const longitude = useLocationStore((state) => state.longitude)
+    const plainLocation = useLocationStore((state) => state.plainLocation)
+    const error = useLocationStore((state) => state.error)
+    const fetchLocation = useLocationStore((state) => state.fetchLocation)
     const [location, setLocation] = useState('');
 
 

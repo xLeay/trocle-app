@@ -1,7 +1,6 @@
-import { useTheme } from '@/src/lib/hooks/useTheme';
-import { Image } from 'expo-image';
-import React from 'react';
-import { ImageSourcePropType, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
+import { Image, ImageSource } from 'expo-image';
+import React, { memo } from 'react';
+import { ImageSourcePropType, Pressable, StyleSheet, View } from 'react-native';
 import Animated, {
     interpolateColor,
     useAnimatedStyle,
@@ -9,11 +8,13 @@ import Animated, {
     withTiming,
 } from 'react-native-reanimated';
 
+import { useTheme } from '@/src/lib/hooks/useTheme';
+
 import defaultImage from '@/assets/avatar.png';
+
 
 export type AvatarSize = 'enormous' | 'veryLarge' | 'large' | 'medium' | 'small' | 'tiny';
 
-// Taille en pixels pour chaque taille d'avatar
 const sizeMapping: Record<AvatarSize, number> = {
     enormous: 128,
     veryLarge: 64,
@@ -24,7 +25,7 @@ const sizeMapping: Record<AvatarSize, number> = {
 };
 
 export interface AvatarProps {
-    customImage?: ImageSourcePropType | string; // undefined => image par défaut
+    customImage?: ImageSourcePropType | string;
     squared?: boolean;
     focused?: boolean;
     size?: AvatarSize;
@@ -32,6 +33,7 @@ export interface AvatarProps {
     touchable?: boolean;
     blurred?: number;
     transition?: number;
+    recyclingKey?: string;
 }
 
 const Avatar: React.FC<AvatarProps> = ({
@@ -42,83 +44,95 @@ const Avatar: React.FC<AvatarProps> = ({
     onPress,
     touchable = true,
     blurred = 0,
-    transition = 250
+    transition = 250,
+    recyclingKey
 }) => {
     const { activeTheme } = useTheme();
 
     const DURATION = 100;
     const pressedValue = useSharedValue(0);
-    const handlePressIn = () => { pressedValue.value = withTiming(1, { duration: DURATION }) };
-    const handlePressOut = () => { pressedValue.value = withTiming(0, { duration: DURATION }) };
 
-    const animatedStyle = useAnimatedStyle(() => {
-        return {
-            backgroundColor: interpolateColor(
-                pressedValue.value,
-                [0, 1],
-                [
-                    'transparent',
-                    activeTheme.colors.surface.transparent
-                ]
-            ),
-        };
-    });
+    const handlePressIn = () => {
+        if (touchable) pressedValue.value = withTiming(1, { duration: DURATION });
+    };
+    const handlePressOut = () => {
+        if (touchable) pressedValue.value = withTiming(0, { duration: DURATION });
+    };
+
+    const animatedStyle = useAnimatedStyle(() => ({
+        backgroundColor: interpolateColor(
+            pressedValue.value,
+            [0, 1],
+            ['transparent', activeTheme.colors.surface.transparent]
+        ),
+    }));
 
     const dimension = sizeMapping[size];
+    const borderRadius = squared ? activeTheme.radius.default : dimension / 2;
 
-    const containerStyle: ViewStyle = {
-        width: dimension,
-        height: dimension,
-        borderRadius: squared ? activeTheme.radius.default : dimension / 2,
-        overflow: 'hidden',
-        borderWidth: focused ? 2 : 0,
-        borderColor: focused ? activeTheme.colors.surface.contrast : 'transparent',
-
-    };
-
-    const getViewImageComponents = (animatedView: boolean = false) => {
-        return (
-            <View style={{ flex: 1 }}>
-                <Image
-                    style={styles.image}
-                    source={customImage || defaultImage}
-                    contentFit="cover"
-                    transition={transition}
-                    blurRadius={blurred}
-                />
-                {animatedView && (
-                    <Animated.View
-                        pointerEvents="none"
-                        style={[StyleSheet.absoluteFill, animatedStyle]}
-                    />
-                )}
-            </View>
-        );
-    };
+    const imageSource = (customImage || defaultImage) as ImageSource;
 
     return (
-        <View style={containerStyle}>
+        <View
+            style={[
+                styles.container,
+                {
+                    width: dimension,
+                    height: dimension,
+                    borderRadius,
+                    // Applique la bordure de focus SANS impacter l'image interne
+                    borderWidth: focused ? 2 : 0,
+                    borderColor: focused ? activeTheme.colors.surface.contrast : 'transparent',
+                },
+            ]}
+        >
             {touchable ? (
                 <Pressable
                     onPress={onPress}
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
-                    style={{ flex: 1 }}
+                    style={styles.fullSize}
                 >
-                    {getViewImageComponents(true)}
+                    <Image
+                        style={styles.image}
+                        source={imageSource}
+                        contentFit="cover"
+                        transition={transition}
+                        blurRadius={blurred}
+                        cachePolicy="memory"
+                        recyclingKey={recyclingKey}
+                    />
+                    <Animated.View
+                        pointerEvents="none"
+                        style={[StyleSheet.absoluteFill, animatedStyle]}
+                    />
                 </Pressable>
             ) : (
-                getViewImageComponents()
+                <Image
+                    style={styles.image}
+                    source={imageSource}
+                    contentFit="cover"
+                    transition={transition}
+                    blurRadius={blurred}
+                    cachePolicy="memory"
+                    recyclingKey={recyclingKey}
+                />
             )}
         </View>
     );
 };
 
 const styles = StyleSheet.create({
+    container: {
+        overflow: 'hidden',
+    },
+    fullSize: {
+        flex: 1,
+    },
     image: {
         width: '100%',
         height: '100%',
     },
 });
 
-export default Avatar;
+export default memo(Avatar);

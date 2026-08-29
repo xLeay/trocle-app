@@ -1,6 +1,6 @@
+import { useScopedThemeName } from '@/src/lib/providers/ThemeScope';
 import { useThemeStore } from '@/src/state/themeStore';
 import { themes } from '@/src/styles/themes';
-import { useScopedThemeName } from '@/src/lib/providers/ThemeScope';
 
 export const useTheme = () => {
     const storedTheme = useThemeStore((state) => state.theme);
@@ -16,3 +16,5 @@ export const useTheme = () => {
         isThemeForced: scopedTheme !== undefined,
     };
 };
+
+export type Theme = ReturnType<typeof useTheme>['activeTheme'];

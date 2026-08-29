@@ -21,7 +21,8 @@ import { useSnackbarStore } from '@/src/state/snackbarStore';
 
 export default function SignInScreen() {
     const { activeTheme } = useTheme();
-    const { addSnackbar } = useSnackbarStore();
+    // const { addSnackbar } = useSnackbarStore();
+    const addSnackbar = useSnackbarStore((state) => state.addSnackbar)
 
     // Config de la top app bar
     const canGoBack = router.canGoBack();
@@ -36,7 +37,10 @@ export default function SignInScreen() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
-    const { signIn, loading, session } = useAuthStore()
+    // const { signIn, loading, session } = useAuthStore()
+    const signIn = useAuthStore((state) => state.signIn)
+    const loading = useAuthStore((state) => state.loading)
+    const session = useAuthStore((state) => state.session)
 
     function getErrorMessage(err: any) {
         if (!err) return;

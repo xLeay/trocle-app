@@ -25,6 +25,7 @@ export interface TableLeftProps {
     icon?: React.ReactNode;
     src?: ImageSourcePropType | string;
     avatarSize?: AvatarSize;
+    avatarRecyclingKey?: string;
     read?: boolean;
     certified?: boolean;
     certificationColor?: string;
@@ -45,6 +46,7 @@ const TableLeft: React.FC<TableLeftProps> = ({
     icon,
     src,
     avatarSize = 'medium',
+    avatarRecyclingKey,
     read = true,
     certified = false,
     certificationColor,
@@ -59,7 +61,7 @@ const TableLeft: React.FC<TableLeftProps> = ({
     const getVariantComponent = () => {
         switch (variant) {
             case 'avatar':
-                return <Avatar size={avatarSize} customImage={src} onPress={onAvatarPress} />;
+                return <Avatar size={avatarSize} customImage={src} recyclingKey={avatarRecyclingKey} onPress={onAvatarPress} />;
             case 'icon': {
                 if (icon == null) return null;
                 if (icon === undefined) return <Circle size={24} color={iconColor} />;

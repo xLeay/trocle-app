@@ -34,14 +34,21 @@ export default function LocationMap() {
         opened: insets.bottom
     };
 
-    const {
-        fetchLocation,
-        latitude,
-        longitude,
-        getLocationStatus,
-        setTrocPropositionSelectedAddress,
-        trocPropositionSelectedAddress
-    } = useLocationStore();
+    // const {
+    //     fetchLocation,
+    //     latitude,
+    //     longitude,
+    //     getLocationStatus,
+    //     setTrocPropositionSelectedAddress,
+    //     trocPropositionSelectedAddress
+    // } = useLocationStore();
+
+    const fetchLocation = useLocationStore((state) => state.fetchLocation)
+    const latitude = useLocationStore((state) => state.latitude)
+    const longitude = useLocationStore((state) => state.longitude)
+    const getLocationStatus = useLocationStore((state) => state.getLocationStatus)
+    const setTrocPropositionSelectedAddress = useLocationStore((state) => state.setTrocPropositionSelectedAddress)
+    const trocPropositionSelectedAddress = useLocationStore((state) => state.trocPropositionSelectedAddress)
 
     const [searchValue, setSearchValue] = useState('');
     const [predictions, setPredictions] = useState<LocationAddress[]>([]);

@@ -2,6 +2,7 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect } from 'react';
+import { enableFreeze } from 'react-native-screens';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SystemBars } from 'react-native-edge-to-edge';
@@ -40,6 +41,9 @@ function InnerApp() {
         'RethinkSans-ExtraBold': require('@/assets/fonts/Rethink_Sans/RethinkSans-ExtraBold.ttf'),
         // 'RethinkSans-ExtraBoldItalic': require('@/assets/fonts/Rethink_Sans/RethinkSans-ExtraBoldItalic.ttf'),
     });
+
+    // Activation de freeze pour optimiser les performances
+    enableFreeze(true)
 
     useEffect(() => {
         if (loaded || error) {

@@ -1,3 +1,4 @@
+import { Link } from 'expo-router';
 import { useEffect, useState } from 'react';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
@@ -171,9 +172,9 @@ function PropositionMessage({
                         }}
                     >
                         {isMe ? (
-                            <Text variant='body_Medium' type='primary'>Tu as accepté l'offre de Troc de {otherUsername} ! Tu peux la retrouver sur la page <Text variant='label_Large' type='brand'>Mes Trocs</Text>.</Text>
+                            <Text variant='body_Medium' type='primary'>Tu as accepté l'offre de Troc de {otherUsername} ! Tu peux la retrouver sur la page <Link href='/trocs'><Text variant='label_Large' type='brand'>Mes Trocs</Text></Link>.</Text>
                         ) : (
-                            <Text variant='body_Medium' type='primary'> {otherUsername} a accepté ton offre de Troc ! Tu peux la retrouver sur la page <Text variant='label_Large' type='brand'>Mes Trocs</Text>.</Text>
+                            <Text variant='body_Medium' type='primary'> {otherUsername} a accepté ton offre de Troc ! Tu peux la retrouver sur la page <Link href='/trocs'><Text variant='label_Large' type='brand'>Mes Trocs</Text></Link>.</Text>
                         )}
                     </Flex>
                 )

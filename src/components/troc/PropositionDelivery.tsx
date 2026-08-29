@@ -252,7 +252,8 @@ export default function PropositionDelivery({
 }: PropositionDeliveryProps) {
     const { theme, activeTheme } = useTheme();
 
-    const { trocPropositionSelectedAddress } = useLocationStore();
+    // const { trocPropositionSelectedAddress } = useLocationStore();
+    const trocPropositionSelectedAddress = useLocationStore((state) => state.trocPropositionSelectedAddress)
     const [pickerMode, setPickerMode] = useState<'date' | 'time' | null>(null);
 
     const pickerValue =

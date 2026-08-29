@@ -1,28 +1,201 @@
 
-import React, { useMemo } from 'react';
-import type { ColorValue } from 'react-native';
+// import React, { useMemo } from 'react';
+// import type { ColorValue } from 'react-native';
+// import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';
+
+// interface GradientProps {
+//     colors: string[]; // Liste des couleurs du dégradé
+//     positions?: number[]; // Liste des positions (entre 0 et 1, optionnel)
+// }
+
+// interface IconProps {
+//     size?: number;
+//     color?: ColorValue;
+//     filled?: boolean;
+//     gradient?: GradientProps;
+//     style?: object;
+// }
+
+// export interface BrandIconProps {
+//     size?: number;
+//     color?: ColorValue; // Si fourni, remplace la couleur/fill par défaut
+//     style?: object;
+// }
+
+// // Fonction pour les icônes avec un seul path (single path)
+// export function createSinglePathSVG({
+//     filledPath,
+//     strokePath,
+// }: {
+//     filledPath: string;
+//     strokePath: string;
+// }) {
+//     const SinglePathSVG: React.FC<IconProps> = ({
+//         size = 24,
+//         color = 'black',
+//         filled = false,
+//         gradient,
+//         style,
+//     }) => {
+//         const path = filled ? filledPath : strokePath;
+//         const gradientId = useMemo(() => `gradient-${Math.random().toString(36).slice(2, 9)}`, []);
+
+//         return (
+//             <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={style}>
+//                 {gradient && (
+//                     <Defs>
+//                         <LinearGradient id={gradientId} x1="50%" y1="0%" x2="50%" y2="100%">
+//                             {gradient.colors.map((color, index) => (
+//                                 <Stop
+//                                     key={index}
+//                                     offset={
+//                                         gradient.positions
+//                                             ? `${gradient.positions[index] * 100}%`
+//                                             : `${(index / (gradient.colors.length - 1)) * 100}%`
+//                                     }
+//                                     stopColor={color}
+//                                 />
+//                             ))}
+//                         </LinearGradient>
+//                     </Defs>
+//                 )}
+//                 <Path
+//                     fill={gradient ? `url(#${gradientId})` : color}
+//                     fillRule="evenodd"
+//                     d={path}
+//                     clipRule="evenodd"
+//                 />
+//             </Svg>
+//         );
+//     };
+
+//     return React.memo(SinglePathSVG);
+// }
+
+// // Fonction pour les icônes avec plusieurs paths (multiple paths)
+// export function createMultiPathSVG({
+//     filledPaths,
+//     strokePaths,
+// }: {
+//     filledPaths: string[];
+//     strokePaths: string[];
+// }) {
+//     const MultiPathSVG: React.FC<IconProps> = ({
+//         size = 24,
+//         color = 'black',
+//         filled = false,
+//         gradient,
+//         style,
+//     }) => {
+//         const paths = filled ? filledPaths : strokePaths;
+//         const gradientId = useMemo(() => `gradient-${Math.random().toString(36).slice(2, 9)}`, []);
+
+//         return (
+//             <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={style}>
+//                 {gradient && (
+//                     <Defs>
+//                         <LinearGradient id={gradientId} x1="50%" y1="0%" x2="50%" y2="100%">
+//                             {gradient.colors.map((color, index) => (
+//                                 <Stop
+//                                     key={index}
+//                                     offset={
+//                                         gradient.positions
+//                                             ? `${gradient.positions[index] * 100}%`
+//                                             : `${(index / (gradient.colors.length - 1)) * 100}%`
+//                                     }
+//                                     stopColor={color}
+//                                 />
+//                             ))}
+//                         </LinearGradient>
+//                     </Defs>
+//                 )}
+//                 {paths.map((path, index) => (
+//                     <Path
+//                         key={index}
+//                         fill={gradient ? `url(#${gradientId})` : color}
+//                         fillRule="evenodd"
+//                         d={path}
+//                         clipRule="evenodd"
+//                     />
+//                 ))}
+//             </Svg>
+//         );
+//     };
+
+//     return React.memo(MultiPathSVG);
+// }
+
+// // Fonction pour les logos de marque
+// export function createBrandSVG({
+//     viewBox = '0 0 24 24',
+//     renderContent,
+// }: {
+//     viewBox?: string;
+//     renderContent: (color?: ColorValue) => React.ReactNode;
+// }) {
+//     const BrandSVG: React.FC<BrandIconProps> = ({
+//         size = 24,
+//         color,
+//         style,
+//     }) => {
+//         return (
+//             <Svg width={size} height={size} viewBox={viewBox} fill="none" style={style}>
+//                 {renderContent(color)}
+//             </Svg>
+//         );
+//     };
+//     return React.memo(BrandSVG);
+// }
+
+
+
+import React, { memo } from 'react';
+import type { ColorValue, StyleProp, ViewStyle } from 'react-native';
 import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg';
 
-interface GradientProps {
-    colors: string[]; // Liste des couleurs du dégradé
-    positions?: number[]; // Liste des positions (entre 0 et 1, optionnel)
+export interface GradientProps {
+    colors: string[];
+    positions?: number[];
 }
 
-interface IconProps {
+export interface IconProps {
     size?: number;
     color?: ColorValue;
     filled?: boolean;
     gradient?: GradientProps;
-    style?: object;
+    style?: StyleProp<ViewStyle>;
 }
 
 export interface BrandIconProps {
     size?: number;
-    color?: ColorValue; // Si fourni, remplace la couleur/fill par défaut
-    style?: object;
+    color?: ColorValue;
+    style?: StyleProp<ViewStyle>;
 }
 
-// Fonction pour les icônes avec un seul path (single path)
+// 1. Dégradé statique global pour réutiliser les Defs SVG au niveau natif
+const RenderGradient = memo(({ gradient, id }: { gradient: GradientProps; id: string }) => (
+    <Defs>
+        <LinearGradient id={id} x1="50%" y1="0%" x2="50%" y2="100%">
+            {gradient.colors.map((c, index) => (
+                <Stop
+                    key={index}
+                    offset={
+                        gradient.positions
+                            ? `${gradient.positions[index] * 100}%`
+                            : `${(index / Math.max(gradient.colors.length - 1, 1)) * 100}%`
+                    }
+                    stopColor={c}
+                />
+            ))}
+        </LinearGradient>
+    </Defs>
+));
+
+// ID deterministe basé sur les couleurs du dégradé (évite Math.random)
+const getGradientId = (gradient?: GradientProps) =>
+    gradient ? `grad-${gradient.colors.join('-').replace(/[^a-zA-Z0-9]/g, '')}` : undefined;
+
+// 2. Single Path SVG
 export function createSinglePathSVG({
     filledPath,
     strokePath,
@@ -38,29 +211,13 @@ export function createSinglePathSVG({
         style,
     }) => {
         const path = filled ? filledPath : strokePath;
-        const gradientId = useMemo(() => `gradient-${Math.random().toString(36).slice(2, 9)}`, []);
+        const gradId = getGradientId(gradient);
 
         return (
             <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={style}>
-                {gradient && (
-                    <Defs>
-                        <LinearGradient id={gradientId} x1="50%" y1="0%" x2="50%" y2="100%">
-                            {gradient.colors.map((color, index) => (
-                                <Stop
-                                    key={index}
-                                    offset={
-                                        gradient.positions
-                                            ? `${gradient.positions[index] * 100}%`
-                                            : `${(index / (gradient.colors.length - 1)) * 100}%`
-                                    }
-                                    stopColor={color}
-                                />
-                            ))}
-                        </LinearGradient>
-                    </Defs>
-                )}
+                {gradient && gradId && <RenderGradient gradient={gradient} id={gradId} />}
                 <Path
-                    fill={gradient ? `url(#${gradientId})` : color}
+                    fill={gradient && gradId ? `url(#${gradId})` : color}
                     fillRule="evenodd"
                     d={path}
                     clipRule="evenodd"
@@ -69,10 +226,10 @@ export function createSinglePathSVG({
         );
     };
 
-    return React.memo(SinglePathSVG);
+    return memo(SinglePathSVG);
 }
 
-// Fonction pour les icônes avec plusieurs paths (multiple paths)
+// 3. Multi Path SVG
 export function createMultiPathSVG({
     filledPaths,
     strokePaths,
@@ -88,31 +245,15 @@ export function createMultiPathSVG({
         style,
     }) => {
         const paths = filled ? filledPaths : strokePaths;
-        const gradientId = useMemo(() => `gradient-${Math.random().toString(36).slice(2, 9)}`, []);
+        const gradId = getGradientId(gradient);
 
         return (
             <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={style}>
-                {gradient && (
-                    <Defs>
-                        <LinearGradient id={gradientId} x1="50%" y1="0%" x2="50%" y2="100%">
-                            {gradient.colors.map((color, index) => (
-                                <Stop
-                                    key={index}
-                                    offset={
-                                        gradient.positions
-                                            ? `${gradient.positions[index] * 100}%`
-                                            : `${(index / (gradient.colors.length - 1)) * 100}%`
-                                    }
-                                    stopColor={color}
-                                />
-                            ))}
-                        </LinearGradient>
-                    </Defs>
-                )}
+                {gradient && gradId && <RenderGradient gradient={gradient} id={gradId} />}
                 {paths.map((path, index) => (
                     <Path
                         key={index}
-                        fill={gradient ? `url(#${gradientId})` : color}
+                        fill={gradient && gradId ? `url(#${gradId})` : color}
                         fillRule="evenodd"
                         d={path}
                         clipRule="evenodd"
@@ -122,10 +263,10 @@ export function createMultiPathSVG({
         );
     };
 
-    return React.memo(MultiPathSVG);
+    return memo(MultiPathSVG);
 }
 
-// Fonction pour les logos de marque
+// 4. Brand SVG
 export function createBrandSVG({
     viewBox = '0 0 24 24',
     renderContent,
@@ -133,16 +274,13 @@ export function createBrandSVG({
     viewBox?: string;
     renderContent: (color?: ColorValue) => React.ReactNode;
 }) {
-    const BrandSVG: React.FC<BrandIconProps> = ({
-        size = 24,
-        color,
-        style,
-    }) => {
+    const BrandSVG: React.FC<BrandIconProps> = ({ size = 24, color, style }) => {
         return (
             <Svg width={size} height={size} viewBox={viewBox} fill="none" style={style}>
                 {renderContent(color)}
             </Svg>
         );
     };
-    return React.memo(BrandSVG);
+
+    return memo(BrandSVG);
 }

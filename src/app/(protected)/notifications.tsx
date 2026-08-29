@@ -1,11 +1,10 @@
 import { Stack, router } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
 
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
-
+import CustomSafeAreaView from '#/CustomSafeAreaView';
 import NotificationsList from '#/messages/NotificationsList';
 
 import { Arrowleft } from '#/icons';
@@ -17,11 +16,10 @@ export default function Notifications() {
     const { activeTheme } = useTheme();
 
     // Config de la top app bar
-    const topAppBarConfig = "_small";
     const canGoBack = router.canGoBack();
     const onBack = () => { canGoBack && router.back() };
 
-    const { left, center, right } = useTopAppBar(topAppBarConfig, {
+    const { left, center, right } = useTopAppBar('_small', {
         iconName: Arrowleft,
         canGoBack,
         onBack,
@@ -29,9 +27,10 @@ export default function Notifications() {
     });
 
     return (
-        <View style={[styles.container, { backgroundColor: activeTheme.colors.surface.secondary }]}>
+        <CustomSafeAreaView style={{ backgroundColor: activeTheme.colors.surface.secondary }}>
             <Stack.Screen
                 options={{
+                    headerShown: true,
                     header: () => (
                         <TopAppBar
                             left={left}
@@ -43,15 +42,6 @@ export default function Notifications() {
             />
 
             <NotificationsList notifications={MOCK_NOTIFICATIONS} />
-        </View>
+        </CustomSafeAreaView>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-
-    },
-});

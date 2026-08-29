@@ -3,14 +3,13 @@ import React from 'react';
 import { useTheme } from '@/src/lib/hooks/useTheme';
 
 import Flex from '#/Flex';
-import Text from '#/Text';
-import Divider from '#/display/Divider';
 import Avatar from '#/display/Avatar';
+import Divider from '#/display/Divider';
 
 
 import NotificationRow from './NotificationRow';
 
-import { Heart, Star1, Follow, Troc, Shield, Plus } from '#/icons';
+import { Follow, Heart, Plus, Shield, Star1, Troc } from '#/icons';
 
 import { NotificationItemData } from '@/src/types/notification';
 
@@ -107,7 +106,7 @@ const NotificationsList: React.FC<NotificationsListProps> = ({
     return (
         <Flex gap={activeTheme.spacing._200} style={{ flex: 1, width: '100%', marginTop: activeTheme.spacing._100 }}>
             <Flex scroll gap={activeTheme.spacing._100} style={{ width: '100%' }}>
-                {notifications.map((notification) => {
+                {notifications.map((notification, index) => {
                     const config = getNotificationItem(notification);
                     return (
                         <React.Fragment key={notification.id}>
@@ -122,10 +121,11 @@ const NotificationsList: React.FC<NotificationsListProps> = ({
                                 actionLink={config.actionLink}
                             />
 
-                            <Divider padding />
+                            {index !== notifications.length - 1 && <Divider padding />}
                         </React.Fragment>
                     );
                 })}
+                <Flex style={{ height: activeTheme.spacing._200 }} />
             </Flex>
         </Flex>
     );

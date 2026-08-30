@@ -1,3 +1,5 @@
+import { useFocusEffect, useNavigation } from 'expo-router';
+import { DrawerNavigationProp } from 'expo-router/drawer';
 import { useCallback } from 'react';
 import { StyleSheet, useWindowDimensions } from 'react-native';
 
@@ -129,6 +131,22 @@ export default function Tab() {
         )
     }
 
+
+    const drawerNavigation = useNavigation<DrawerNavigationProp<ReactNavigation.RootParamList>>('/(protected)/(drawer)');
+
+    useFocusEffect(
+        useCallback(() => {
+            drawerNavigation.setOptions({
+                swipeEnabled: false,
+            });
+
+            return () => {
+                drawerNavigation.setOptions({
+                    swipeEnabled: true,
+                });
+            };
+        }, [drawerNavigation])
+    );
     return (
         <Flex
             style={[

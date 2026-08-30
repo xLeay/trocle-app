@@ -8,7 +8,6 @@ import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 import CustomSafeAreaView from '#/CustomSafeAreaView';
 import Flex from '#/Flex';
 import Text from '#/Text';
-import SearchBar from '#/bars/SearchBar';
 import BadgeNotification from '#/display/BadgeNotification';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
@@ -60,28 +59,9 @@ export default function Trocs() {
             <ScrollView
                 style={{ backgroundColor: activeTheme.colors.surface.secondary, flex: 1 }}
                 contentContainerStyle={{ gap: activeTheme.spacing._100 }}
-                stickyHeaderIndices={[0]}
                 bounces={false}
                 overScrollMode='never'
             >
-                {/* Top */}
-                <Flex
-                    style={{
-                        backgroundColor: activeTheme.colors.surface.secondary,
-                        paddingHorizontal: activeTheme.spacing._200,
-                        paddingTop: activeTheme.spacing._0,
-                        paddingBottom: activeTheme.spacing._200,
-                        borderBottomWidth: 1,
-                        borderBottomColor: activeTheme.colors.border.primary
-                    }}
-                >
-                    <SearchBar
-                        onChangeText={setSearch}
-                        value={search}
-                        placeholder='Utilisateur, Article...'
-                    />
-                </Flex>
-
                 {/* Section de Trocs */}
                 <Flex fullWidth gap={activeTheme.spacing._400}>
                     {/* Prochains Trocs */}
@@ -101,7 +81,7 @@ export default function Trocs() {
                             </Flex>
 
                             {/* Droite */}
-                            <PressableOverlay onPress={() => router.push('/trocs/next-trocs')}>
+                            <PressableOverlay onPress={() => router.push('/trocs/next-trocs')} borderRadius={activeTheme.radius.default}>
                                 <Flex direction='row' alignItems='center' gap={activeTheme.spacing._50}>
                                     <Text variant='body_Large' type='primary'>Tout voir</Text>
                                     <Chevronright color={activeTheme.colors.text.primary} />
@@ -139,7 +119,7 @@ export default function Trocs() {
                             </Flex>
 
                             {/* Droite */}
-                            <PressableOverlay onPress={() => router.push('/trocs/trocs-list')}>
+                            <PressableOverlay onPress={() => router.push('/trocs/trocs-list')} borderRadius={activeTheme.radius.default}>
                                 <Flex direction='row' alignItems='center' gap={activeTheme.spacing._50}>
                                     <Text variant='body_Large' type='primary'>Tout voir</Text>
                                     <Chevronright color={activeTheme.colors.text.primary} />
@@ -151,10 +131,9 @@ export default function Trocs() {
                         <Flex
                             fullWidth
                             direction='row'
-                            overflow='visible'
                             gap={activeTheme.spacing._200}
                             style={{
-                                height: 220,
+                                // height: 220,
                                 borderTopWidth: 1,
                                 borderTopColor: activeTheme.colors.border.primary
                             }}

@@ -1,5 +1,4 @@
 
-import React from "react";
 import { StyleSheet } from "react-native";
 
 import Flex from "#/Flex";
@@ -14,11 +13,13 @@ import { Search } from "#/icons";
 interface SearchArticleProps {
     article?: boolean;
     imageSrc?: string;
+    grayScale?: boolean;
 }
 
 const SearchArticle = ({
     article = true,
     imageSrc,
+    grayScale = false,
 }: SearchArticleProps) => {
     const { activeTheme } = useTheme();
 
@@ -29,6 +30,7 @@ const SearchArticle = ({
                     ratio="1:1"
                     source={imageSrc}
                     style={{ backgroundColor: activeTheme.colors.surface.primary, borderRadius: activeTheme.radius.default }}
+                    grayScale={grayScale}
                 />
             ) : (
                 <Flex border borderColor={activeTheme.colors.surface.divider} style={{ backgroundColor: activeTheme.colors.surface.primary, borderRadius: activeTheme.radius.full }}>

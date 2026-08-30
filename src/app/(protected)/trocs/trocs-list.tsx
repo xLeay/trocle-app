@@ -10,10 +10,11 @@ import Text from '#/Text';
 import SearchBar from '#/bars/SearchBar';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
-import NextTrocsList from '#/troc/NextTrocsList';
+import AllTrocsList from '#/troc/AllTrocsList';
 import { MOCK_TROCS } from '@/src/mock/trocs.mock';
 
 import { Arrowleft } from '#/icons';
+import { ScrollView } from 'react-native';
 
 export default function TrocsList() {
     const { activeTheme } = useTheme();
@@ -33,7 +34,6 @@ export default function TrocsList() {
     const [search, setSearch] = useState('');
 
     const trocsList = MOCK_TROCS;
-    const nextTrocs = trocsList.filter((troc) => troc.status === 'accepted');
 
     const normalize = (value: string) =>
         value
@@ -42,7 +42,7 @@ export default function TrocsList() {
             .toLowerCase()
             .trim();
 
-    const filteredNextTrocs = nextTrocs.filter((troc) => {
+    const filteredTrocs = trocsList.filter((troc) => {
         const query = normalize(search);
 
         const searchableValues = [
@@ -75,13 +75,13 @@ export default function TrocsList() {
             />
 
             {/* Content */}
-            <Flex
-                fullWidth
-                gap={activeTheme.spacing._100}
-                style={{
-                    height: 500,
-                    backgroundColor: activeTheme.colors.surface.secondary
-                }}>
+            <ScrollView
+                style={{ backgroundColor: activeTheme.colors.surface.secondary, flex: 1 }}
+                contentContainerStyle={{ gap: activeTheme.spacing._100 }}
+                stickyHeaderIndices={[0]}
+                bounces={false}
+                overScrollMode='never'
+            >
                 {/* Top */}
                 <Flex
                     style={{
@@ -112,7 +112,7 @@ export default function TrocsList() {
                             justifyContent='space-between'
                             style={{ paddingHorizontal: activeTheme.spacing._200 }}
                         >
-                            <Text variant='body_Medium' type='secondary'>{nextTrocs.length} résultats</Text>
+                            <Text variant='body_Medium' type='secondary'>{filteredTrocs.length} résultats</Text>
                         </Flex>
 
                         {/* Trocs (cards) */}
@@ -122,14 +122,13 @@ export default function TrocsList() {
                             gap={activeTheme.spacing._200}
                             style={{ height: '100%' }}
                         >
-                            <NextTrocsList
-                                trocs={filteredNextTrocs}
-                                horizontal={false}
+                            <AllTrocsList
+                                trocs={filteredTrocs}
                             />
                         </Flex>
                     </Flex>
                 </Flex>
-            </Flex>
+            </ScrollView>
         </CustomSafeAreaView>
     );
 }

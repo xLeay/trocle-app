@@ -43,11 +43,6 @@ const AvatarTabButton = React.memo(() => {
     const isFocused = drawerStatus === 'open';
 
     const handlePress = () => {
-
-        // 1. Top départ au moment exact du tap utilisateur
-        (globalThis as any).__drawerStartTime = performance.now();
-        console.log('[PERF] Tap Avatar...');
-
         navigation.openDrawer();
     };
 

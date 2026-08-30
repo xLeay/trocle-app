@@ -34,6 +34,7 @@ export interface AvatarProps {
     blurred?: number;
     transition?: number;
     recyclingKey?: string;
+    grayScale?: boolean;
 }
 
 const Avatar: React.FC<AvatarProps> = ({
@@ -45,7 +46,8 @@ const Avatar: React.FC<AvatarProps> = ({
     touchable = true,
     blurred = 0,
     transition = 250,
-    recyclingKey
+    recyclingKey,
+    grayScale = false
 }) => {
     const { activeTheme } = useTheme();
 
@@ -94,7 +96,11 @@ const Avatar: React.FC<AvatarProps> = ({
                     style={styles.fullSize}
                 >
                     <Image
-                        style={styles.image}
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            ...(grayScale && { filter: [{ grayscale: 1 }] })
+                        }}
                         source={imageSource}
                         contentFit="cover"
                         transition={transition}
@@ -109,7 +115,11 @@ const Avatar: React.FC<AvatarProps> = ({
                 </Pressable>
             ) : (
                 <Image
-                    style={styles.image}
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        ...(grayScale && { filter: [{ grayscale: 1 }] })
+                    }}
                     source={imageSource}
                     contentFit="cover"
                     transition={transition}

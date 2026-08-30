@@ -42,6 +42,7 @@ type ImageRatioProps = {
     ratio?: RatioName;
     style?: any;
     transition?: number;
+    grayScale?: boolean;
 
     /**
      * Si présent, ImageRatio utilise AnimatedImage.
@@ -62,6 +63,7 @@ const ImageRatio = ({
     ratio,
     style,
     transition = 250,
+    grayScale = false,
     animatedStyle,
     animatedProps,
     onPress,
@@ -80,6 +82,7 @@ const ImageRatio = ({
         width: "100%" as const,
         height: ratio ? width! / aspectRatio : ("100%" as const),
         ...StyleSheet.flatten(style),
+        ...(grayScale && { filter: [{ grayscale: 1 }] })
     };
 
     const isAnimated = !!animatedStyle || !!animatedProps;

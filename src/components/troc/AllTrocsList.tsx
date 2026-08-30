@@ -1,4 +1,3 @@
-import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
 
 import { useTheme, type Theme } from "@/src/lib/hooks/useTheme";
@@ -21,7 +20,7 @@ interface AllTrocsListProps {
 const getStatusIcon = (status: string, theme: Theme) => {
     switch (status) {
         case "pending":
-            return <Pause size={32} color={theme.colors.icon.alert} />;
+            return <Pause filled size={32} color={theme.colors.icon.alert} />;
         case "accepted":
             return <Arrowright size={32} color={theme.colors.icon.success} />;
         case "rejected":
@@ -49,11 +48,11 @@ export default function AllTrocsList({
     const getGreyScale = (status: TrocMock['status']) => {
         switch (status) {
             case "pending":
-                return true;
+                return false;
             case "accepted":
                 return false;
             case "rejected":
-                return false;
+                return true;
             case "completed":
                 return false;
             case "cancelled":
@@ -70,16 +69,10 @@ export default function AllTrocsList({
         }
     }
 
-    const itemSeparatorComponent = () => {
-        return (
-            <Flex style={{ paddingVertical: activeTheme.spacing._200 }}>
-                <Divider />
-            </Flex>
-        )
-    }
-
-
     const renderItem = ({ item }: { item: TrocMock }) => {
+
+        const isGreyScale = getGreyScale(item.status);
+
         return (
             // Troc
             <Flex
@@ -101,6 +94,7 @@ export default function AllTrocsList({
                                 {/* Avatar */}
                                 <Flex fullWidth direction="row" alignItems="center" gap={activeTheme.spacing._50}>
                                     <Avatar
+                                        grayScale={isGreyScale}
                                         transition={0}
                                         size="small"
                                         customImage={`https://api.dicebear.com/10.x/dylan/svg?seed=${item.username_recipient}`}
@@ -113,6 +107,7 @@ export default function AllTrocsList({
                                 <Flex fullWidth direction="row" gap={activeTheme.spacing._100}>
                                     <SearchArticle
                                         imageSrc={item.image_initiator_article}
+                                        grayScale={isGreyScale}
                                     />
                                     <Text variant="label_Large" type={textColor(item.status)} numberOfLines={2} style={{ flexShrink: 1 }}>{item.title_initiator_article}</Text>
                                 </Flex>
@@ -127,6 +122,7 @@ export default function AllTrocsList({
                                 {/* Avatar */}
                                 <Flex fullWidth direction="row" alignItems="center" gap={activeTheme.spacing._50}>
                                     <Avatar
+                                        grayScale={isGreyScale}
                                         transition={0}
                                         size="small"
                                         customImage={`https://api.dicebear.com/10.x/dylan/svg?seed=${item.username_initiator}`}
@@ -139,6 +135,7 @@ export default function AllTrocsList({
                                 <Flex fullWidth direction="row" gap={activeTheme.spacing._100}>
                                     <SearchArticle
                                         imageSrc={item.image_recipient_article}
+                                        grayScale={isGreyScale}
                                     />
                                     <Text variant="label_Large" type={textColor(item.status)} numberOfLines={2} style={{ flexShrink: 1 }}>{item.title_recipient_article}</Text>
                                 </Flex>
@@ -158,19 +155,14 @@ export default function AllTrocsList({
     };
 
     return (
-        <FlashList
-            key={'all-trocs'}
-            data={trocs}
-            renderItem={renderItem}
-            ItemSeparatorComponent={itemSeparatorComponent}
-            keyExtractor={(item) => item.id}
-            showsHorizontalScrollIndicator={false}
-            style={{ flex: 1, width: '100%' }}
-            contentContainerStyle={{
-                gap: activeTheme.spacing._200,
-                paddingBottom: activeTheme.spacing._400,
-            }}
-            bounces={false}
-        />
+        <Flex fullWidth gap={activeTheme.spacing._100} style={{ paddingBottom: activeTheme.spacing._400, paddingTop: activeTheme.spacing._100 }}>
+            {trocs.map((item, index) => (
+                <Flex key={item.id} fullWidth gap={activeTheme.spacing._200}>
+                    {renderItem({ item })}
+
+                    {index < trocs.length - 1 && <Divider />}
+                </Flex>
+            ))}
+        </Flex>
     );
 }

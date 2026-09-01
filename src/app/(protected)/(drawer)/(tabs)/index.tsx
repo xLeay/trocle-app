@@ -92,6 +92,16 @@ export default function Tab() {
                 action,
             });
 
+            // TODO: Si Y'a vraiment match, on redirect
+            // if (action === 'like') {
+            //     router.push({
+            //         pathname: '/(protected)/match',
+            //         params: {
+            //             productId: product.id,
+            //         }
+            //     });
+            // }
+
             // Plus tard :
             // mutation.mutate({
             //     productId: product.id,

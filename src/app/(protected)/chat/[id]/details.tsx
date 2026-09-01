@@ -1,19 +1,18 @@
-import React, { useState } from "react";
 import { Stack, router, useLocalSearchParams } from "expo-router";
+import { useState } from "react";
 
 import { useTheme } from "@/src/lib/hooks/useTheme";
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
-import TopAppBar from "#/display/TopAppBar/TopAppBar";
-import Button from "#/controls/Button";
-import Table from "#/display/Table";
-import Flex from "#/Flex";
-import Text from "#/Text";
+import Switch from "#/controls/Switch";
 import Avatar from "#/display/Avatar";
 import Divider from "#/display/Divider";
-import Switch from "#/controls/Switch";
+import Table from "#/display/Table";
+import TopAppBar from "#/display/TopAppBar/TopAppBar";
+import Flex from "#/Flex";
+import Text from "#/Text";
 
-import { Arrowleft, Certification, Notification, History, Profile, Block, Report, Delete } from "#/icons";
+import { Arrowleft, Block, Certification, Delete, History, Notification, Profile, Report } from "#/icons";
 
 export default function ChatDetailsScreen() {
     const { activeTheme } = useTheme();

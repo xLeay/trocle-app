@@ -196,7 +196,8 @@ const Button = forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>(({
     return (
         <Animated.View style={[
             styles.animatedView,
-            fullWidth && { flex: 1, width: '100%' },
+            // ne pas mettre flex 1 ici
+            fullWidth && { width: '100%' },
             animatedStyle,
             variantButtonStyles
         ]}>

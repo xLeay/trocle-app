@@ -41,13 +41,16 @@ const TopAppBar = ({
     const { activeTheme } = useTheme();
     const insets = useSafeAreaInsets();
 
-    const getNotNullStyles = (element: React.ReactNode = null) => {
-        return element ? styles.isNotNull : styles.isNull;
-    };
+    const hasCenter = Boolean(center);
 
-    const leftStyles = getNotNullStyles(left);
-    const centerStyles = getNotNullStyles(center);
-    const rightStyles = getNotNullStyles(right);
+    // Si l'élément existe :
+    // - S'il y a un center, les côtés ne prennent que la taille de leur contenu (flex: 0 / shrink: 0)
+    // - S'il n'y a pas de center, les côtés peuvent s'étendre (flex: 1)
+    const leftStyles = left ? (hasCenter ? styles.sideContent : styles.flexExpand) : styles.isNull;
+    const centerStyles = center ? styles.centerExpand : styles.isNull;
+    const rightStyles = right ? (hasCenter ? styles.sideContent : styles.flexExpand) : styles.isNull;
+
+
 
     return (
         <Pressable onPress={onPress} style={{ zIndex, ...(border ? { borderColor, borderWidth } : {}) }}>
@@ -100,14 +103,8 @@ const styles = StyleSheet.create({
         width: 1,
         height: 1,
     },
-    isNotNull: {
-        flex: 1,
-    },
-    isNull: {
-        flex: 0,
-    },
     topBar: {
-        flex: 1,
+        // flex: 1,
         flexDirection: 'row',
         height: '100%',
         alignItems: 'center',
@@ -128,5 +125,18 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
 
         // backgroundColor: '#FF000025',
+    },
+    sideContent: {
+        flexShrink: 0,
+    },
+    centerExpand: {
+        flex: 1,
+        paddingHorizontal: 12,
+    },
+    flexExpand: {
+        flex: 1,
+    },
+    isNull: {
+        flex: 0,
     },
 });

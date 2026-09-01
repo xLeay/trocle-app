@@ -1,6 +1,6 @@
 import { useTheme } from '@/src/lib/hooks/useTheme';
-import React, { useRef, useEffect } from 'react';
-import { Pressable, TextInput as RNTextInput, StyleSheet, Keyboard } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { Keyboard, Pressable, TextInput as RNTextInput, StyleSheet } from 'react-native';
 
 // Composants
 import Button from '#/controls/Button';
@@ -8,10 +8,12 @@ import Flex from '#/Flex';
 import TextInput from '#/TextInput';
 
 // Icones
-import { Image, Send } from '#/icons';
+import { Arrowtop, Image, Send } from '#/icons';
 
+type MessageBarVariant = 'default' | 'match';
 
 interface MessageBarProps {
+    variant?: MessageBarVariant;
     value?: string;
     onChangeText: (text: string) => void;
     placeholder?: string;
@@ -23,6 +25,7 @@ interface MessageBarProps {
 }
 
 const MessageBar = ({
+    variant = 'default',
     onChangeText,
     value = '',
     placeholder = 'Écris ton message',
@@ -36,6 +39,7 @@ const MessageBar = ({
     const inputRef = useRef<RNTextInput>(null);
     const [isFocused, setIsFocused] = React.useState(false);
 
+    const isMatch = variant === 'match';
 
     const handleFocus = () => { onFocus?.(); setIsFocused(true); };
     const handleBlur = () => { onBlur?.(); setIsFocused(false); };
@@ -45,10 +49,13 @@ const MessageBar = ({
         inputRef.current?.blur();
     };
 
-    const isExpanded = isFocused;          // default/filled -> compact ; focused/filled_focused -> expanded
-    const showSend = value.length > 0;
+    const isExpanded = isFocused; // default/filled -> compact ; focused/filled_focused -> expanded
+    // En mode match, le bouton Send est toujours présent (désactivé si vide)
+    const showSend = isMatch || value.length > 0;
+    const canSend = value.trim().length > 0;
 
-    const iconEl = (
+    // Pas de bouton image en mode match
+    const iconEl = !isMatch ? (
         <Button
             key="icon"
             icon={<Image color={activeTheme.colors.icon.primary} />}
@@ -56,7 +63,7 @@ const MessageBar = ({
             size="large"
             onPress={onImagePress}
         />
-    );
+    ) : null;
 
     const inputEl = (
         <TextInput
@@ -64,11 +71,11 @@ const MessageBar = ({
             ref={inputRef}
             placeholder={placeholder}
             placeholderColor={activeTheme.colors.text.secondary}
-            caretColor={activeTheme.colors.text.brand}
+            caretColor={isMatch ? activeTheme.colors.text.primary : activeTheme.colors.text.brand}
             value={value}
             onChangeText={onChangeText}
             style={[styles.input, {
-                paddingLeft: isExpanded ? activeTheme.spacing._100 : 0,
+                paddingLeft: (isExpanded || isMatch) ? activeTheme.spacing._100 : 0,
                 marginRight: isExpanded ? 0 : activeTheme.spacing._100
             }]}
             containerStyle={{ flex: isExpanded ? 0 : 1 }}
@@ -82,13 +89,18 @@ const MessageBar = ({
     const sendEl = showSend ? (
         <Button
             key="send"
-            icon={<Send />}
-            variant="primary"
+            icon={isMatch ? <Arrowtop /> : <Send />}
+            variant={isMatch ? 'secondary' : 'primary'}
             size="large"
             onPress={handleSend}
-            disabled={!showSend}
+            disabled={!canSend}
         />
     ) : null;
+
+
+    const componentColor = isMatch ?
+        activeTheme.colors.surface.primary :
+        activeTheme.colors.component.messageBar.background;
 
 
     useEffect(() => {
@@ -116,10 +128,8 @@ const MessageBar = ({
                 style={[styles.inner, {
                     borderWidth: isFocused ? 1 : 0,
                     borderColor: activeTheme.colors.border.brand,
-                    backgroundColor: activeTheme.colors.component.messageBar.background,
-                    // backgroundColor: activeTheme.colors.surface.accentSecondary,
+                    backgroundColor: componentColor,
                     paddingHorizontal: activeTheme.spacing._100,
-                    // paddingBottom: activeTheme.spacing._50,
                     paddingBottom: isExpanded ? activeTheme.spacing._100 : 0
                 }]}
             >
@@ -129,8 +139,9 @@ const MessageBar = ({
                         <Flex
                             // border
                             borderColor='red'
-                            key="actions" direction="row" alignItems="center" style={styles.actionsRow}>
-                            {iconEl}
+                            key="actions" direction="row" alignItems="center" style={styles.actionsRow}
+                        >
+                            {!isMatch ? iconEl : <Flex />}
                             {sendEl}
                         </Flex>
                     </>

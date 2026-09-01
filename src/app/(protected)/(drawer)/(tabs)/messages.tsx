@@ -81,7 +81,7 @@ export default function Tab() {
                 </Flex>
             )}
 
-            <PrivateMessagesList search={search} filterType={currentFilter} />
+            <PrivateMessagesList search={search} filterType={currentFilter} onPressNewMessage={() => router.push('/(protected)/chat/new-chat')} />
 
         </View>
     );

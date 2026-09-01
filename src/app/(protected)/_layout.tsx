@@ -10,6 +10,7 @@ export default function ProtectedLayout() {
     // const { session, initialized, fetchSession } = useAuthStore()
     const session = useAuthStore((state) => state.session)
     const initialized = useAuthStore((state) => state.initialized)
+    const hasCompletedOnboarding = useAuthStore((state) => state.hasCompletedOnboarding)
     const fetchSession = useAuthStore((state) => state.fetchSession)
 
     useEffect(() => {
@@ -37,6 +38,7 @@ export default function ProtectedLayout() {
 
     if (!initialized) return null
     if (!session) return <Redirect href={'/sign-in'} />
+    if (!hasCompletedOnboarding) return <Redirect href={'/(onboarding)'} />
 
     return (
         <Stack
@@ -61,6 +63,14 @@ export default function ProtectedLayout() {
             <Stack.Screen
                 name="settings"
                 options={{ headerShown: false, }}
+            />
+            <Stack.Screen
+                name="match"
+                options={{
+                    presentation: 'modal',
+                    animation: 'fade',
+                    headerShown: false,
+                }}
             />
         </Stack>
     );

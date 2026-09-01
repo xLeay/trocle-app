@@ -1,5 +1,6 @@
 import type { TableLeftProps } from '#/_partial/TableLeft';
 import type { TableRightProps } from '#/_partial/TableRight';
+import { SharedValue } from 'react-native-reanimated';
 
 export type TopAppBarConfiguration<T = string> =
     | '_layout'
@@ -35,6 +36,7 @@ export interface TopAppBarProps {
     onBlur?: () => void;
 
     progress?: number;
+    animatedProgress?: SharedValue<number>;
     progressBarType?: 'primary' | 'mono';
 
     tableLeft?: TableLeftProps;

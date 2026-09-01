@@ -116,6 +116,8 @@ const ImageRatio = ({
 
 export default memo(ImageRatio);
 
+// Il faut toucher à la width du parent de l'imageRatio pour qu'il apparaisse bien.
+
 const styles = StyleSheet.create({
     container: {
         width: "100%",

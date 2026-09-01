@@ -1,17 +1,19 @@
-import { create } from 'zustand'
-import { supabase } from '../lib/supabase'
-import { Session, User, AuthError } from '@supabase/supabase-js'
+import { AuthError, Session, User } from '@supabase/supabase-js';
+import { create } from 'zustand';
+import { supabase } from '../lib/supabase';
 
 type AuthStore = {
-    user: User | null
-    session: Session | null
-    loading: boolean
-    initialized: boolean
-    error: AuthError | null
-    signIn: (email: string, password: string) => Promise<{ error: AuthError | null; data: { user: User | null; session: Session | null } }>
-    signUp: (email: string, password: string) => Promise<{ error: AuthError | null; data: { user: User | null; session: Session | null } }>
-    signOut: () => Promise<void>
-    fetchSession: () => Promise<void>
+    user: User | null;
+    session: Session | null;
+    loading: boolean;
+    initialized: boolean;
+    error: AuthError | null;
+    hasCompletedOnboarding: boolean;
+    signIn: (email: string, password: string) => Promise<{ error: AuthError | null; data: { user: User | null; session: Session | null } }>;
+    signUp: (email: string, password: string) => Promise<{ error: AuthError | null; data: { user: User | null; session: Session | null } }>;
+    signOut: () => Promise<void>;
+    fetchSession: () => Promise<void>;
+    setHasCompletedOnboarding: (status: boolean) => void;
 }
 
 export const useAuthStore = create<AuthStore>((set) => ({
@@ -20,6 +22,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
     loading: false,
     initialized: false,
     error: null,
+    hasCompletedOnboarding: false,
     signIn: async (email, password) => {
         set({ loading: true })
         const { data, error } = await supabase.auth.signInWithPassword({ email, password })
@@ -45,7 +48,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
             // alert(error.message)
             set({ error })
         } else {
-            set({ user: data.user, session: data.session })
+            set({ user: data.user, session: data.session, hasCompletedOnboarding: false })
             if (!data.session) {
                 alert('Veuillez vérifier votre boîte mail pour confirmer votre inscription.')
             }
@@ -75,4 +78,6 @@ export const useAuthStore = create<AuthStore>((set) => ({
         }
         set({ session, user: session?.user ?? null, initialized: true })
     },
+
+    setHasCompletedOnboarding: (status) => set({ hasCompletedOnboarding: status }),
 }))

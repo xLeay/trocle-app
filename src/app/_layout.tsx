@@ -22,6 +22,7 @@ const queryClient = new QueryClient();
 
 function InnerApp() {
     const { theme, activeTheme } = useTheme();
+    const statusBarstyle = theme === 'dark' ? 'light' : 'dark'
 
     const initialized = useThemeStore((state) => state.initialized);
     const loadTheme = useThemeStore((state) => state.loadTheme);
@@ -63,21 +64,28 @@ function InnerApp() {
             <QueryClientProvider client={queryClient}>
                 <GestureHandlerRootView style={{ flex: 1 }}>
                     <KeyboardProvider>
-                        <SystemBars style={theme === 'dark' ? 'light' : 'dark'} />
+                        <SystemBars style={statusBarstyle} />
                         <Stack>
                             <Stack.Screen
                                 name='(protected)'
                                 options={{
                                     headerShown: false,
                                     animation: 'none',
-                                    statusBarStyle: theme === 'dark' ? 'light' : 'dark'
+                                    statusBarStyle: statusBarstyle
                                 }}
                             />
                             <Stack.Screen
                                 name="(auth)"
                                 options={{
                                     headerShown: false,
-                                    statusBarStyle: theme === 'dark' ? 'light' : 'dark'
+                                    statusBarStyle: statusBarstyle
+                                }}
+                            />
+                            <Stack.Screen
+                                name="(onboarding)"
+                                options={{
+                                    headerShown: false,
+                                    statusBarStyle: statusBarstyle
                                 }}
                             />
                         </Stack>

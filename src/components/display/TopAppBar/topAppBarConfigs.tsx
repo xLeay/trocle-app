@@ -62,9 +62,9 @@ const topAppBarConfigs = {
         left: ({ canGoBack, onBack, iconColor }: TopAppBarProps) => canGoBack ? (
             <Button icon={<Arrowleft color={iconColor} />} variant="ghost" size="small" onPress={onBack} />
         ) : <View />,
-        // Nécessite : progress: number, progressBarType: primary | mono
-        center: ({ progress, progressBarType }: TopAppBarProps) => (
-            <ProgressBar progress={progress ?? 0} type={progressBarType} />
+        // Nécessite : animatedProgress: SharedValue<number>, progressBarType: primary | mono
+        center: ({ animatedProgress, progressBarType }: TopAppBarProps) => (
+            <ProgressBar animatedProgress={animatedProgress} type={progressBarType} />
         ),
         // Nécessite : label: string
         right: ({ label }: TopAppBarProps) => <Text variant="title_Medium">{label}</Text>,

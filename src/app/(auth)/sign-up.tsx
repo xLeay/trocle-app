@@ -109,17 +109,18 @@ export default function SignUpScreen() {
                 center={center}
                 right={right}
             />
+
             <Flex
-                style={[styles.container, {
-                    backgroundColor: activeTheme.colors.surface.primary,
+                style={{
+                    flex: 1,
                     paddingTop: activeTheme.spacing._800,
                     paddingBottom: activeTheme.spacing._200,
                     paddingHorizontal: activeTheme.spacing._200,
-                }]}
+                }}
                 justifyContent='space-between'
             >
 
-                <Flex gap={activeTheme.spacing._200} alignItems='center' style={{ width: '100%' }}>
+                <Flex fullWidth gap={activeTheme.spacing._200} alignItems='center'>
                     <Flex gap={activeTheme.spacing._200}>
                         <TextField
                             placeholder={'Adresse email'}
@@ -140,7 +141,12 @@ export default function SignUpScreen() {
                         />
                     </Flex>
 
-                    <Card gap={activeTheme.spacing._100} padding={activeTheme.spacing._200} border={false} backgroundColor={activeTheme.colors.surface.brandLight}>
+                    <Card
+                        gap={activeTheme.spacing._100}
+                        padding={activeTheme.spacing._200}
+                        border={false}
+                        backgroundColor={activeTheme.colors.surface.brandLight}
+                    >
                         <Text variant='body_Small'>Le mot de passe doit contenir au minimum :</Text>
                         <Flex style={{ width: '100%' }}>
                             {[
@@ -177,16 +183,31 @@ export default function SignUpScreen() {
                     </Card>
 
 
-                    <Flex gap={activeTheme.spacing._100} style={{ width: '100%' }}>
-                        <Button label="S'inscrire" variant='primary' size='large' disabled={!emailValid || !isPasswordValid || loading} loading={loading} onPress={() => handleSignUp()} fullWidth />
-                    </Flex>
+                    <Button
+                        label="S'inscrire"
+                        variant='primary'
+                        size='large'
+                        disabled={!emailValid || !isPasswordValid || loading}
+                        loading={loading}
+                        onPress={() => handleSignUp()}
+                        fullWidth
+                    />
                 </Flex>
 
-                <Flex gap={activeTheme.spacing._200} style={{ width: '100%' }} alignItems='center'>
+                <Flex
+                    alignItems='flex-end'
+                    gap={activeTheme.spacing._200}
+                >
                     <Text style={{ textAlign: 'center' }}>
                         <Text variant='body_Small'>En créant un compte, tu confirmes que tu acceptes les <Text variant='body_Small' type='brand' onPress={() => router.push('/terms-and-conditions')} style={{ textDecorationLine: 'underline' }}>Termes et Conditions de Trocle</Text>, avoir lu la <Text variant='body_Small' type='brand' style={{ textDecorationLine: 'underline' }} onPress={() => router.push('/privacy-policy')}>Politique de confidentialité</Text> et avoir au moins 14 ans.</Text>
                     </Text>
-                    <Button label="J'ai déjà un compte" variant='outlined' size='large' onPress={() => router.replace('/sign-in')} fullWidth />
+                    <Button
+                        label="J'ai déjà un compte"
+                        variant='outlined'
+                        size='large'
+                        onPress={() => router.replace('/sign-in')}
+                        fullWidth
+                    />
                 </Flex>
             </Flex>
         </CustomSafeAreaView>

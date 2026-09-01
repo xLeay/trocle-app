@@ -113,12 +113,26 @@ export default function SignInScreen() {
                     </Flex>
 
                     <Flex gap={activeTheme.spacing._100} style={{ width: '100%' }}>
-                        <Button label="Connexion" variant='primary' size='large' disabled={loading} loading={loading} onPress={() => handleSignIn()} fullWidth />
+                        <Button
+                            label="Connexion"
+                            variant='primary'
+                            size='large'
+                            disabled={loading || !email || !password}
+                            loading={loading}
+                            onPress={() => handleSignIn()}
+                            fullWidth
+                        />
                     </Flex>
                 </Flex>
 
                 <Flex style={{ width: '100%', paddingVertical: activeTheme.spacing._200 }}>
-                    <Button label="Créer un nouveau compte" variant='outlined' size='large' onPress={() => router.replace('/sign-up')} fullWidth />
+                    <Button
+                        label="Créer un nouveau compte"
+                        variant='outlined'
+                        size='large'
+                        onPress={() => router.replace('/sign-up')}
+                        fullWidth
+                    />
                 </Flex>
             </Flex>
 

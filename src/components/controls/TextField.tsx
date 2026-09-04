@@ -1,6 +1,6 @@
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import React, { useRef } from 'react';
-import { Pressable, TextInput as RNTextInput, TextInputProps as RNTextInputProps, StyleSheet } from 'react-native';
+import { Pressable, TextInput as RNTextInput, TextInputProps as RNTextInputProps, StyleSheet, ViewStyle } from 'react-native';
 
 // Composants
 import Flex from '#/Flex';
@@ -8,14 +8,14 @@ import Text from '#/Text';
 import TextInput from '#/TextInput';
 
 // Icones
-import { Chevronbottom, Eye, Eyeslash } from '#/icons';
+import { Chevronbottom, Circle, Eye, Eyeslash, France, Germany } from '#/icons';
 
 interface IconProps {
     color?: string;
     fill?: string;
 }
 
-export type TextFieldType = 'text' | 'icon' | 'dropdown' | 'password' | 'number' | 'action';
+export type TextFieldType = 'text' | 'icon' | 'dropdown' | 'password' | 'number' | 'action' | 'phone' | 'otp';
 export type TextFieldState = 'default' | 'focused' | 'filled' | 'error';
 
 interface TextFieldProps extends RNTextInputProps {
@@ -27,6 +27,7 @@ interface TextFieldProps extends RNTextInputProps {
     icon?: React.ReactNode;
     action?: () => void;
     hasError?: boolean;
+    hasSuccess?: boolean;
     label?: string;
     legend?: string;
     autoCapitalize?: RNTextInputProps['autoCapitalize'];
@@ -34,10 +35,35 @@ interface TextFieldProps extends RNTextInputProps {
     numberOfLines?: number;
     multiline?: boolean;
     keyboardType?: RNTextInputProps['keyboardType'];
+    style?: ViewStyle;
 }
 
-const TextField = ({
+function getCountryFlagAndPhoneCode(countryCode: string) {
+    switch (countryCode) {
+        case 'FR':
+            return {
+                icon: <France size={16} />,
+                code: '+33'
+            };
+        case 'DE':
+            return {
+                icon: <Germany size={16} />,
+                code: '+49'
+            };
+        default:
+            return {
+                icon: <Circle size={16} />,
+                code: '+33'
+            };
+    }
+}
+
+const TextField = React.forwardRef<RNTextInput, TextFieldProps>(({
     onChangeText,
+    onKeyPress,
+    textContentType,
+    autoComplete,
+    selectTextOnFocus,
     value = '',
     placeholder = 'Champ de texte',
     disabled = false,
@@ -45,6 +71,7 @@ const TextField = ({
     icon,
     action,
     hasError = false,
+    hasSuccess = false,
     label,
     legend,
     autoCapitalize,
@@ -52,7 +79,8 @@ const TextField = ({
     numberOfLines = 1,
     multiline = false,
     keyboardType = 'default',
-}: TextFieldProps) => {
+    style = {},
+}, forwardedRef) => {
     const { activeTheme } = useTheme();
     const inputRef = useRef<RNTextInput>(null);
     const [isFocused, setIsFocused] = React.useState(false);
@@ -107,8 +135,21 @@ const TextField = ({
                     defaultStyle;
 
     const textType = disabled ? 'placeholder' : 'primary';
+
+    const legendTextType = hasError ?
+        'danger' :
+        hasSuccess ?
+            'success' :
+            'placeholder';
+
+    const { icon: countryIcon, code: countryCode } = getCountryFlagAndPhoneCode('FR');
+
     return (
-        <Flex gap={activeTheme.spacing._100} style={{ width: '100%' }}>
+        <Flex
+            fullWidth
+            gap={activeTheme.spacing._100}
+            style={{ flexShrink: 1 }}
+        >
             {label && (
                 <Text variant='title_Small' style={{ color: hasError ? activeTheme.colors.surface.danger : '' }}>{label}</Text>
             )}
@@ -117,12 +158,16 @@ const TextField = ({
                 alignItems='center'
                 gap={8}
                 style={[styles.container, containerStyle, {
-                    paddingHorizontal: activeTheme.spacing._200,
+                    // paddingHorizontal: activeTheme.spacing._200,
+                    paddingHorizontal: type === 'phone' || type === 'otp' ? activeTheme.spacing._100 : activeTheme.spacing._200,
                     borderRadius: activeTheme.radius.default,
                     backgroundColor: activeTheme.colors.surface.primary,
                     width: '100%'
-                }]}
+                },
+                    style
+                ]}
             >
+
                 <Pressable style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}
                     onPress={() => {
                         if (inputRef.current) {
@@ -141,17 +186,47 @@ const TextField = ({
                                 })
                                 : icon
                         )}
+                        {type === 'phone' && (
+                            <Flex
+                                direction='row'
+                                alignItems='center'
+                                gap={activeTheme.spacing._50}
+                                style={{
+                                    backgroundColor: activeTheme.colors.surface.secondary,
+                                    padding: activeTheme.spacing._100,
+                                    borderRadius: activeTheme.radius.modal,
+                                    borderWidth: 1,
+                                    borderColor: activeTheme.colors.border.primary
+                                }}
+                            >
+                                {countryIcon}
+                                <Text variant='label_Medium' type='primary'>{countryCode}</Text>
+                            </Flex>
+                        )}
                         <TextInput
-                            ref={inputRef}
+                            ref={(node) => {
+                                inputRef.current = node;
+
+                                if (typeof forwardedRef === 'function') {
+                                    forwardedRef(node);
+                                } else if (forwardedRef) {
+                                    forwardedRef.current = node;
+                                }
+                            }}
                             placeholder={placeholder}
                             value={value}
                             onChangeText={onChangeText}
-                            style={[styles.input]}
+                            onKeyPress={onKeyPress}
+                            textContentType={textContentType}
+                            autoComplete={autoComplete}
+                            selectTextOnFocus={selectTextOnFocus}
+                            style={[styles.input, type === 'otp' && { textAlign: 'center' }]}
                             containerStyle={{ flex: 1 }}
                             onFocus={handleFocus}
                             onBlur={handleBlur}
                             editable={!disabled}
                             type={textType}
+                            variant={type === 'otp' ? 'title_Large' : 'body_Large'}
                             secureTextEntry={type === 'password' && !isPasswordVisible}
                             autoCapitalize={autoCapitalize}
                             maxLength={maxLength}
@@ -183,11 +258,11 @@ const TextField = ({
             </Flex>
 
             {legend && (
-                <Text variant='body_Medium' type='placeholder' style={{ color: hasError ? activeTheme.colors.surface.danger : '' }}>{legend}</Text>
+                <Text variant='body_Medium' type={legendTextType}>{legend}</Text>
             )}
         </Flex>
     );
-}
+});
 
 export default TextField;
 

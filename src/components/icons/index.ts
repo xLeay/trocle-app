@@ -152,3 +152,6 @@ export { default as TikTok } from './brand/Tiktok';
 export { default as TwitterX } from './brand/TwitterX';
 export { default as UPS } from './brand/UPS';
 
+// Pays
+export { default as France } from './countries/France';
+export { default as Germany } from './countries/Germany';

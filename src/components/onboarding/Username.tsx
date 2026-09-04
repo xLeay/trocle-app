@@ -3,7 +3,6 @@ import { ActivityIndicator } from 'react-native';
 import { useTheme } from '@/src/lib/hooks/useTheme';
 
 import Flex from "#/Flex";
-import Text from "#/Text";
 import TextField from "#/controls/TextField";
 
 import { At, Close, Done } from '#/icons';
@@ -32,6 +31,7 @@ function Username({
     const { activeTheme } = useTheme();
 
     const helperText = isUsernameValid ? 'Pseudonyme valide' : '';
+
     const leadingIcon = () => {
         if (isCheckingUsername) {
             return <ActivityIndicator size="small" color={activeTheme.colors.surface.brand} />;
@@ -46,19 +46,27 @@ function Username({
     };
 
     return (
-        <Flex style={{}}>
+        <Flex direction='row' fullWidth gap={activeTheme.spacing._100} style={{}}>
             <TextField
                 type='icon'
                 icon={<At />}
                 value={valueUsername}
                 onChangeText={onChangeUsername}
-                legend={errorMessage}
+                legend={errorMessage || helperText}
                 onFocus={onFocus}
                 onBlur={onBlur}
+                hasError={error}
+                hasSuccess={isUsernameValid}
             />
-            <Flex direction='row' alignItems='center' gap={activeTheme.spacing._100} style={{}}>
+
+            <Flex
+                direction='column'
+                alignItems='center'
+                justifyContent='center'
+                gap={activeTheme.spacing._100}
+                style={{ height: 48 }}
+            >
                 {leadingIcon()}
-                <Text variant='body_Small'>{helperText}</Text>
             </Flex>
         </Flex>
     )

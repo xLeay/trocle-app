@@ -9,6 +9,18 @@ export async function getCheckEmailExists(email: string) {
 }
 
 
+export type UsernameAvailability = {
+    available: boolean;
+    reason: 'format' | 'reserved' | 'taken' | null;
+};
+
+export async function checkUsernameAvailability(username: string): Promise<UsernameAvailability> {
+    const { data, error } = await supabase.rpc('check_username_availability', { candidate: username });
+    if (error) {
+        throw error;
+    }
+    return data[0];
+}
 
 
 

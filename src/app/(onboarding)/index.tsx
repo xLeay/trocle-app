@@ -1,11 +1,16 @@
+import * as Location from 'expo-location';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { KeyboardStickyView } from 'react-native-keyboard-controller';
+import { Linking } from 'react-native';
+import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useDebounce } from '@/src/lib/hooks/useDebounce';
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
+
+import { useUsernameAvailability } from '@/src/queries/useUserQueries';
 
 import Button from '#/controls/Button';
 import CustomSafeAreaView from '#/CustomSafeAreaView';
@@ -13,6 +18,9 @@ import TopAppBar from '#/display/TopAppBar/TopAppBar';
 import Flex from '#/Flex';
 import Text from '#/Text';
 
+import BirthDate from '#/onboarding/BirthDate';
+import Gender from '#/onboarding/Gender';
+import LocationSection from '#/onboarding/Location';
 import Username from '#/onboarding/Username';
 
 import { Arrowleft } from '#/icons';
@@ -30,7 +38,7 @@ const STEPS = [
     {
         name: 'username',
         title: 'Comment je t’appelle ?',
-        description: 'Crée un pseudonyme d’au moins 3 caractères, sans espace. Les lettres, chiffres, points (.) et underscores (_) sont acceptés.',
+        description: 'Crée un pseudonyme d’au moins 3 caractères, sans espace. Les lettres, chiffres et underscores (_) sont acceptés.',
         optional: false
     },
     {
@@ -43,13 +51,7 @@ const STEPS = [
         name: 'gender',
         title: 'Ton sexe ?',
         description: 'Ça nous permet de te proposer une expérience personnalisée sur Trocle.',
-        optional: false
-    },
-    {
-        name: 'phone',
-        title: 'T’as un 06 ?',
-        description: 'Grâce à ton numéro, on peut te contacter si il y a un problème avec ton compte',
-        optional: false
+        optional: true
     },
     {
         name: 'location',
@@ -88,73 +90,75 @@ export default function OnboardingScreen() {
 
     const animatedProgress = useSharedValue(0);
 
-    // Données de l'onboarding
+
+    // Données de l'onboarding (states)
     const [username, setUsername] = useState('');
+
+    const [birthDate, setBirthDate] = useState<Date | null>(null);
+
+    const [gender, setGender] = useState<'male' | 'female' | 'other' | null>(null);
+    const [otherGender, setOtherGender] = useState('');
+
+    const [locationEnabled, setLocationEnabled] = useState(false);
+
     const [avatar, setAvatar] = useState<string | null>(null);
+
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
-    // Vérification des données en temps réel
-    const [isCheckingUsername, setIsCheckingUsername] = useState(false);
-    const [isUsernameValid, setIsUsernameValid] = useState(false);
-    const [isAgeValid, setIsAgeValid] = useState(false);
-    const [isGenderValid, setIsGenderValid] = useState(false);
-    const [isPhoneValid, setIsPhoneValid] = useState(false);
-    const [isLocationValid, setIsLocationValid] = useState(false);
+
+    // Vérification des données
+    const isAgeValid = birthDate !== null;
+    const isGenderValid = gender !== null;
     const [isCategoriesValid, setIsCategoriesValid] = useState(false);
     const [isAvatarValid, setIsAvatarValid] = useState(false);
     const [isNotificationsValid, setIsNotificationsValid] = useState(false);
 
-    // Vérification du pseudo
-    const validateUsername = (username: string) => {
-        if (username.length < 3) {
-            setIsUsernameValid(false);
+
+    ////////// Nom d'utilisateur
+    const normalizedUsername = username.trim().toLowerCase();
+    const debouncedUsername = useDebounce(normalizedUsername, 400);
+
+    const {
+        data: usernameAvailability,
+        isFetching: isCheckingUsername,
+    } = useUsernameAvailability(debouncedUsername);
+
+    const usernameError =
+        username.length === 0
+            ? ''
+            : usernameAvailability?.reason === 'format'
+                ? '3 à 30 caractères : lettres, chiffres, . et _'
+                : usernameAvailability?.reason === 'reserved' || usernameAvailability?.reason === 'taken'
+                    ? 'Ce pseudonyme n\'est pas disponible.'
+                    : '';
+
+    const isUsernameValid =
+        usernameAvailability?.available === true &&
+        normalizedUsername === debouncedUsername;
+
+
+
+    //////////// Localisation
+    const handleLocationToggle = async (enabled: boolean) => {
+        if (!enabled) {
+            setLocationEnabled(false);
             return;
         }
 
-        setIsCheckingUsername(true);
-        setTimeout(() => {
-            setIsUsernameValid(true);
-            setIsCheckingUsername(false);
-        }, 1000);
-    };
+        const permission = await Location.requestForegroundPermissionsAsync();
 
-    // Vérification de l'âge
-    const validateAge = (age: string) => {
-        const ageNumber = parseInt(age, 10);
-        if (isNaN(ageNumber) || ageNumber < 18 || ageNumber > 100) {
-            setIsAgeValid(false);
+        if (permission.status === 'granted') {
+            setLocationEnabled(true);
             return;
         }
-        setIsAgeValid(true);
+
+        setLocationEnabled(false);
+
+        if (!permission.canAskAgain) {
+            await Linking.openSettings();
+        }
     };
 
-    // Vérification du sexe
-    const validateGender = (gender: string) => {
-        if (gender !== 'homme' && gender !== 'femme' && gender !== 'autre') {
-            setIsGenderValid(false);
-            return;
-        }
-        setIsGenderValid(true);
-    };
-
-    // Vérification du numéro de téléphone
-    const validatePhone = (phone: string) => {
-        const phoneRegex = /^[0-9]{10}$/;
-        if (!phoneRegex.test(phone)) {
-            setIsPhoneValid(false);
-            return;
-        }
-        setIsPhoneValid(true);
-    };
-
-    // Vérification de la localisation
-    const validateLocation = (location: string) => {
-        if (location.length < 3) {
-            setIsLocationValid(false);
-            return;
-        }
-        setIsLocationValid(true);
-    };
 
     // Vérification des catégories
     const validateCategories = (categories: string[]) => {
@@ -194,8 +198,7 @@ export default function OnboardingScreen() {
         (currentStep === 'username' && !isCheckingUsername && isUsernameValid) ||
         (currentStep === 'birthdate' && isAgeValid) ||
         (currentStep === 'gender' && isGenderValid) ||
-        (currentStep === 'phone' && isPhoneValid) ||
-        (currentStep === 'location' && isLocationValid) ||
+        (currentStep === 'location' && locationEnabled) ||
         (currentStep === 'preferences' && isCategoriesValid) ||
         (currentStep === 'avatar' && isAvatarValid);
 
@@ -217,6 +220,13 @@ export default function OnboardingScreen() {
             //     avatar_url: avatar,
             //     has_completed_onboarding: true,
             // }).eq('id', user.id);
+
+            // Enfin, lors de la création réelle du profil, refais quand même l’insertion avec le pseudo normalisé et gère une éventuelle erreur 23505 (unique violation). C’est indispensable : deux personnes peuvent voir le même pseudo disponible à la même milliseconde.
+
+            //         const genderForDatabase =
+            // gender === 'other'
+            //     ? otherGender.trim()
+            //     : gender;
 
             // Redirection vers l'accueil de l'app
             router.replace('/(protected)/(drawer)/(tabs)');
@@ -281,41 +291,72 @@ export default function OnboardingScreen() {
                 center={center}
                 right={right}
             />
-            <Flex
-                fullWidth
-                justifyContent="space-between"
-                style={{
-                    flex: 1,
+
+            <KeyboardAwareScrollView
+                contentContainerStyle={{
                     paddingHorizontal: activeTheme.spacing._200,
                     paddingTop: activeTheme.spacing._100,
                 }}
+                keyboardShouldPersistTaps="handled"
+                bottomOffset={140} // marge de sécurité au-dessus du bouton
             >
+
+                {/* Header */}
                 <Flex gap={activeTheme.spacing._200}>
                     <Text variant="display_Small" type='primary'>{stepTitle}</Text>
                     <Text variant="body_Large" type='secondary'>{stepDescription}</Text>
                 </Flex>
 
-                <KeyboardStickyView offset={offset} style={{ width: '100%', paddingBottom: activeTheme.spacing._200, borderWidth: 1, }}>
-                    <Flex border fullWidth style={{ paddingTop: activeTheme.spacing._400 }}>
-                        {currentStep === 'welcome' && (
-                            <Flex />
-                        )}
-                        {currentStep === 'username' && (
-                            <Username
-                                valueUsername={username}
-                                onChangeUsername={setUsername}
-                                isCheckingUsername={isCheckingUsername}
-                                isUsernameValid={isUsernameValid}
-                                error={!isCheckingUsername && !isUsernameValid}
-                                onFocus={() => setIsCheckingUsername(true)}
-                                onBlur={() => setIsCheckingUsername(false)}
-                            />
-                        )}
+                {/* Contenu */}
+                <Flex fullWidth style={{ flex: 1, paddingTop: activeTheme.spacing._400 }}>
+                    {currentStep === 'username' && (
+                        <Username
+                            valueUsername={username}
+                            onChangeUsername={setUsername}
+                            isCheckingUsername={isCheckingUsername}
+                            isUsernameValid={isUsernameValid}
+                            error={Boolean(usernameError)}
+                            errorMessage={usernameError}
+                        />
+                    )}
 
-                    </Flex>
-                </KeyboardStickyView>
+                    {currentStep === 'birthdate' && (
+                        <BirthDate
+                            value={birthDate}
+                            onChange={setBirthDate}
+                            minimumAge={18}
+                            maximumAge={100}
+                        />
+                    )}
 
-                {/* Bouton d'action persistant en bas */}
+                    {currentStep === 'gender' && (
+                        <Gender
+                            value={gender}
+                            onChange={setGender}
+                            otherValue={otherGender}
+                            onChangeOtherValue={setOtherGender}
+                        />
+                    )}
+
+                    {currentStep === 'location' && (
+                        <LocationSection
+                            value={locationEnabled}
+                            onValueChange={handleLocationToggle}
+                        />
+                    )}
+                </Flex>
+            </KeyboardAwareScrollView>
+
+            {/* Boutons collés en bas (au-dessus du clavier quand il s'ouvre) */}
+            <KeyboardStickyView
+                offset={offset}
+                style={{
+                    paddingHorizontal: activeTheme.spacing._200,
+                    paddingBottom: activeTheme.spacing._200,
+                    gap: activeTheme.spacing._100,
+                    backgroundColor: activeTheme.colors.surface.secondary,
+                }}
+            >
                 <Button
                     label={getButtonLabel()}
                     variant="primary"
@@ -334,7 +375,7 @@ export default function OnboardingScreen() {
                         fullWidth
                     />
                 )}
-            </Flex>
+            </KeyboardStickyView>
         </CustomSafeAreaView>
     );
 }

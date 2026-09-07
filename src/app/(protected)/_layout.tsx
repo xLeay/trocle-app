@@ -7,7 +7,7 @@ import { AppState, } from 'react-native';
 
 export default function ProtectedLayout() {
     const { activeTheme } = useTheme();
-    // const { session, initialized, fetchSession } = useAuthStore()
+
     const session = useAuthStore((state) => state.session)
     const initialized = useAuthStore((state) => state.initialized)
     const hasCompletedOnboarding = useAuthStore((state) => state.hasCompletedOnboarding)

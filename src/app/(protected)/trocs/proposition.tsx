@@ -17,9 +17,18 @@ import PropositionArticle, { PropositionArticleItem } from '#/troc/PropositionAr
 import PropositionDelivery, { PropositionDeliveryMethod } from '#/troc/PropositionDelivery';
 import PropositionSummary from '#/troc/PropositionSummary';
 
-import { CATEGORY, PRODUCT_STATE } from '@/src/lib/utils/product';
+import { PRODUCT_STATE } from '@/src/lib/utils/product';
 
 import { Arrowleft } from '#/icons';
+
+enum CATEGORY {
+    gaming = "Jeux-vidéos",
+    household_appliances = "Électroménager",
+    transports = "Transports",
+    clothing = "Vêtements",
+    sports = "Sports",
+    toys = "Jouets",
+}
 
 const myUsername = 'xLeay';
 

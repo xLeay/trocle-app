@@ -70,13 +70,38 @@ export const useAuthStore = create<AuthStore>((set) => ({
     fetchSession: async () => {
         const {
             data: { session },
-            error,
-        } = await supabase.auth.getSession()
-        if (error) {
-            console.error('FetchSession error:', error)
-            set({ error })
+            error: sessionError,
+        } = await supabase.auth.getSession();
+
+        if (sessionError) {
+            console.error('FetchSession error:', sessionError);
+
+            set({
+                session: null,
+                user: null,
+                hasCompletedOnboarding: false,
+                initialized: true,
+            });
+
+            return;
         }
-        set({ session, user: session?.user ?? null, initialized: true })
+
+        const { data: userData, error: userError } = await supabase
+            .from('user')
+            .select('has_completed_onboarding')
+            .eq('id', session?.user.id)
+            .maybeSingle();
+
+        if (userError) {
+            console.error('Erreur lors de la lecture du statut onboarding:', userError);
+        }
+
+        set({
+            session,
+            user: session?.user,
+            hasCompletedOnboarding: userData?.has_completed_onboarding === true,
+            initialized: true,
+        });
     },
 
     setHasCompletedOnboarding: (status) => set({ hasCompletedOnboarding: status }),

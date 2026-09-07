@@ -9,8 +9,12 @@ import { usePhotoContext } from '#/context/PhotoContext';
 import { useGoBack } from '@/src/lib/hooks/useGoBack';
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
+
 import { useLocationStore } from '@/src/state/locationStore';
 import { useSnackbarStore } from '@/src/state/snackbarStore';
+
+import { Category } from '@/src/lib/api/category';
+import { useCategories } from '@/src/queries/useCategoryQueries';
 
 import Flex from '#/Flex';
 import Text from '#/Text';
@@ -29,67 +33,43 @@ import { Close, Image, Mylocation, Photo, Plus } from '#/icons';
 
 
 // Exemple de données
-// const categories = [
-//     { id: 1, name: 'Jeux-videos', parentId: null },
-//     { id: 2, name: 'Transports', parentId: null },
-//     { id: 3, name: 'Vêtements', parentId: null },
-//     { id: 4, name: 'Sport', parentId: null },
-//     { id: 5, name: 'Nature', parentId: null },
-//     { id: 6, name: 'Jouets et loisirs', parentId: null },
-//     { id: 7, name: 'Art et culture', parentId: null },
-//     { id: 8, name: 'Bricolage', parentId: null },
-//     { id: 9, name: 'Musique', parentId: null },
-//     { id: 10, name: 'Jeunesse', parentId: null },
-//     { id: 11, name: 'Livres pour enfants', parentId: 10 },
-//     { id: 12, name: 'Vêtements pour enfants', parentId: 10 },
-//     { id: 13, name: 'Jouets éducatifs', parentId: 10 },
-//     { id: 14, name: 'Jeux de société pour enfants', parentId: 10 },
-//     { id: 15, name: 'Électronique', parentId: null },
-//     { id: 16, name: 'Photographie', parentId: null },
-//     { id: 17, name: 'Animaux', parentId: null },
-//     { id: 18, name: 'Décoration', parentId: null },
-//     { id: 19, name: 'Bijoux et accessoires', parentId: null },
-//     { id: 20, name: 'Mobilier', parentId: null },
-//     { id: 21, name: 'Divers', parentId: null },
+// interface Category {
+//     id: number;
+//     name: string;
+//     parentId: number | null;
+// }
+
+// const categories: Category[] = [
+//     { id: 1, name: 'Informatique', parentId: null },
+//     { id: 2, name: 'Jeux-vidéos', parentId: 1 },
+//     { id: 3, name: 'PC Gamer', parentId: 2 },
+//     { id: 4, name: 'Consoles', parentId: 2 },
+
+//     { id: 5, name: 'Mode', parentId: null },
+//     { id: 6, name: 'Homme', parentId: 5 },
+//     { id: 7, name: 'Vêtements', parentId: 6 },
+//     { id: 8, name: 'Bas', parentId: 7 },
+//     { id: 9, name: 'Jeans', parentId: 8 },
+//     { id: 10, name: 'Shorts', parentId: 8 },
+//     { id: 11, name: 'Pantalons', parentId: 8 },
+
+//     { id: 12, name: 'Femme', parentId: 5 },
+//     { id: 13, name: 'Chaussures', parentId: 12 },
+//     { id: 14, name: 'Accessoires', parentId: 12 },
+
+//     { id: 15, name: 'Enfant', parentId: 5 },
+//     { id: 16, name: 'Jouets', parentId: 15 },
+//     { id: 17, name: 'Vêtements Enfant', parentId: 15 },
+
+//     { id: 18, name: 'Maison', parentId: null },
+//     { id: 19, name: 'Meubles', parentId: 18 },
+//     { id: 20, name: 'Déco', parentId: 18 },
+//     { id: 21, name: 'Commodes', parentId: 19 },
+
+//     { id: 22, name: 'Culture', parentId: null },
+//     { id: 23, name: 'Livres', parentId: 22 },
+//     { id: 24, name: 'BD / Manga', parentId: 22 },
 // ];
-
-interface Category {
-    id: number;
-    name: string;
-    parentId: number | null;
-}
-
-const categories: Category[] = [
-    { id: 1, name: 'Informatique', parentId: null },
-    { id: 2, name: 'Jeux-vidéos', parentId: 1 },
-    { id: 3, name: 'PC Gamer', parentId: 2 },
-    { id: 4, name: 'Consoles', parentId: 2 },
-
-    { id: 5, name: 'Mode', parentId: null },
-    { id: 6, name: 'Homme', parentId: 5 },
-    { id: 7, name: 'Vêtements', parentId: 6 },
-    { id: 8, name: 'Bas', parentId: 7 },
-    { id: 9, name: 'Jeans', parentId: 8 },
-    { id: 10, name: 'Shorts', parentId: 8 },
-    { id: 11, name: 'Pantalons', parentId: 8 },
-
-    { id: 12, name: 'Femme', parentId: 5 },
-    { id: 13, name: 'Chaussures', parentId: 12 },
-    { id: 14, name: 'Accessoires', parentId: 12 },
-
-    { id: 15, name: 'Enfant', parentId: 5 },
-    { id: 16, name: 'Jouets', parentId: 15 },
-    { id: 17, name: 'Vêtements Enfant', parentId: 15 },
-
-    { id: 18, name: 'Maison', parentId: null },
-    { id: 19, name: 'Meubles', parentId: 18 },
-    { id: 20, name: 'Déco', parentId: 18 },
-    { id: 21, name: 'Commodes', parentId: 19 },
-
-    { id: 22, name: 'Culture', parentId: null },
-    { id: 23, name: 'Livres', parentId: 22 },
-    { id: 24, name: 'BD / Manga', parentId: 22 },
-];
 
 const productStates = [
     { id: 1, name: 'Comme neuf' },
@@ -128,6 +108,8 @@ export default function CreationModal() {
     const [tempSelectedCategory, setTempSelectedCategory] = useState<any>(null);
     const [selectedCategory, setSelectedCategory] = useState<any>(null);
     const categorySheetRef = useRef<BottomSheetRef>(null);
+
+    const { data: categories = [], isLoading: isCategoriesLoading } = useCategories();
 
     const [categoryPath, setCategoryPath] = useState<Category[]>([]);
     const currentParent = categoryPath.at(-1);
@@ -255,11 +237,17 @@ export default function CreationModal() {
                 const result = await ImagePicker.launchCameraAsync({ quality: 0.8 });
 
                 if (!result.canceled) {
-                    const manipulated = await ImageManipulator.manipulateAsync(
-                        result.assets[0].uri,
-                        [],
-                        { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+                    const context = ImageManipulator.ImageManipulator.manipulate(
+                        result.assets[0].uri
                     );
+
+                    const renderedImage = await context.renderAsync();
+
+                    const manipulated = await renderedImage.saveAsync({
+                        compress: 0.7,
+                        format: ImageManipulator.SaveFormat.JPEG,
+                    });
+
                     setPhotos([...photos, { ...result.assets[0], uri: manipulated.uri }]);
                 }
 
@@ -280,14 +268,18 @@ export default function CreationModal() {
                 if (!result.canceled) {
                     const processedAssets = await Promise.all(
                         result.assets.map(async (asset) => {
-                            const manipulated = await ImageManipulator.manipulateAsync(
-                                asset.uri,
-                                [],
-                                { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
-                            );
+                            const context = ImageManipulator.ImageManipulator.manipulate(asset.uri);
+                            const renderedImage = await context.renderAsync();
+
+                            const manipulated = await renderedImage.saveAsync({
+                                compress: 0.7,
+                                format: ImageManipulator.SaveFormat.JPEG,
+                            });
+
                             return { ...asset, uri: manipulated.uri };
                         })
                     );
+
                     setPhotos([...photos, ...processedAssets]);
                 }
             }

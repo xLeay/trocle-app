@@ -16,8 +16,13 @@ import { Troc } from '#/icons';
 
 
 // TODO: tout mettre au propre au niveau des imports, des types etc
-import { CATEGORY, PRODUCT_STATE } from '@/src/lib/utils/product';
+import { PRODUCT_STATE } from '@/src/lib/utils/product';
 import { PropositionArticleItem } from '../troc/PropositionArticle';
+
+enum CATEGORY {
+    gaming = "Jeux-vidéos",
+    household_appliances = "Appareils ménagers"
+}
 
 const MY_ARTICLE: PropositionArticleItem = {
     id: 'mine-1',

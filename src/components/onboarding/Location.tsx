@@ -4,6 +4,7 @@ import { useTheme } from '@/src/lib/hooks/useTheme';
 import Switch from '#/controls/Switch';
 import Table from '#/display/Table';
 import Flex from '#/Flex';
+import Text from '#/Text';
 
 import { Location as LocIcon } from '#/icons';
 import { TrocleLogoPicto } from '#/logos';
@@ -11,28 +12,36 @@ import { TrocleLogoPicto } from '#/logos';
 interface LocationSectionProps {
     value: boolean;
     onValueChange: (value: boolean) => void;
+    locationError: Error | string | null;
 }
 
 function LocationSection({
     value,
-    onValueChange
+    onValueChange,
+    locationError,
 }: LocationSectionProps) {
     const { activeTheme } = useTheme();
 
     return (
         <Flex fullWidth gap={activeTheme.spacing._800} style={{ flex: 1 }}>
-            <Table
-                leftProps={{
-                    variant: 'icon',
-                    icon: <LocIcon />,
-                    leftText: 'Localisation'
-                }}
-                rightProps={{
-                    variant: 'switch',
-                    switch: <Switch checked={value} onValueChange={onValueChange} />
-                }}
-                onPress={() => onValueChange(!value)}
-            />
+            <Flex fullWidth gap={activeTheme.spacing._100}>
+                <Table
+                    leftProps={{
+                        variant: 'icon',
+                        icon: <LocIcon />,
+                        leftText: 'Localisation'
+                    }}
+                    rightProps={{
+                        variant: 'switch',
+                        switch: <Switch checked={value} onValueChange={onValueChange} />
+                    }}
+                    onPress={() => onValueChange(!value)}
+                />
+
+                {locationError && (
+                    <Text variant='body_Large' type='danger'>{locationError?.toString?.()}</Text>
+                )}
+            </Flex>
 
             <Flex fullWidth alignItems='center' justifyContent='center'>
 

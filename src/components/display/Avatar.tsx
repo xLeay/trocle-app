@@ -15,7 +15,7 @@ import defaultImage from '@/assets/avatar.png';
 
 export type AvatarSize = 'enormous' | 'veryLarge' | 'large' | 'medium' | 'small' | 'tiny';
 
-const sizeMapping: Record<AvatarSize, number> = {
+export const sizeMapping: Record<AvatarSize, number> = {
     enormous: 128,
     veryLarge: 64,
     large: 56,

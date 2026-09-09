@@ -5,8 +5,11 @@ import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
 
-import CustomSafeAreaView from '#/CustomSafeAreaView';
+import { useAuthStore } from '@/src/state/authStore';
 
+import { useUserProfileByUsername } from '@/src/queries/useUserQueries';
+
+import CustomSafeAreaView from '#/CustomSafeAreaView';
 import Flex from '#/Flex';
 import Text from '#/Text';
 import Avatar from '#/display/Avatar';
@@ -43,49 +46,6 @@ const DrawerItem = React.memo(({
     );
 });
 
-const avatarImage = require('@/assets/icon.png');
-const userNameMock = 'xLeay';
-
-// Extraction statique hors du composant
-const mainItems: DrawerItemProps[] = [
-    {
-        href: `/user/${userNameMock}`,
-        label: 'Mon profil',
-        icon: <Profile />,
-    },
-    // FEATURE FLAG : Premium/Shop/Abonnement
-    // {
-    //     href: '/shop/premium',
-    //     label: 'Premium',
-    //     icon: <Subscription />,
-    // },
-    {
-        href: '/favorites',
-        label: 'Favoris',
-        icon: <Heart />,
-    },
-    {
-        href: '/evaluations',
-        label: 'Évaluations',
-        icon: <Star0 />,
-    },
-    {
-        href: '/trocs',
-        label: 'Mes trocs',
-        icon: <Troc />,
-        rightProps: {
-            variant: 'text',
-            active: true,
-            rightText: '14 nov.',
-            chevron: false,
-        },
-    },
-    {
-        href: '/history',
-        label: 'Historique',
-        icon: <History />,
-    },
-];
 
 const secondaryItems: DrawerItemProps[] = [
     {
@@ -109,6 +69,57 @@ const secondaryItems: DrawerItemProps[] = [
 const DrawerContent = React.memo(() => {
     const { theme, activeTheme, toggleTheme } = useTheme();
 
+    const profile = useAuthStore((state) => state.profile)
+    const username = profile?.username ?? '';
+
+    const avatarImage = profile?.profile_picture;
+
+    const { data: userProfile } = useUserProfileByUsername(username);
+
+    const followersCount = userProfile?.followersCount ?? 0;
+    const followingCount = userProfile?.followingCount ?? 0;
+
+
+    const mainItems: DrawerItemProps[] = [
+        {
+            href: `/user/${username}`,
+            label: 'Mon profil',
+            icon: <Profile />,
+        },
+        // FEATURE FLAG : Premium/Shop/Abonnement
+        // {
+        //     href: '/shop/premium',
+        //     label: 'Premium',
+        //     icon: <Subscription />,
+        // },
+        {
+            href: '/favorites',
+            label: 'Favoris',
+            icon: <Heart />,
+        },
+        {
+            href: '/evaluations',
+            label: 'Évaluations',
+            icon: <Star0 />,
+        },
+        {
+            href: '/trocs',
+            label: 'Mes trocs',
+            icon: <Troc />,
+            rightProps: {
+                variant: 'text',
+                active: true,
+                rightText: '14 nov.',
+                chevron: false,
+            },
+        },
+        {
+            href: '/history',
+            label: 'Historique',
+            icon: <History />,
+        },
+    ];
+
     return (
         <Flex gap={32} style={styles.fullFlex}>
             <Flex gap={16} style={[styles.fullFlex, { width: '100%', paddingBottom: 16 }]}>
@@ -119,25 +130,25 @@ const DrawerContent = React.memo(() => {
                             size="medium"
                             customImage={avatarImage}
                             transition={0}
-                            onPress={() => router.push(`user/${userNameMock}`)}
+                            onPress={() => router.push(`user/${username}`)}
                         />
                         <Flex>
-                            <Text variant='title_Small'>{userNameMock}</Text>
+                            <Text variant='title_Small'>{username}</Text>
                         </Flex>
                         <Flex direction='row' alignItems='center' gap={8}>
-                            <Link href={`/user/${userNameMock}/followers`}>
+                            <Link href={`/user/${username}/followers`}>
                                 <Flex gap={4} direction='row'>
-                                    <Text variant='label_Large'>12</Text>
-                                    <Text variant='body_Medium' type='secondary'>Abonnés</Text>
+                                    <Text variant='label_Large'>{followersCount}</Text>
+                                    <Text variant='body_Medium' type='secondary'>Abonné{followersCount > 1 ? 's' : ''}</Text>
                                 </Flex>
                             </Link>
 
                             <View style={[styles.dot, { backgroundColor: activeTheme.colors.text.secondary }]} />
 
-                            <Link href={`/user/${userNameMock}/following`}>
+                            <Link href={`/user/${username}/following`}>
                                 <Flex gap={4} direction='row'>
-                                    <Text variant='label_Large'>18</Text>
-                                    <Text variant='body_Medium' type='secondary'>Abonnements</Text>
+                                    <Text variant='label_Large'>{followingCount}</Text>
+                                    <Text variant='body_Medium' type='secondary'>Abonnement{followingCount > 1 ? 's' : ''}</Text>
                                 </Flex>
                             </Link>
                         </Flex>

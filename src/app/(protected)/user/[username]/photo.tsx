@@ -1,22 +1,16 @@
 import { Stack, router, useLocalSearchParams } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
-import { ThemeScope } from '@/src/lib/providers/ThemeScope';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
+import { ThemeScope } from '@/src/lib/providers/ThemeScope';
 
 import CustomSafeAreaView from '#/CustomSafeAreaView';
 import Flex from '#/Flex';
 import ImageRatio from '#/display/ImageRatio';
-import Text from '#/Text';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
-import { Plusvert } from '#/icons'
-
-const MOCK_USER = {
-    banner: require('@/assets/profile_banner.png'),
-    avatar: require('@/assets/icon.png'),
-};
+import { Plusvert } from '#/icons';
 
 export default function ProfilePhoto() {
     return (
@@ -28,15 +22,14 @@ export default function ProfilePhoto() {
 
 function ProfilePhotoContent() {
     const { activeTheme } = useTheme();
-    const { username, kind } = useLocalSearchParams<{
+
+    const { username, kind, photo } = useLocalSearchParams<{
         username: string;
         kind: 'banner' | 'avatar';
+        photo: string;
     }>();
 
-    const source =
-        kind === 'avatar'
-            ? MOCK_USER.avatar
-            : MOCK_USER.banner;
+    const source = photo;
 
     const canGoBack = router.canGoBack();
     const onBack = () => { canGoBack && router.back() };

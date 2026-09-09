@@ -1,4 +1,8 @@
-import { checkUsernameAvailability, getCheckEmailExists } from "@/src/lib/api/user";
+import {
+    checkUsernameAvailability,
+    getCheckEmailExists,
+    getUserProfileByUsername
+} from "@/src/lib/api/user";
 import { useQuery } from "@tanstack/react-query";
 
 // Check email exists
@@ -27,5 +31,30 @@ export function useUsernameAvailability(username: string) {
         queryFn: () => checkUsernameAvailability(normalizedUsername),
         enabled: hasMinimumLength,
         staleTime: 30_000,
+    });
+}
+
+
+
+
+
+// Profile
+
+// --- Keys ---
+export const userProfileKeys = {
+    all: ['user-profile'] as const,
+    byId: (userId: string) => [...userProfileKeys.all, 'id', userId] as const,
+    byUsername: (username: string) => [...userProfileKeys.all, 'username', username] as const,
+};
+
+// --- Queries ---
+
+export function useUserProfileByUsername(username: string) {
+    const normalizedUsername = username.trim().toLowerCase();
+
+    return useQuery({
+        queryKey: userProfileKeys.byUsername(normalizedUsername),
+        queryFn: () => getUserProfileByUsername(normalizedUsername),
+        enabled: normalizedUsername.length > 0,
     });
 }

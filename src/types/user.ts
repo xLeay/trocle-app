@@ -14,3 +14,18 @@ export interface User {
     trocoin_balance: number;
     email?: string;
 }
+
+export type UserProfile = {
+    id: string;
+    username: string;
+    avatarUrl: ImageSourcePropType | string | undefined;
+    bannerUrl: ImageSourcePropType | string | undefined;
+    bio: string | null;
+    location: string | null;
+    createdAt: string;
+    trocsCount: number;
+    followersCount: number;
+    followingCount: number;
+    reviewsCount: number;
+    reviewsRating: number | null;
+}

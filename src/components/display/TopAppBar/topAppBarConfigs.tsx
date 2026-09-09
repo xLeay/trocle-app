@@ -97,7 +97,8 @@ const topAppBarConfigs = {
                     <Button
                         icon={iconName ? React.createElement(iconName, { color: iconColor }) : <Arrowleft color={iconColor} />}
                         variant={outlinedButtons ? 'outlined' : 'ghost'}
-                        size="small" onPress={onBack} />
+                        size="small" onPress={onBack}
+                    />
                 ) : <View style={{ width: 32 }} />}
                 {typeof label === 'string' ? (
                     <Text variant="title_Medium">{label}</Text>

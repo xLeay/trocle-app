@@ -141,14 +141,19 @@ export default function ProductImageModal() {
                 style={{
                     flex: 1,
                     width: '100%',
+                    padding: activeTheme.spacing._50,
                 }}
             >
                 <ImageRatio
+                    ratio='cover'
                     source={{ uri: currentUri }}
                     style={{
                         width: '100%',
+                        borderWidth: 1,
+                        borderColor: activeTheme.colors.border.primary,
+                        borderRadius: activeTheme.radius.default,
                     }}
-                    contentFit="contain"
+                    contentFit="cover"
                     transition={500}
                 />
             </Flex>
@@ -167,7 +172,7 @@ export default function ProductImageModal() {
                         onPress={() => {
                             handleCrop();
                         }}
-                        disabled
+                    // disabled
                     />
 
                     <Button

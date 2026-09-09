@@ -164,13 +164,13 @@
 
 
 
-import { getProducts, getUsers } from '@/src/lib/api/feedMixing';
+import { getFeedFilterOptions, getProducts, getUsers } from '@/src/lib/api/feedMixing';
 import {
     DEFAULT_PATTERN,
     PageData,
 } from '@/src/types/feed';
 import { User } from '@/src/types/user';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { assembleFeed } from './useFeedAlgorithm';
 
 const PRODUCTS_PER_PAGE = 8;
@@ -206,5 +206,13 @@ export function useFeed(pattern = DEFAULT_PATTERN) {
             };
         },
         getNextPageParam: last => (last.hasNext ? last.next : undefined),
+    });
+}
+
+export function useFeedFilters(categoryId: number | null) {
+    return useQuery({
+        queryKey: ['feed-filters', categoryId],
+        queryFn: () => getFeedFilterOptions(categoryId),
+        staleTime: 1000 * 60 * 10,
     });
 }

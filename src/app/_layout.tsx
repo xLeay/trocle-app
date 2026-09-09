@@ -1,7 +1,7 @@
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { enableFreeze } from 'react-native-screens';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -13,6 +13,7 @@ import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-c
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import { useThemeStore } from '@/src/state/themeStore';
 
+import BootOverlay from '#/BootOverlay';
 import { Provider as PortalProvider } from '#/Portal';
 import Snackbar from '#/display/Snackbar';
 
@@ -26,6 +27,8 @@ function InnerApp() {
 
     const initialized = useThemeStore((state) => state.initialized);
     const loadTheme = useThemeStore((state) => state.loadTheme);
+
+    const [splashHidden, setSplashHidden] = useState(false);
 
     const [loaded, error] = useFonts({
         'RethinkSans-VariableFont_wght': require('@/assets/fonts/Rethink_Sans/RethinkSans-VariableFont_wght.ttf'),
@@ -44,20 +47,27 @@ function InnerApp() {
     });
 
     // Activation de freeze pour optimiser les performances
-    enableFreeze(true)
+    useEffect(() => {
+        enableFreeze(true)
+    }, []);
+
+    const appReady = (loaded || error) && initialized;
 
     useEffect(() => {
-        if (loaded || error) {
-            SplashScreen.hideAsync();
+        if (!appReady) {
+            return;
         }
-    }, [loaded, error]);
+
+        void SplashScreen.hideAsync().then(() => {
+            setSplashHidden(true);
+        });
+    }, [appReady]);
 
     useEffect(() => {
         void loadTheme();
     }, [loadTheme]);
 
-    if (!loaded && !error) { return null; }
-    if (!initialized) { return null; }
+    if (!appReady) { return null; }
 
     return (
         <React.Fragment>
@@ -88,8 +98,17 @@ function InnerApp() {
                                     statusBarStyle: statusBarstyle
                                 }}
                             />
+                            <Stack.Screen
+                                name="index"
+                                options={{
+                                    headerShown: false,
+                                    statusBarStyle: statusBarstyle,
+                                    animation: 'none',
+                                }}
+                            />
                         </Stack>
                         <Snackbar />
+                        <BootOverlay splashHidden={splashHidden} />
                     </KeyboardProvider>
                 </GestureHandlerRootView>
             </QueryClientProvider>

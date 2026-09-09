@@ -11,10 +11,8 @@ export default function ProtectedLayout() {
     const session = useAuthStore((state) => state.session)
     const initialized = useAuthStore((state) => state.initialized)
     const hasCompletedOnboarding = useAuthStore((state) => state.hasCompletedOnboarding)
-    const fetchSession = useAuthStore((state) => state.fetchSession)
 
     useEffect(() => {
-        fetchSession()
         const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
             useAuthStore.setState({
                 session,

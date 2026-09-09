@@ -39,7 +39,11 @@ export const getStateIcon = (state: PRODUCT_STATE, size = 20, color?: string) =>
     }
 };
 
-export const getCategoryIcon = (category: keyof typeof BIG_CATEGORY, size = 20, color?: string) => {
+export const getCategoryIcon = (
+    category: string | undefined,
+    size = 20,
+    color?: string
+) => {
     switch (category) {
         case "accessoires-pour-animaux":
             return <Pet size={size} color={color} />;

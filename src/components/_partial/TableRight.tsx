@@ -60,8 +60,18 @@ const TableRight: React.FC<TableRightProps> = ({
                 return <View style={styles.empty} />;
             case 'text':
                 return (
-                    <Flex direction='row' gap={activeTheme.spacing._50} style={styles.rightText}>
-                        <Text variant="body_Large" type={active ? 'brand' : 'primary'}>
+                    <Flex
+                        // border
+                        direction='row'
+                        gap={activeTheme.spacing._50}
+                        style={styles.rightText}
+                    >
+                        <Text
+                            variant="body_Large"
+                            type={active ? 'brand' : 'primary'}
+                            numberOfLines={1}
+                            style={{ flexShrink: 1 }}
+                        >
                             {rightText}
                         </Text>
                         {chevron && (
@@ -121,7 +131,11 @@ const TableRight: React.FC<TableRightProps> = ({
     return (
         <Flex
             // border borderColor='blue'
-            direction='column' gap={activeTheme.spacing._100} style={styles.container}>
+            direction='column'
+            alignItems='flex-end'
+            gap={activeTheme.spacing._100}
+            style={[styles.container, { maxWidth: '60%' }]}
+        >
             {getVariantComponent()}
         </Flex>
     );

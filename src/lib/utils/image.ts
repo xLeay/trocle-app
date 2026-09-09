@@ -13,6 +13,12 @@ export const BANNER_SIZE = {
     compress: 0.7,
 };
 
+export const PRODUCT_IMAGE_SIZE = {
+    width: 1016,
+    height: 960,
+    compress: 0.8,
+};
+
 export type ImageSize = {
     width: number;
     height: number;

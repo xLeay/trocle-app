@@ -2,9 +2,19 @@ import { AuthError, Session, User } from '@supabase/supabase-js';
 import { create } from 'zustand';
 import { supabase } from '../lib/supabase';
 
+type UserProfile = {
+    id: string;
+    username: string;
+    profile_picture: string | null;
+    profile_header: string | null;
+    bio: string | null;
+    has_completed_onboarding: boolean;
+}
+
 type AuthStore = {
     user: User | null;
-    session: Session | null;
+    session: Session | null; // identité Supabase Auth
+    profile: UserProfile | null; // données Trocle
     loading: boolean;
     initialized: boolean;
     error: AuthError | null;
@@ -19,6 +29,7 @@ type AuthStore = {
 export const useAuthStore = create<AuthStore>((set) => ({
     user: null,
     session: null,
+    profile: null,
     loading: false,
     initialized: false,
     error: null,
@@ -86,19 +97,51 @@ export const useAuthStore = create<AuthStore>((set) => ({
             return;
         }
 
+        if (!session?.user) {
+            set({
+                session: null,
+                user: null,
+                hasCompletedOnboarding: false,
+                initialized: true,
+            });
+
+            return;
+        }
+
+
         const { data: userData, error: userError } = await supabase
             .from('user')
-            .select('has_completed_onboarding')
-            .eq('id', session?.user.id)
+            .select(`
+                id,
+                username,
+                profile_picture,
+                profile_header,
+                bio,
+                has_completed_onboarding
+            `)
+            .eq('id', session.user.id)
             .maybeSingle();
 
         if (userError) {
-            console.error('Erreur lors de la lecture du statut onboarding:', userError);
+            console.error(
+                'Erreur lors de la lecture du statut onboarding:',
+                userError
+            );
         }
 
         set({
             session,
-            user: session?.user,
+            user: session.user,
+            profile: userData
+                ? {
+                    id: userData.id,
+                    username: userData.username,
+                    profile_picture: userData.profile_picture,
+                    profile_header: userData.profile_header,
+                    bio: userData.bio,
+                    has_completed_onboarding: userData.has_completed_onboarding,
+                }
+                : null,
             hasCompletedOnboarding: userData?.has_completed_onboarding === true,
             initialized: true,
         });

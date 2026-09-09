@@ -1,4 +1,4 @@
-import { Link, Tabs, useNavigation } from 'expo-router';
+import { router, Tabs, useNavigation } from 'expo-router';
 import { DrawerNavigationProp, useDrawerStatus } from 'expo-router/drawer';
 import React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
@@ -13,32 +13,24 @@ import Animated, {
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
+import { useAuthStore } from '@/src/state/authStore';
+
 import Avatar from '#/display/Avatar';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
 import { Bubble, Compass, Plus, Preferences, Troc } from '#/icons';
 
 
-const avatarImage = require('@/assets/icon.png');
-
 const TAB_BAR_HEIGHT = 56;
 const ICON_SIZE = 36;
 
-const CreationTabButton = () => {
-    const { activeTheme } = useTheme();
-
-    return (
-        <Link href="/modal/creation" asChild>
-            <Pressable style={styles.tabBarButtonOdd}>
-                <Plus size={ICON_SIZE} color={activeTheme.colors.icon.primary} />
-            </Pressable>
-        </Link>
-    );
-};
 
 const AvatarTabButton = React.memo(() => {
     const navigation = useNavigation<DrawerNavigationProp<ReactNavigation.RootParamList>>('/(protected)/(drawer)');
     const drawerStatus = useDrawerStatus();
+
+    const profile = useAuthStore((state) => state.profile)
+    const avatarImage = profile?.profile_picture;
 
     const isFocused = drawerStatus === 'open';
 
@@ -161,7 +153,7 @@ export default function TabLayout() {
                     padding: 0,
                 },
                 tabBarShowLabel: false, // TODO, afficher les labels ou pas selon les settings d'accessibilité
-                lazy: false,
+                // lazy: false,
                 freezeOnBlur: true,
             }}
         >
@@ -193,7 +185,11 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="add"
                 options={{
-                    tabBarButton: () => <CreationTabButton />
+                    tabBarButton: ({ style }) => (
+                        <TabBarButton style={style} onPress={() => router.push('/modal/creation')}>
+                            <Plus size={ICON_SIZE} color={activeTheme.colors.icon.primary} />
+                        </TabBarButton>
+                    ),
                 }}
             />
             <Tabs.Screen
@@ -229,7 +225,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 4,
 
         // borderWidth: 1,
-        // backgroundColor: 'red',
+        // backgroundColor: 'blue',
         // zIndex: -1,
 
     },

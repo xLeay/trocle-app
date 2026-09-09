@@ -1,4 +1,4 @@
-import React, { Children, cloneElement, isValidElement, useRef, useState } from 'react';
+import React, { Children, cloneElement, isValidElement, useEffect, useRef, useState } from 'react';
 import {
     Dimensions,
     LayoutRectangle,
@@ -10,11 +10,11 @@ import {
     ViewStyle
 } from 'react-native';
 import Animated, {
-    runOnJS,
     useAnimatedStyle,
     useSharedValue,
     withTiming,
 } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
 
@@ -30,7 +30,9 @@ interface TooltipProps {
     offset?: number;
     beforeDelay?: number;
     afterDelay?: number;
-    children: React.ReactNode;
+    children?: React.ReactNode;
+    visible?: boolean;
+    inline?: boolean; // ou controlled
 }
 
 const ANIMATION_DURATION = 250;
@@ -46,6 +48,8 @@ export default function Tooltip({
     beforeDelay = 750,
     afterDelay = 1500,
     children,
+    visible: controlledVisible,
+    inline = false,
 }: TooltipProps) {
     const { activeTheme } = useTheme();
     const [visible, setVisible] = useState(false);
@@ -62,6 +66,10 @@ export default function Tooltip({
     const longPressTimeout = useRef<NodeJS.Timeout | null>(null);
 
     const screen = Dimensions.get('window');
+
+
+    const isControlled = controlledVisible !== undefined;
+    const isVisible = isControlled ? controlledVisible : visible;
 
 
 
@@ -101,7 +109,7 @@ export default function Tooltip({
         // Start animation in reverse
         opacity.value = withTiming(0, { duration: ANIMATION_DURATION }, (isFinished) => {
             if (isFinished) {
-                runOnJS(setVisible)(false); // Hide the modal after animation is complete
+                scheduleOnRN(setVisible, false); // Hide the modal after animation is complete
             }
         });
         translateY.value = withTiming(ANIMATION_OFFSET, { duration: ANIMATION_DURATION }); // Slide down
@@ -281,6 +289,42 @@ export default function Tooltip({
         return child;
     });
 
+
+
+
+
+
+    // Quand le composant est contrôlé, animer l'apparition/disparition
+    useEffect(() => {
+        if (isControlled) {
+            if (controlledVisible) {
+                opacity.value = withTiming(1, { duration: ANIMATION_DURATION });
+                translateY.value = withTiming(0, { duration: ANIMATION_DURATION });
+            } else {
+                opacity.value = withTiming(0, { duration: ANIMATION_DURATION });
+                translateY.value = withTiming(ANIMATION_OFFSET, { duration: ANIMATION_DURATION });
+            }
+        }
+    }, [controlledVisible, isControlled]);
+
+
+
+    // Si c'est en mode inline (ex: dans un Slider)
+    if (inline) {
+        return (
+            <Animated.View
+                pointerEvents="none"
+                style={[
+                    styles.inlineTooltip,
+                    { bottom: offset },
+                    animatedTooltipStyle,
+                ]}
+            >
+                {getTooltipContent()}
+            </Animated.View>
+        );
+    }
+
     return (
         <>
             <Flex
@@ -327,5 +371,10 @@ const styles = StyleSheet.create({
     tooltipWrapper: {
         zIndex: 1000,
         position: 'absolute',
+    },
+    inlineTooltip: {
+        position: 'absolute',
+        alignItems: 'center',
+        zIndex: 100,
     },
 });

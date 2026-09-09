@@ -1,89 +1,55 @@
-import * as ImageManipulator from 'expo-image-manipulator';
-import * as ImagePicker from 'expo-image-picker';
-import * as Location from 'expo-location';
 import { Stack, useRouter } from 'expo-router';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Keyboard, Linking, Platform, Pressable, StyleSheet } from 'react-native';
+import React, { useMemo, useRef, useState } from 'react';
+import { StyleSheet } from 'react-native';
 
+// HOOKS
 import { usePhotoContext } from '#/context/PhotoContext';
+import { useCategoryAttributeValues } from '@/src/lib/hooks/useCategoryAttributeValues';
 import { useGoBack } from '@/src/lib/hooks/useGoBack';
+import { useProductPhotos } from '@/src/lib/hooks/useProductPhotos';
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
+// UTILS
+import { LocationAddress, reverseGeocode } from '@/src/lib/utils/geocoding';
+
+// STATE
 import { useLocationStore } from '@/src/state/locationStore';
 import { useSnackbarStore } from '@/src/state/snackbarStore';
 
+// API
 import { Category } from '@/src/lib/api/category';
-import { useCategories } from '@/src/queries/useCategoryQueries';
+import { State } from '@/src/lib/api/condition';
 
+// QUERIES
+import { useCategoryAttributes } from '@/src/queries/useCategoryQueries';
+import { useCreateProduct } from '@/src/queries/useProductMutations';
+
+// COMPONENTS BASIQUES
 import Flex from '#/Flex';
 import Text from '#/Text';
 import Button from '#/controls/Button';
-import Radio from '#/controls/Radio';
 import TextField from '#/controls/TextField';
-import BottomSheet, { BottomSheetRef } from '#/display/BottomSheet';
+import { BottomSheetRef } from '#/display/BottomSheet';
 import Divider from '#/display/Divider';
-import ImageRatio from '#/display/ImageRatio';
-
 import Table from '#/display/Table';
-import Tooltip from '#/display/Tooltip';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
-import { Close, Image, Mylocation, Photo, Plus } from '#/icons';
+// COMPONENTS METIERS
+import CategoryAttributesSheet from '#/category/CategoryAttributesSheet';
+import CategoryPickerSheet from '#/category/CategoryPickerSheet';
+import LocationAutocompleteField from '#/location/LocationAutocompleteField';
+import PhotoPickerSheet from '#/photo/PhotoPickerSheet';
+import CreationPhotosSection from '#/product/CreationPhotosSection';
+import ProductStateSheet from '#/product/ProductStateSheet';
 
-
-// Exemple de données
-// interface Category {
-//     id: number;
-//     name: string;
-//     parentId: number | null;
-// }
-
-// const categories: Category[] = [
-//     { id: 1, name: 'Informatique', parentId: null },
-//     { id: 2, name: 'Jeux-vidéos', parentId: 1 },
-//     { id: 3, name: 'PC Gamer', parentId: 2 },
-//     { id: 4, name: 'Consoles', parentId: 2 },
-
-//     { id: 5, name: 'Mode', parentId: null },
-//     { id: 6, name: 'Homme', parentId: 5 },
-//     { id: 7, name: 'Vêtements', parentId: 6 },
-//     { id: 8, name: 'Bas', parentId: 7 },
-//     { id: 9, name: 'Jeans', parentId: 8 },
-//     { id: 10, name: 'Shorts', parentId: 8 },
-//     { id: 11, name: 'Pantalons', parentId: 8 },
-
-//     { id: 12, name: 'Femme', parentId: 5 },
-//     { id: 13, name: 'Chaussures', parentId: 12 },
-//     { id: 14, name: 'Accessoires', parentId: 12 },
-
-//     { id: 15, name: 'Enfant', parentId: 5 },
-//     { id: 16, name: 'Jouets', parentId: 15 },
-//     { id: 17, name: 'Vêtements Enfant', parentId: 15 },
-
-//     { id: 18, name: 'Maison', parentId: null },
-//     { id: 19, name: 'Meubles', parentId: 18 },
-//     { id: 20, name: 'Déco', parentId: 18 },
-//     { id: 21, name: 'Commodes', parentId: 19 },
-
-//     { id: 22, name: 'Culture', parentId: null },
-//     { id: 23, name: 'Livres', parentId: 22 },
-//     { id: 24, name: 'BD / Manga', parentId: 22 },
-// ];
-
-const productStates = [
-    { id: 1, name: 'Comme neuf' },
-    { id: 2, name: 'Très bon état' },
-    { id: 3, name: 'Bon état' },
-    { id: 4, name: 'Mauvais état' },
-];
-
+// ICÔNES
+import { Close } from '#/icons';
 
 
 export default function CreationModal() {
     const { activeTheme } = useTheme();
     const router = useRouter();
-    // const { addSnackbar } = useSnackbarStore();
     const addSnackbar = useSnackbarStore((state) => state.addSnackbar)
 
 
@@ -104,189 +70,219 @@ export default function CreationModal() {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
 
+
     // Section 2
-    const [tempSelectedCategory, setTempSelectedCategory] = useState<any>(null);
-    const [selectedCategory, setSelectedCategory] = useState<any>(null);
+    const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
     const categorySheetRef = useRef<BottomSheetRef>(null);
 
-    const { data: categories = [], isLoading: isCategoriesLoading } = useCategories();
+    // Les attributs de la catégorie sélectionnée
+    const { data: categoryAttributes = [] } = useCategoryAttributes(selectedCategory?.id ?? null);
 
-    const [categoryPath, setCategoryPath] = useState<Category[]>([]);
-    const currentParent = categoryPath.at(-1);
-    const visibleCategories = categories.filter(
-        (category) =>
-            category.parentId === (currentParent?.id ?? null),
-    );
+    const {
+        attributeValues,
+        activeAttribute,
+        setActiveAttribute,
+        getAttributeText,
+        setAttributeValue,
+        toggleAttributeValue,
+        clearAttributeValue,
+        requiredAttributesValid,
+    } = useCategoryAttributeValues(selectedCategory?.id, categoryAttributes);
 
-    const handleCategoryPress = (category: Category) => {
-        const children = categories.filter(
-            (item) => item.parentId === category.id,
-        );
+    const attributeSheetRef = useRef<BottomSheetRef>(null);
 
-        if (children.length > 0) {
-            setCategoryPath((current) => [...current, category]);
-            return;
-        }
-
-        setTempSelectedCategory(category);
-    };
-
-    const handleBack = () => {
-        setCategoryPath((current) => current.slice(0, -1));
-    };
-
-    const [selectedProductState, setSelectedProductState] = useState<any>(null);
+    // L'état du produit (bon état, très bon état, etc.)
+    const [selectedProductState, setSelectedProductState] = useState<State | null>(null);
     const productStateSheetRef = useRef<BottomSheetRef>(null);
 
+
     // Section 3
-    const [estimatedPrice, setEstimatedPrice] = useState('');
-    // const { latitude, longitude, plainLocation, error, fetchLocation } = useLocationStore();
+    const [selectedProductLocation, setSelectedProductLocation] = useState<LocationAddress | null>(null);
     const latitude = useLocationStore((state) => state.latitude)
     const longitude = useLocationStore((state) => state.longitude)
     const plainLocation = useLocationStore((state) => state.plainLocation)
-    const error = useLocationStore((state) => state.error)
     const fetchLocation = useLocationStore((state) => state.fetchLocation)
-    const [location, setLocation] = useState('');
+    const hasLocation = latitude !== null && longitude !== null;
+
+    const locationLabel = plainLocation
+        ? [plainLocation.city, plainLocation.postalCode]
+            .filter(Boolean)
+            .join(', ')
+        : hasLocation
+            ? 'Position actuelle'
+            : '';
 
 
     // Section 4
     const photoContext = usePhotoContext();
     if (!photoContext) throw new Error("PhotoContext absent du provider");
-    const { photos, setPhotos } = photoContext;
-    const [loadingPhotos, setLoadingPhotos] = useState(false);
-    const maxPhotos = 10;
-    const gotPhotos = photos.length > 0;
-    const [selectedPhotoType, setSelectedPhotoType] = useState<'camera' | 'library' | null>(null);
+    const {
+        photos,
+        setPhotos,
+        loadingPhotos,
+        maxPhotos,
+        handleAddPhoto,
+        removePhoto,
+    } = useProductPhotos();
     const photoSheetRef = useRef<BottomSheetRef>(null);
+
 
     // Section 5 (Validation)
     const [loading, setLoading] = useState(false);
     const formValid = useMemo(() => {
         return (
-            title.length > 0 &&
-            description.length > 0 &&
-            selectedCategory &&
-            selectedProductState &&
-            estimatedPrice.length > 0 &&
-            location.length > 0 &&
+            title.trim().length > 0 &&
+            description.trim().length > 0 &&
+            selectedCategory !== null &&
+            requiredAttributesValid &&
+            selectedProductState !== null &&
+            selectedProductLocation !== null &&
             photos.length > 0 &&
             photos.length <= maxPhotos
         );
-    }, [title, description, selectedCategory, selectedProductState, estimatedPrice, location, photos]);
+    }, [
+        title,
+        description,
+        selectedCategory,
+        requiredAttributesValid,
+        selectedProductState,
+        selectedProductLocation,
+        photos,
+        maxPhotos,
+    ]);
 
-    // On récupère la localisation du store
-    useEffect(() => {
-        fetchLocation()
-    }, [])
 
-    const handleCreateArticle = () => {
-        setLoading(true);
-        // TODO : Créer l'article
-        console.log('Création de l\'article');
-        setLoading(false);
-    }
+    // Creation du produit
+    const createProductMutation = useCreateProduct();
 
-    const handleLocationClick = async () => {
-        if (plainLocation) {
-            setLocation(`${plainLocation.city}, ${plainLocation.postalCode}`)
+    const handleCreateArticle = async () => {
+        if (!formValid || !selectedCategory || !selectedProductState) {
+            addSnackbar({
+                message: 'Complète tous les champs obligatoires.',
+                type: 'error',
+                position: 'bottom',
+            });
+
+            return;
         }
 
-        if (error) {
-            console.log('La localisation n\'est pas disponible');
+        if (!selectedProductLocation) {
+            addSnackbar({
+                message: 'Ajoute une localisation à ton article.',
+                type: 'error',
+                position: 'bottom',
+            });
 
-            const { status } = await Location.getForegroundPermissionsAsync()
-            if (status !== 'granted') {
-                const { status: newStatus } = await Location.requestForegroundPermissionsAsync()
-
-                if (newStatus !== 'granted') {
-                    return Alert.alert(
-                        "Permission requise",
-                        "L'accès à la localisation est nécessaire. Activez-la dans les réglages.",
-                        [
-                            { text: "Annuler", style: "cancel" },
-                            {
-                                text: "Ouvrir les réglages",
-                                onPress: () => {
-                                    const url = Platform.OS === 'ios' ? 'app-settings:' : undefined
-                                    Linking.openSettings().catch(() => {
-                                        if (url) Linking.openURL(url)
-                                    })
-                                }
-                            }
-                        ]
-                    )
-                }
-            }
+            return;
         }
-    }
 
-
-    const handleAddPhoto = async (type: 'camera' | 'library') => {
-        if (photos.length >= maxPhotos) return;
-
-        setLoadingPhotos(true);
+        createProductMutation.reset();
 
         try {
-            if (type === 'camera') {
-                const { status } = await ImagePicker.requestCameraPermissionsAsync();
-                if (status !== 'granted') {
-                    alert('Permission caméra refusée');
-                    return;
-                }
+            const attributes = Object.entries(attributeValues).map(
+                ([attributeId, value]) => ({
+                    attributeId: Number(attributeId),
+                    values: Array.isArray(value) ? value : [value],
+                })
+            );
 
-                const result = await ImagePicker.launchCameraAsync({ quality: 0.8 });
+            const productId = await createProductMutation.mutateAsync({
+                input: {
+                    title: title.trim(),
+                    description: description.trim(),
+                    categoryId: selectedCategory.id,
+                    stateId: selectedProductState.id,
+                    attributes,
+                    location: {
+                        city: selectedProductLocation.city,
+                        postcode: selectedProductLocation.postcode,
+                        department: selectedProductLocation.department,
+                        latitude: selectedProductLocation.latitude,
+                        longitude: selectedProductLocation.longitude,
+                    },
+                },
+                photos,
+            });
 
-                if (!result.canceled) {
-                    const context = ImageManipulator.ImageManipulator.manipulate(
-                        result.assets[0].uri
-                    );
+            setPhotos([]);
 
-                    const renderedImage = await context.renderAsync();
+            addSnackbar({
+                message: 'Ton article a été publié !',
+                type: 'success',
+                position: 'bottom',
+            });
 
-                    const manipulated = await renderedImage.saveAsync({
-                        compress: 0.7,
-                        format: ImageManipulator.SaveFormat.JPEG,
-                    });
+            router.replace({
+                pathname: '/product/[id]',
+                params: {
+                    id: productId,
+                },
+            });
+        } catch (error) {
+            console.error('Erreur création article :', error);
 
-                    setPhotos([...photos, { ...result.assets[0], uri: manipulated.uri }]);
-                }
-
-            } else if (type === 'library') {
-                const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-                if (status !== 'granted') {
-                    alert('Permission galerie refusée');
-                    return;
-                }
-
-                const result = await ImagePicker.launchImageLibraryAsync({
-                    mediaTypes: 'images',
-                    allowsMultipleSelection: true,
-                    selectionLimit: maxPhotos - photos.length,
-                    quality: 0.8,
-                });
-
-                if (!result.canceled) {
-                    const processedAssets = await Promise.all(
-                        result.assets.map(async (asset) => {
-                            const context = ImageManipulator.ImageManipulator.manipulate(asset.uri);
-                            const renderedImage = await context.renderAsync();
-
-                            const manipulated = await renderedImage.saveAsync({
-                                compress: 0.7,
-                                format: ImageManipulator.SaveFormat.JPEG,
-                            });
-
-                            return { ...asset, uri: manipulated.uri };
-                        })
-                    );
-
-                    setPhotos([...photos, ...processedAssets]);
-                }
-            }
-        } finally {
-            setLoadingPhotos(false);
+            addSnackbar({
+                message:
+                    error instanceof Error
+                        ? error.message
+                        : 'Impossible de publier ton article.',
+                type: 'error',
+                position: 'bottom',
+            });
         }
     };
+
+
+    const handleUseCurrentLocation = async () => {
+        await fetchLocation();
+
+        const {
+            latitude: currentLatitude,
+            longitude: currentLongitude,
+            error: locationError,
+        } = useLocationStore.getState();
+
+        if (
+            currentLatitude === null ||
+            currentLongitude === null
+        ) {
+            addSnackbar({
+                message:
+                    locationError ??
+                    'Impossible de récupérer ta position.',
+                type: 'error',
+                position: 'bottom',
+            });
+
+            return;
+        }
+
+        const address = await reverseGeocode(
+            currentLatitude,
+            currentLongitude
+        );
+
+        if (!address) {
+            addSnackbar({
+                message: 'Position trouvée, mais adresse indisponible.',
+                type: 'warning',
+                position: 'bottom',
+            });
+
+            return;
+        }
+
+        setSelectedProductLocation({
+            ...address,
+            name: address.city,
+            label: [address.city, address.postcode]
+                .filter(Boolean)
+                .join(', '),
+        });
+    };
+
+
+
 
     return (
         <Flex style={[styles.container, { backgroundColor: activeTheme.colors.surface.secondary }]}>
@@ -370,14 +366,90 @@ export default function CreationModal() {
                             productStateSheetRef.current?.present()
                         }}
                     />
+
+                    {categoryAttributes.map((attribute) => {
+                        const label = `${attribute.name}${attribute.required ? ' *' : ''}`;
+
+                        if (attribute.inputType === 'text') {
+                            const currentValue = attributeValues[attribute.id];
+
+                            return (
+                                <React.Fragment key={attribute.id}>
+                                    <Divider type="thin" />
+
+                                    <Flex
+                                        gap={activeTheme.spacing._100}
+                                        style={{
+                                            paddingHorizontal: activeTheme.spacing._200,
+                                            width: '100%',
+                                        }}
+                                    >
+                                        <TextField
+                                            label={label}
+                                            placeholder={`Renseigner ${attribute.name.toLowerCase()}`}
+                                            value={
+                                                typeof currentValue === 'string'
+                                                    ? currentValue
+                                                    : ''
+                                            }
+                                            onChangeText={(value) =>
+                                                setAttributeValue(attribute.id, value)
+                                            }
+                                        />
+
+                                        {attribute.unit && (
+                                            <Text variant="body_Small" type="secondary">
+                                                Unité : {attribute.unit}
+                                            </Text>
+                                        )}
+                                    </Flex>
+                                </React.Fragment>
+                            );
+                        }
+
+                        if (
+                            attribute.inputType === 'select' ||
+                            attribute.inputType === 'multi_select'
+                        ) {
+                            return (
+                                <React.Fragment key={attribute.id}>
+                                    <Divider type="thin" />
+
+                                    <Table
+                                        leftProps={{
+                                            variant: 'empty',
+                                            leftText: label,
+                                        }}
+                                        rightProps={{
+                                            variant: 'text',
+                                            rightText: getAttributeText(attribute),
+                                            active: Boolean(
+                                                attributeValues[attribute.id]
+                                            ),
+                                        }}
+                                        onPress={() => {
+                                            setActiveAttribute(attribute);
+                                            attributeSheetRef.current?.present();
+                                        }}
+                                    />
+                                </React.Fragment>
+                            );
+                        }
+
+                        return null;
+                    })}
                 </Flex>
 
                 {/* Divider */}
                 <Divider type='thick' />
 
                 {/* Section */}
-                <Flex gap={activeTheme.spacing._200} style={{ paddingHorizontal: activeTheme.spacing._200, width: '100%' }}>
-                    <TextField
+                <Flex
+                    gap={activeTheme.spacing._200}
+                    style={{ paddingHorizontal: activeTheme.spacing._200, width: '100%' }}
+                >
+                    {/* Feature Flag: Trocoins */}
+                    {/* <TextField
                         placeholder={'22'}
                         value={estimatedPrice}
                         onChangeText={(price) => setEstimatedPrice(price)}
@@ -389,21 +461,14 @@ export default function CreationModal() {
                         console.log('Aide à l\'estimation');
                     }}>Aide à l'estimation</Text>
 
-                    <Divider type='thin' />
+                    <Divider type='thin' /> */}
 
                     <Flex gap={activeTheme.spacing._50} style={{ width: '100%' }}>
-                        <TextField
-                            type='action'
-                            action={() => {
-                                console.log('handleLocationClick');
-                                handleLocationClick();
-                            }}
-                            icon={<Mylocation color={activeTheme.colors.icon.primary} />}
-                            placeholder={'Paris, France'}
-                            value={location}
-                            onChangeText={(text) => setLocation(text)}
-                            label={'Localisation de l\'article *'}
-                            editable={false}
+                        <LocationAutocompleteField
+                            label="Localisation de l’article *"
+                            value={selectedProductLocation}
+                            onChange={setSelectedProductLocation}
+                            onUseCurrentLocation={handleUseCurrentLocation}
                         />
                     </Flex>
                 </Flex>
@@ -411,127 +476,14 @@ export default function CreationModal() {
                 {/* Divider */}
                 <Divider type='thick' />
 
-                {/* Section */}
-                <Flex gap={activeTheme.spacing._200} style={{ paddingHorizontal: activeTheme.spacing._200, width: '100%' }}>
-                    {/* Textes */}
-                    <Flex gap={activeTheme.spacing._100}>
-                        <Text variant='title_Large' type='primary'>Ajoute des photos à ton article</Text>
-                        {!gotPhotos && (
-                            <Text variant='body_Small' type='secondary'>Tu peux ajouter jusqu'à 10 photos. N'hésite pas, cela permet de mettre en valeur tes articles et augmenter ton nombre d'échanges.</Text>
-                        )}
-                    </Flex>
-
-                    <Flex
-                        direction={gotPhotos || loadingPhotos ? 'row' : 'column'}
-                        style={{ width: gotPhotos || loadingPhotos ? '100%' : null }}>
-                        {loadingPhotos ? (
-                            <Flex alignItems="center" justifyContent="center" style={{ width: '100%', height: 100 }}>
-                                <ActivityIndicator size="large" color={activeTheme.colors.icon.primary} />
-                            </Flex>
-                        ) : gotPhotos ? (
-                            // Photos container
-                            <Flex gap={activeTheme.spacing._100} style={{ width: '100%' }}>
-                                <Flex direction='row'>
-                                    {/* Scroll */}
-                                    <Flex
-                                        // overflow='hidden'
-                                        scroll
-                                        direction='row'
-                                        alignItems='center'
-                                        gap={activeTheme.spacing._400}
-                                        style={{
-                                            width: '100%',
-                                            borderTopRightRadius: activeTheme.radius.default,
-                                            borderBottomRightRadius: activeTheme.radius.default,
-                                        }}>
-
-                                        {/* Photos */}
-                                        <Flex
-                                            direction='row'
-                                            gap={activeTheme.spacing._200}
-                                        >
-                                            {photos.map((photo, index) => (
-                                                <Flex key={index} style={{ width: 127 }}>
-
-                                                    <ImageRatio
-                                                        ratio='cover'
-                                                        source={{ uri: photo.uri }}
-                                                        style={{
-                                                            borderRadius: activeTheme.radius.default,
-                                                        }}
-                                                        contentFit="cover"
-                                                        transition={1000}
-
-                                                        onPress={() => {
-                                                            router.push({
-                                                                pathname: '/modal/product-image',
-                                                                params: { uri: photo.uri, index }
-                                                            });
-                                                        }}
-                                                    />
-
-                                                    <Flex
-                                                        alignItems='center'
-                                                        justifyContent='center'
-                                                        style={{
-                                                            position: 'absolute',
-                                                            top: activeTheme.spacing._100,
-                                                            right: activeTheme.spacing._100,
-                                                            backgroundColor: activeTheme.colors.icon.invert,
-                                                            height: 24,
-                                                            width: 24,
-                                                            borderRadius: 12,
-                                                        }}
-                                                    >
-                                                        <Pressable onPress={() => {
-                                                            setPhotos(photos.filter((_, i) => i !== index));
-                                                        }}>
-                                                            <Close color={activeTheme.colors.icon.primary} />
-                                                        </Pressable>
-                                                    </Flex>
-                                                </Flex>
-                                            ))}
-                                        </Flex>
-
-                                        <Tooltip
-                                            content='Ajouter des photos'
-                                        >
-                                            <Button
-                                                variant='outlined'
-                                                size='large'
-                                                icon={<Plus />}
-                                                onPress={() => {
-                                                    Keyboard.dismiss();
-                                                    photoSheetRef.current?.present();
-                                                }}
-                                                disabled={photos.length >= maxPhotos}
-                                            />
-                                        </Tooltip>
-
-                                        <Flex style={{ width: 0, height: 20 }} />
-                                    </Flex>
-
-                                </Flex>
-
-                                {/* Photos count */}
-                                <Flex>
-                                    <Text variant='body_Small' type='secondary'>{photos.length}/{maxPhotos}</Text>
-                                </Flex>
-                            </Flex>
-                        ) : (
-                            <Button
-                                label='Ajouter photo'
-                                variant='secondary'
-                                size='large'
-                                icon={<Photo />}
-                                onPress={() => {
-                                    Keyboard.dismiss();
-                                    photoSheetRef.current?.present();
-                                }}
-                            />
-                        )}
-                    </Flex>
-                </Flex>
+                {/* Section Photos */}
+                <CreationPhotosSection
+                    photos={photos}
+                    loadingPhotos={loadingPhotos}
+                    maxPhotos={maxPhotos}
+                    onAddPhotoPress={() => photoSheetRef.current?.present()}
+                    onRemovePhoto={removePhoto}
+                />
 
                 {/* Divider */}
                 <Divider type='thick' />
@@ -562,8 +514,8 @@ export default function CreationModal() {
                     variant="primary"
                     size="large"
                     fullWidth
-                    disabled={!formValid || loading}
-                    loading={loading}
+                    disabled={!formValid || createProductMutation.isPending}
+                    loading={createProductMutation.isPending}
                     onPress={handleCreateArticle}
                 />
             </Flex>
@@ -571,178 +523,36 @@ export default function CreationModal() {
 
 
 
-
-
             {/* Sheet de sélection de catégorie */}
-            <BottomSheet
-                ref={categorySheetRef}
-                headerVariant="text + icon"
-                title={currentParent?.name ?? 'Catégorie'}
-                canGoBack={categoryPath.length > 0}
-                onBack={handleBack}
-                onClose={() => setCategoryPath([])}
-                actions={
-                    <>
-                        <Button
-                            label="Réinitialiser"
-                            variant="outlined"
-                            size="large"
-                            fullWidth
-                            disabled={!tempSelectedCategory}
-                            onPress={() => {
-                                setTempSelectedCategory(null);
-                                setSelectedCategory(null);
-                            }}
-                        />
-
-                        <Button
-                            label="Appliquer"
-                            variant="secondary"
-                            size="large"
-                            fullWidth
-                            onPress={() => {
-                                setSelectedCategory(tempSelectedCategory);
-                                categorySheetRef.current?.dismiss();
-                            }}
-                        />
-                    </>
-                }
-            >
-                {visibleCategories.map((category) => {
-                    const hasChildren = categories.some(
-                        (item) => item.parentId === category.id,
-                    );
-
-                    return (
-                        <Table
-                            key={category.id}
-                            leftProps={{
-                                leftText: category.name,
-                            }}
-                            rightProps={
-                                hasChildren
-                                    ? {
-                                        variant: 'text',
-                                        active: true,
-                                        rightText: '',
-                                    }
-                                    : {
-                                        variant: 'radio',
-                                        radio: (
-                                            <Radio
-                                                checked={
-                                                    tempSelectedCategory?.id ===
-                                                    category.id
-                                                }
-                                                onValueChange={() =>
-                                                    setTempSelectedCategory(category)
-                                                }
-                                            />
-                                        ),
-                                    }
-                            }
-                            onPress={() => handleCategoryPress(category)}
-                        />
-                    );
-                })}
-            </BottomSheet>
-
-
+            <CategoryPickerSheet
+                sheetRef={categorySheetRef}
+                value={selectedCategory}
+                onChange={setSelectedCategory}
+            />
 
             {/* Sheet de sélection d'état de l'article */}
-            <BottomSheet
-                ref={productStateSheetRef}
-                headerVariant="text + icon"
-                title={'État de l\'article'}
-                actions={
-                    <>
-                        <Button
-                            label="Réinitialiser"
-                            variant="outlined"
-                            size="large"
-                            fullWidth
-                            disabled={!selectedProductState}
-                            onPress={() => {
-                                setSelectedProductState(null);
-                            }}
-                        />
+            <ProductStateSheet
+                sheetRef={productStateSheetRef}
+                value={selectedProductState}
+                onChange={setSelectedProductState}
+            />
 
-                        <Button
-                            label="Appliquer"
-                            variant="secondary"
-                            size="large"
-                            fullWidth
-                            onPress={() => {
-                                productStateSheetRef.current?.dismiss();
-                            }}
-                        />
-                    </>
-                }
-            >
-                {productStates.map((state) => {
-                    return (
-                        <Table
-                            key={state.id}
-                            leftProps={{
-                                leftText: state.name,
-                            }}
-                            rightProps={
-                                {
-                                    variant: 'radio',
-                                    radio: (
-                                        <Radio
-                                            checked={
-                                                selectedProductState?.id ===
-                                                state.id
-                                            }
-                                            onValueChange={() =>
-                                                setSelectedProductState(state)
-                                            }
-                                        />
-                                    )
-                                }
-                            }
-                            onPress={() => setSelectedProductState(state)}
-                        />
-                    );
-                })}
-            </BottomSheet>
-
-
+            {/* Sheets de sélection des attributs du produit */}
+            <CategoryAttributesSheet
+                sheetRef={attributeSheetRef}
+                attribute={activeAttribute}
+                values={attributeValues}
+                onSetValue={setAttributeValue}
+                onToggleValue={toggleAttributeValue}
+                onClearValue={clearAttributeValue}
+            />
 
             {/* Sheet de sélection de photos */}
-            <BottomSheet
-                ref={photoSheetRef}
-                headerVariant="handle"
-            >
-                <Table
-                    leftProps={{
-                        leftText: 'Prendre une photo',
-                        icon: <Photo />,
-                        variant: 'icon',
-                    }}
-                    rightProps={{ variant: 'empty' }}
-                    onPress={() => {
-                        setSelectedPhotoType('camera');
-                        photoSheetRef.current?.dismiss();
-                        handleAddPhoto('camera');
-                    }}
-                />
-
-                <Table
-                    leftProps={{
-                        leftText: 'Choisir une photo',
-                        icon: <Image />,
-                        variant: 'icon',
-                    }}
-                    rightProps={{ variant: 'empty' }}
-                    onPress={() => {
-                        setSelectedPhotoType('library');
-                        photoSheetRef.current?.dismiss();
-                        handleAddPhoto('library');
-                    }}
-                />
-            </BottomSheet>
+            <PhotoPickerSheet
+                sheetRef={photoSheetRef}
+                onSelectCamera={() => handleAddPhoto('camera')}
+                onSelectLibrary={() => handleAddPhoto('library')}
+            />
         </Flex>
     );
 }

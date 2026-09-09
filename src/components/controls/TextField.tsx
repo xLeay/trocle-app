@@ -1,6 +1,14 @@
 import { useTheme } from '@/src/lib/hooks/useTheme';
-import React, { useRef } from 'react';
-import { Pressable, TextInput as RNTextInput, TextInputProps as RNTextInputProps, StyleSheet, ViewStyle } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import {
+    Keyboard,
+    Platform,
+    Pressable,
+    TextInput as RNTextInput,
+    TextInputProps as RNTextInputProps,
+    StyleSheet,
+    ViewStyle
+} from 'react-native';
 
 // Composants
 import Flex from '#/Flex';
@@ -143,6 +151,27 @@ const TextField = React.forwardRef<RNTextInput, TextFieldProps>(({
             'placeholder';
 
     const { icon: countryIcon, code: countryCode } = getCountryFlagAndPhoneCode('FR');
+
+
+
+    useEffect(() => {
+        if (Platform.OS !== 'android') {
+            return;
+        }
+
+        const subscription = Keyboard.addListener(
+            'keyboardDidHide',
+            () => {
+                if (inputRef.current?.isFocused()) {
+                    inputRef.current.blur();
+                }
+            }
+        );
+
+        return () => {
+            subscription.remove();
+        };
+    }, []);
 
     return (
         <Flex

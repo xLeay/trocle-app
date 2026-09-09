@@ -141,7 +141,6 @@ export default function Tab() {
         )
     }
 
-
     const drawerNavigation = useNavigation<DrawerNavigationProp<ReactNavigation.RootParamList>>('/(protected)/(drawer)');
 
     useFocusEffect(
@@ -157,6 +156,7 @@ export default function Tab() {
             };
         }, [drawerNavigation])
     );
+
     return (
         <Flex
             style={[

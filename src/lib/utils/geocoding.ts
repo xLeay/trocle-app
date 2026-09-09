@@ -83,3 +83,38 @@ export function formatLocationAddress(location: LocationAddress) {
         .filter(Boolean)
         .join(', ');
 }
+
+export async function searchCity(query: string): Promise<LocationAddress[]> {
+    if (query.trim().length < 3) {
+        return [];
+    }
+
+    const response = await fetch(
+        `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(
+            query
+        )}&type=municipality&limit=5`
+    );
+
+    if (!response.ok) {
+        return [];
+    }
+
+    const data = await response.json();
+
+    return data.features.map((feature: any) => {
+        const city = feature.properties.city;
+        const postcode = feature.properties.postcode;
+
+        return {
+            // On n'affiche volontairement jamais la rue.
+            label: [city, postcode].filter(Boolean).join(', '),
+            name: city,
+            city,
+            postcode,
+            department:
+                feature.properties.context?.split(',')[1]?.trim() ?? '',
+            latitude: feature.geometry.coordinates[1],
+            longitude: feature.geometry.coordinates[0],
+        };
+    });
+}

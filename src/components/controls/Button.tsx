@@ -113,7 +113,7 @@ const Button = forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>(({
                     activeTheme.colors.component.button.outlinedPressed
                 ] : variant === 'ghost' ? [
                     'transparent',
-                    'transparent'
+                    activeTheme.colors.surface.transparentLight
                 ] : variant === 'transparent' ? [
                     activeTheme.colors.surface.transparent,
                     activeTheme.colors.surface.transparentContrast
@@ -140,9 +140,7 @@ const Button = forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>(({
 
     const iconColor =
         variant === 'ghost' && isIconOnly
-            ? isPressed
-                ? activeTheme.colors.component.button.secondaryPressed
-                : activeTheme.colors.component.button.secondary
+            ? activeTheme.colors.component.button.secondary
             : textColor;
 
     const baseButtonStyles = [
@@ -193,16 +191,23 @@ const Button = forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>(({
     ] : [];
 
 
+    // Calcul du hitSlop selon la taille ou si c'est une icône seule
+    // Le hitSlop est la surface virtuelle du bouton
+    const hitSlop = isIconOnly || size === 'small'
+        ? { top: 8, bottom: 8, left: 8, right: 8 }
+        : undefined;
+
     return (
         <Animated.View style={[
             styles.animatedView,
             // ne pas mettre flex 1 ici
-            fullWidth && { width: '100%' },
+            fullWidth && { width: '100%', flexShrink: 1 },
             animatedStyle,
             variantButtonStyles
         ]}>
             <Pressable
                 ref={ref}
+                hitSlop={hitSlop}
                 style={[baseButtonStyles, fullWidth && styles.fullWidth]}
                 onPress={onPress}
                 onLongPress={onLongPress}

@@ -1,61 +1,86 @@
-import React from 'react';
+import { useTheme } from '@/src/lib/hooks/useTheme';
+import { StyleSheet, View } from 'react-native';
 
 import Flex from '#/Flex';
-import Grid from '#/Grid';
 
 interface CropBoxProps {
     cropBox: {
-        x: number,
-        y: number,
-        width: number,
-        height: number,
-    },
-    setCropBox: (cropBox: {
-        x: number,
-        y: number,
-        width: number,
-        height: number,
-    }) => void,
+        width: number;
+        height: number;
+    };
 }
 
-const CropBox = ({
-    cropBox,
-    setCropBox,
-}: CropBoxProps) => {
+export default function CropBox({ cropBox }: CropBoxProps) {
+    const { activeTheme } = useTheme();
+
+    const overlayColor = activeTheme.colors.surface.transparent;
+
     return (
-        <Flex
-            border borderColor='blue'
-            alignItems='center'
-            justifyContent='center'
-            style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                zIndex: 2,
-                backgroundColor: 'rgba(0, 0, 0, 0.2)',
-
-                pointerEvents: 'none',
-            }}
-        >
-            <Grid columns={3} rows={3} border borderColor='red' style={{
-                width: cropBox.width,
-                height: cropBox.height,
-                zIndex: 3,
-            }}>
-                {Array.from({ length: 9 }).map((_, index) => (
-                    <Flex key={index} style={{
-                        width: cropBox.width / 3,
-                        height: cropBox.height / 3,
-                        // borderWidth: 1,
-                        // borderColor: 'green',
-                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    }} />
-                ))}
-            </Grid>
-        </Flex>
+        <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+            {/* 1. Bande supérieure sombre */}
+            <View style={{ flex: 1, backgroundColor: overlayColor }} />
+            {/* 2. Rangée du milieu contenant : Gauche sombre + Zone CROP transparente + Droite sombre */}
+            <View style={{ flexDirection: 'row', height: cropBox.height }}>
+                {/* Bande gauche sombre */}
+                <View style={{ flex: 1, backgroundColor: overlayColor }} />
+                {/* Zone de Crop : TRANSPARENTE avec grille */}
+                <View
+                    style={{
+                        width: cropBox.width,
+                        height: cropBox.height,
+                        borderWidth: 2,
+                        borderColor: '#FFFFFF',
+                        position: 'relative',
+                    }}
+                >
+                    {/* Lignes verticales */}
+                    <Flex
+                        style={{
+                            position: 'absolute',
+                            left: '33.333%',
+                            top: 0,
+                            bottom: 0,
+                            width: 1,
+                            backgroundColor: 'rgba(255,255,255,0.65)',
+                        }}
+                    />
+                    <Flex
+                        style={{
+                            position: 'absolute',
+                            left: '66.666%',
+                            top: 0,
+                            bottom: 0,
+                            width: 1,
+                            backgroundColor: 'rgba(255,255,255,0.65)',
+                        }}
+                    />
+                    {/* Lignes horizontales */}
+                    <Flex
+                        style={{
+                            position: 'absolute',
+                            top: '33.333%',
+                            left: 0,
+                            right: 0,
+                            height: 1,
+                            backgroundColor: 'rgba(255,255,255,0.65)',
+                        }}
+                    />
+                    <Flex
+                        style={{
+                            position: 'absolute',
+                            top: '66.666%',
+                            left: 0,
+                            right: 0,
+                            height: 1,
+                            backgroundColor: 'rgba(255,255,255,0.65)',
+                        }}
+                    />
+                </View>
+                {/* Bande droite sombre */}
+                <View style={{ flex: 1, backgroundColor: overlayColor }} />
+            </View>
+            {/* 3. Bande inférieure sombre */}
+            <View style={{ flex: 1, backgroundColor: overlayColor }} />
+        </View>
     );
-};
-
-export default CropBox;
+}

@@ -1,4 +1,5 @@
 import { supabase } from "@/src/lib/supabase";
+import { UserProfile } from "@/src/types/user";
 
 export async function getCheckEmailExists(email: string) {
     const { data, error } = await supabase.from('user').select('id').eq('email', email).maybeSingle();
@@ -7,7 +8,6 @@ export async function getCheckEmailExists(email: string) {
     }
     return data;
 }
-
 
 export type UsernameAvailability = {
     available: boolean;
@@ -21,6 +21,37 @@ export async function checkUsernameAvailability(username: string): Promise<Usern
     }
     return data[0];
 }
+
+export async function getUserProfileByUsername(username: string): Promise<UserProfile | null> {
+    const { data, error } = await supabase.rpc(
+        'get_public_user_profile',
+        {
+            p_username: username.trim().toLowerCase(),
+        }
+    );
+
+    if (error) {
+        throw error;
+    }
+
+    return data as UserProfile | null;
+}
+
+
+
+// getUserProfileByUsername()
+// getUserProducts(userId, page)
+// getUserPublicProducts()
+// getUserFollowers()
+// getUserFollowing()
+// updateMyProfile()
+// updateMyAvatar()
+// followUser()
+// unfollowUser()
+
+
+
+
 
 
 

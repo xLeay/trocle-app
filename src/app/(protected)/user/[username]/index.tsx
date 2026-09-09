@@ -18,6 +18,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
+import { getDateText } from '@/src/lib/utils/date';
+
+import { useAuthStore } from '@/src/state/authStore';
+
+import { useUserProfileByUsername } from '@/src/queries/useUserQueries';
+
+import { UserProfile } from '@/src/types/user';
+
 import CustomSafeAreaView from '#/CustomSafeAreaView';
 import Flex from '#/Flex';
 import Grid from '#/Grid';
@@ -30,23 +38,6 @@ import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
 import { Calendar, Chevronright, Heart, Location, Plus, Plusvert, Preferences, Share, Star0, Star05, Star1, Trocoin } from '#/icons';
 
-const avatarImage = require('@/assets/icon.png');
-
-const connectedUser = 'xLeay'; // TODO : Remplacer par l'utilisateur connecté
-
-const MOCK_USER = {
-    banner: require('@/assets/profile_banner.png'),
-    avatar: avatarImage,
-    username: 'xLeay',
-    bio: 'Je troc de tout, assez souvent',
-    location: 'Seine-et-Marne, France',
-    joined: '2024-11-16',
-    trocsCount: 11,
-    followersCount: 12,
-    followingCount: 18,
-    reviewsCount: 11,
-    reviewsRating: 4.5
-}
 
 const ARTICLES = [
     {
@@ -97,6 +88,29 @@ export default function Profile() {
 
     const route = useRoute();
     const { username } = route.params as { username: string };
+
+    const { data: userProfile, isLoading, isError, error } = useUserProfileByUsername(username);
+
+    const user: UserProfile | null = userProfile ?? null;
+
+    const profile = useAuthStore((state) => state.profile)
+
+    const connectedUser = profile?.username;
+    const isMyProfile = connectedUser === username;
+    const avatarImage = isMyProfile ? profile?.profile_picture : user?.avatarUrl;
+    const bannerImage = isMyProfile ? profile?.profile_header : user?.bannerUrl;
+    const bio = isMyProfile ? profile?.bio : user?.bio;
+    const location = user?.location;
+    const joined = user?.createdAt
+        ? getDateText(user.createdAt, 'monthYear').toLocaleLowerCase('fr-FR')
+        : '';
+    const trocsCount = user?.trocsCount ?? 0;
+    const followersCount = user?.followersCount ?? 0;
+    const followingCount = user?.followingCount ?? 0;
+    const reviewsCount = user?.reviewsCount ?? 0;
+    const reviewsRating = user?.reviewsRating ?? 0;
+
+
 
     const bannerHeight = useWindowDimensions().width / RATIO_PRESETS['banner'];
     const scrollY = useSharedValue(0);
@@ -159,7 +173,7 @@ export default function Profile() {
         onBack,
         label: (
             <Animated.View pointerEvents={'none'} style={headerUsernameStyle}>
-                <Text variant="title_Medium" type='invert'>{MOCK_USER.username}</Text>
+                <Text variant="title_Medium" type='invert'>{username}</Text>
             </Animated.View>
         ),
         rightArea: [
@@ -174,7 +188,6 @@ export default function Profile() {
         <CustomSafeAreaView
             style={{ backgroundColor: activeTheme.colors.surface.secondary }}
         >
-            {/* <View style={[styles.container, { backgroundColor: activeTheme.colors.surface.secondary }]}> */}
             <Stack.Screen
                 options={{
                     statusBarStyle: 'inverted',
@@ -189,11 +202,19 @@ export default function Profile() {
 
                 // style={{ borderWidth: 2, borderColor: 'red' }}
 
+                // onPress={() => {
+                //     router.push({
+                //         pathname: '/user/[username]/photo',
+                //         params: { username, kind: 'banner', photo: bannerImage as string | undefined },
+                //     })
+                // }}
                 onPress={() => {
-                    router.push({
-                        pathname: '/user/[username]/photo',
-                        params: { username, kind: 'banner' },
-                    })
+                    if (bannerImage) {
+                        router.push({
+                            pathname: '/user/[username]/photo',
+                            params: { username, kind: 'banner', photo: bannerImage as string | undefined },
+                        })
+                    }
                 }}
             />
 
@@ -215,12 +236,21 @@ export default function Profile() {
             >
                 <ImageRatio
                     ratio="banner"
-                    source={MOCK_USER.banner}
+                    source={bannerImage}
                     animatedProps={animatedProps}
-                    onPress={() => router.push({
-                        pathname: '/user/[username]/photo',
-                        params: { username, kind: 'banner' },
-                    })}
+                    // onPress={() => router.push({
+                    //     pathname: '/user/[username]/photo',
+                    //     params: { username, kind: 'banner', photo: bannerImage as string | undefined },
+                    // })}
+
+                    onPress={() => {
+                        if (bannerImage) {
+                            router.push({
+                                pathname: '/user/[username]/photo',
+                                params: { username, kind: 'banner', photo: bannerImage as string | undefined },
+                            })
+                        }
+                    }}
                 />
             </Animated.View>
 
@@ -242,11 +272,11 @@ export default function Profile() {
                             <Flex direction='row' fullWidth justifyContent='space-between'>
                                 <Avatar
                                     size='veryLarge'
-                                    customImage={MOCK_USER.avatar}
+                                    customImage={avatarImage}
                                     onPress={() =>
                                         router.push({
                                             pathname: '/user/[username]/photo',
-                                            params: { username, kind: 'avatar' },
+                                            params: { username, kind: 'avatar', photo: avatarImage as string | undefined },
                                         })
                                     }
                                 />
@@ -283,24 +313,24 @@ export default function Profile() {
                         </Flex>
 
                         {/* Bio */}
-                        <Text variant='body_Medium'>{MOCK_USER.bio}</Text>
+                        {bio && (
+                            <Text variant='body_Medium'>{bio}</Text>
+                        )}
 
                         {/* Données */}
                         <Flex gap={activeTheme.spacing._50}>
                             {/* Localisation */}
-                            <Flex direction='row' gap={activeTheme.spacing._50} alignItems='center'>
-                                <Location size={16} color={activeTheme.colors.text.secondary} />
-                                <Text variant='body_Medium' type='secondary'>{MOCK_USER.location}</Text>
-                            </Flex>
+                            {location && (
+                                <Flex direction='row' gap={activeTheme.spacing._50} alignItems='center'>
+                                    <Location size={16} color={activeTheme.colors.text.secondary} />
+                                    <Text variant='body_Medium' type='secondary'>{location}</Text>
+                                </Flex>
+                            )}
 
                             {/* Création de compte */}
                             <Flex direction='row' gap={activeTheme.spacing._50} alignItems='center'>
                                 <Calendar size={16} color={activeTheme.colors.text.secondary} />
-                                <Text variant='body_Medium' type='secondary'>Membre depuis {new Date(MOCK_USER.joined)
-                                    .toLocaleDateString('fr-FR', {
-                                        month: 'long',
-                                        year: 'numeric',
-                                    })}
+                                <Text variant='body_Medium' type='secondary'>Membre depuis {joined}
                                 </Text>
                             </Flex>
                         </Flex>
@@ -308,9 +338,9 @@ export default function Profile() {
                         {/* Stats */}
                         <Flex direction='row' gap={activeTheme.spacing._100} alignItems='center' justifyContent='center'>
                             {[
-                                { id: 'trocs', value: MOCK_USER.trocsCount, label: 'trocs' },
-                                { id: 'followers', value: MOCK_USER.followersCount, label: 'abonnés' },
-                                { id: 'following', value: MOCK_USER.followingCount, label: 'abonnements' },
+                                { id: 'trocs', value: trocsCount, label: trocsCount <= 1 ? 'troc' : 'trocs' },
+                                { id: 'followers', value: followersCount, label: followersCount <= 1 ? 'abonné' : 'abonnés' },
+                                { id: 'following', value: followingCount, label: followingCount <= 1 ? 'abonnement' : 'abonnements' },
                             ].map((stat, index, stats) => (
                                 <React.Fragment key={stat.id}>
                                     <Link href={`/user/${username}/${stat.id}`}>
@@ -353,13 +383,13 @@ export default function Profile() {
                                 {/* Notes */}
                                 <Flex direction="row" gap={0}>
                                     {[0, 1, 2, 3, 4].map((index) => {
-                                        const value = getStarValue(MOCK_USER.reviewsRating, index)
+                                        const value = getStarValue(reviewsRating, index)
                                         if (value === 1) { return <Star1 key={index} size={32} color={activeTheme.colors.icon.yellow} /> }
                                         if (value === 0.5) { return <Star05 key={index} size={32} color={activeTheme.colors.icon.yellow} /> }
                                         return <Star0 key={index} size={32} color={activeTheme.colors.icon.yellow} />
                                     })}
                                 </Flex>
-                                <Text variant='body_Medium'>({MOCK_USER.reviewsCount} évaluations)</Text>
+                                <Text variant='body_Medium'>({reviewsCount > 1 ? reviewsCount : 'Aucune'} évaluation{reviewsCount > 1 ? 's' : ''})</Text>
                             </Flex>
 
                             {/* Droite */}

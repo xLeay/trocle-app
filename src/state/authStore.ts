@@ -1,3 +1,4 @@
+import { getPublicStorageUrl } from '@/src/lib/api/helper';
 import { AuthError, Session, User } from '@supabase/supabase-js';
 import { create } from 'zustand';
 import { supabase } from '../lib/supabase';
@@ -136,8 +137,14 @@ export const useAuthStore = create<AuthStore>((set) => ({
                 ? {
                     id: userData.id,
                     username: userData.username,
-                    profile_picture: userData.profile_picture,
-                    profile_header: userData.profile_header,
+                    profile_picture: getPublicStorageUrl(
+                        'user-images',
+                        userData.profile_picture
+                    ),
+                    profile_header: getPublicStorageUrl(
+                        'user-images',
+                        userData.profile_header
+                    ),
                     bio: userData.bio,
                     has_completed_onboarding: userData.has_completed_onboarding,
                 }

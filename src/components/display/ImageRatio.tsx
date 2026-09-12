@@ -43,6 +43,7 @@ type ImageRatioProps = {
     style?: any;
     transition?: number;
     grayScale?: boolean;
+    touchable?: boolean;
 
     /**
      * Si présent, ImageRatio utilise AnimatedImage.
@@ -64,6 +65,7 @@ const ImageRatio = ({
     style,
     transition = 250,
     grayScale = false,
+    touchable = true,
     animatedStyle,
     animatedProps,
     onPress,
@@ -91,7 +93,7 @@ const ImageRatio = ({
         <View style={styles.container} onLayout={onLayout}>
             {width !== null ? (
                 isAnimated ? (
-                    <PressableOverlay onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut}>
+                    <PressableOverlay touchable={touchable} onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut}>
                         <AnimatedImage
                             {...props}
                             animatedProps={animatedProps}
@@ -99,7 +101,7 @@ const ImageRatio = ({
                         />
                     </PressableOverlay>
                 ) : (
-                    <PressableOverlay onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut}>
+                    <PressableOverlay touchable={touchable} onPress={onPress} onPressIn={onPressIn} onPressOut={onPressOut}>
                         <Image
                             {...props}
                             transition={transition}

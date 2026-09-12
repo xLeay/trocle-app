@@ -9,14 +9,20 @@ type PressableOverlayProps = {
     children: React.ReactNode;
     overlayColor?: string;
     borderRadius?: number;
+    overlayScale?: number; // Multiplicateur pour agrandir l'overlay (ex: 1.3 ou 1.5)
     style?: StyleProp<ViewStyle>;
+    touchable?: boolean;
+    hitSlop?: number | { top: number; bottom: number; left: number; right: number };
 } & Omit<PressableProps, 'children' | 'style'>;
 
 export default function PressableOverlay({
     children,
     overlayColor = 'rgba(0, 0, 0, 0.10)',
     borderRadius = 0,
+    overlayScale = 1,
     style,
+    touchable = true,
+    hitSlop = 0,
     onPressIn,
     onPressOut,
     android_ripple,
@@ -30,12 +36,14 @@ export default function PressableOverlay({
 
     return (
         <Pressable
+            hitSlop={hitSlop}
+            disabled={!touchable}
             {...props}
             style={[style, { borderRadius }]}
             android_ripple={
                 android_ripple ?? {
                     color: 'rgba(255, 255, 255, 0.10)',
-                    borderless: false,
+                    borderless: overlayScale > 1,
                     radius: 180
                 }
             }
@@ -58,6 +66,7 @@ export default function PressableOverlay({
                         inset: 0,
                         backgroundColor: overlayColor,
                         borderRadius,
+                        transform: [{ scale: overlayScale }],
                     },
                     overlayStyle,
                 ]}

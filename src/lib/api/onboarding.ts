@@ -32,7 +32,7 @@ const uploadAvatar = async (
 
     const storagePath = `avatars/${userId}/avatar.jpg`;
 
-    const { error: uploadError } = await supabase.storage
+    const { error } = await supabase.storage
         .from('user-images')
         .upload(storagePath, imageData, {
             contentType: 'image/jpeg',
@@ -40,19 +40,9 @@ const uploadAvatar = async (
             upsert: true,
         });
 
-    if (uploadError) {
-        throw uploadError;
-    }
+    if (error) throw error;
 
-    const { data } = supabase.storage
-        .from('user-images')
-        .getPublicUrl(storagePath);
-
-    /*
-     * Le chemin Storage reste stable.
-     * Le paramètre évite d'afficher l'ancienne image mise en cache.
-     */
-    return `${data.publicUrl}?v=${Date.now()}`;
+    return storagePath;
 };
 
 export async function completeOnboarding(

@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, StyleSheet, ViewStyle, DimensionValue } from 'react-native';
+import { DimensionValue, StyleSheet } from 'react-native';
 
 import { useTheme } from '@/src/lib/hooks/useTheme';
 
-import Flex from '#/Flex'
+import Flex from '#/Flex';
+import PressableOverlay from '#/controls/PressableOverlay';
 
 
 interface CardProps {
@@ -17,6 +18,8 @@ interface CardProps {
     overflow?: 'visible' | 'hidden';
     gap?: number;
     width?: DimensionValue;
+    touchable?: boolean;
+    onPress?: () => void;
     children: React.ReactNode;
 }
 
@@ -31,6 +34,8 @@ const Card: React.FC<CardProps> = ({
     overflow = 'visible',
     gap,
     width,
+    touchable = false,
+    onPress,
     children,
 }) => {
     const { activeTheme } = useTheme();
@@ -46,22 +51,29 @@ const Card: React.FC<CardProps> = ({
     };
 
     return (
-        <Flex
-            style={[
-                {
-                    padding: padding ?? activeTheme.spacing._200,
-                    borderRadius: radius ?? activeTheme.radius.card,
-                    backgroundColor: backgroundColor ?? activeTheme.colors.surface.primary,
-                    gap: gap ?? activeTheme.spacing._200,
-                    width: width ?? '100%',
-                },
-                viewStyle,
-                shadow ? shadowStyle : {},
-            ]}
-
+        <PressableOverlay
+            disabled={!touchable}
+            onPress={onPress}
+            borderRadius={radius ?? activeTheme.radius.card}
+            style={{ overflow: 'hidden' }}
         >
-            {children}
-        </Flex>
+            <Flex
+                style={[
+                    {
+                        padding: padding ?? activeTheme.spacing._200,
+                        borderRadius: radius ?? activeTheme.radius.card,
+                        backgroundColor: backgroundColor ?? activeTheme.colors.surface.primary,
+                        gap: gap ?? activeTheme.spacing._200,
+                        width: width ?? '100%',
+                    },
+                    viewStyle,
+                    shadow ? shadowStyle : {},
+                ]}
+
+            >
+                {children}
+            </Flex>
+        </PressableOverlay>
     );
 };
 

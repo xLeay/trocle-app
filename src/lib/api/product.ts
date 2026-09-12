@@ -2,23 +2,14 @@ import * as ImagePicker from 'expo-image-picker';
 
 import { supabase } from '@/src/lib/supabase';
 
-export type CreateProductInput = {
-    title: string;
-    description: string;
-    categoryId: number;
-    stateId: number;
-    attributes: Array<{
-        attributeId: number;
-        values: string[];
-    }>;
-    location: {
-        city: string;
-        postcode: string;
-        department: string;
-        latitude: number;
-        longitude: number;
-    };
-};
+import {
+    CreateProductInput,
+    ProductAttribute,
+    ProductDetails,
+    ProductPublicLocation,
+    ProfileProduct
+} from '@/src/types/product';
+
 
 export async function createProduct(
     input: CreateProductInput,
@@ -118,4 +109,234 @@ export async function createProduct(
     }
 
     return String(responseData.productId);
+}
+
+
+export async function getProductsByUsername(
+    username: string
+): Promise<ProfileProduct[]> {
+    const { data, error } = await supabase
+        .from('product')
+        .select(`
+            id,
+            name,
+            price_trocoin,
+            brand (
+                name
+            ),
+            owner:user!product_id_user_fkey!inner (
+                username
+            ),
+            photos:product_photos!product_photos_id_product_fkey (
+                url,
+                order_position
+            )
+        `)
+        .eq('owner.username', username)
+        .eq('is_active', true);
+
+    if (error) {
+        throw error;
+    }
+
+    return (data ?? []).map((product) => ({
+        id: String(product.id),
+        title: product.name,
+        brand: product.brand?.[0]?.name ?? 'Sans marque',
+        trocValue: product.price_trocoin,
+        images: (product.photos ?? [])
+            .sort((a, b) => a.order_position - b.order_position)
+            .map((photo) => {
+                const { data } = supabase.storage
+                    .from('product-images')
+                    .getPublicUrl(photo.url);
+
+                return data.publicUrl;
+            }),
+    }));
+}
+
+
+const getProductImageUrl = (pathOrUrl: string): string => {
+    if (pathOrUrl.startsWith('http://') || pathOrUrl.startsWith('https://')) {
+        return pathOrUrl;
+    }
+
+    return supabase.storage
+        .from('product-images')
+        .getPublicUrl(pathOrUrl)
+        .data.publicUrl;
+}
+
+const getUserImageUrl = (pathOrUrl: string | null): string | null => {
+    if (!pathOrUrl) return null;
+
+    if (pathOrUrl.startsWith('http://') || pathOrUrl.startsWith('https://')) {
+        return pathOrUrl;
+    }
+
+    return supabase.storage
+        .from('user-images')
+        .getPublicUrl(pathOrUrl)
+        .data.publicUrl;
+};
+
+export async function getProductById(
+    productId: string
+): Promise<ProductDetails | null> {
+    const { data, error } = await supabase
+        .from('product')
+        .select(`
+            id,
+            name,
+            description,
+            price_trocoin,
+            created_at,
+
+            brand:brand!product_id_brand_fkey (
+                id,
+                name
+            ),
+
+            state:state!product_id_state_fkey (
+                id,
+                name,
+                slug
+            ),
+
+            category:category!product_id_category_fkey (
+                id,
+                name,
+                slug
+            ),
+
+            owner:user!product_id_user_fkey (
+                id,
+                username,
+                profile_picture,
+                created_at
+            ),
+
+            photos:product_photos!product_photos_id_product_fkey (
+                url,
+                order_position
+            )
+        `)
+        .eq('id', productId)
+        .eq('is_active', true)
+        .maybeSingle();
+
+    if (error) throw error;
+    if (!data) return null;
+
+    const brand = Array.isArray(data.brand)
+        ? data.brand[0] ?? null
+        : data.brand;
+
+    const state = Array.isArray(data.state)
+        ? data.state[0] ?? null
+        : data.state;
+
+    const category = Array.isArray(data.category)
+        ? data.category[0] ?? null
+        : data.category;
+
+    const owner = Array.isArray(data.owner)
+        ? data.owner[0] ?? null
+        : data.owner;
+
+    if (!owner) {
+        throw new Error('Produit incomplet : propriétaire introuvable.');
+    }
+
+    return {
+        id: String(data.id),
+        title: data.name,
+        description: data.description ?? '',
+        trocValue: data.price_trocoin,
+        createdAt: data.created_at,
+        brand: brand
+            ? {
+                id: brand.id,
+                name: brand.name,
+            }
+            : null,
+        state: state
+            ? { id: state.id, name: state.name, slug: state.slug }
+            : null,
+        category: category
+            ? { id: category.id, name: category.name, slug: category.slug }
+            : null,
+        owner: {
+            username: owner.username,
+            avatarUrl: getUserImageUrl(owner.profile_picture),
+            createdAt: owner.created_at,
+        },
+        images: (data.photos ?? [])
+            .sort((a, b) => a.order_position - b.order_position)
+            .map((photo) => getProductImageUrl(photo.url)),
+    };
+}
+
+
+export async function getProductAttributes(
+    productId: string
+): Promise<ProductAttribute[]> {
+    const { data, error } = await supabase
+        .from('product_attributes')
+        .select('id_attribute_def, product_attribute_value')
+        .eq('id_product', productId);
+
+    if (error) {
+        throw error;
+    }
+
+    const attributesById = new Map<number, string[]>();
+
+    for (const row of data ?? []) {
+        const currentValues =
+            attributesById.get(row.id_attribute_def) ?? [];
+
+        attributesById.set(
+            row.id_attribute_def,
+            [...currentValues, row.product_attribute_value]
+        );
+    }
+
+    return [...attributesById.entries()].map(
+        ([attributeId, values]) => ({
+            attributeId,
+            values,
+        })
+    );
+}
+
+export async function getProductPublicLocation(
+    productId: string
+): Promise<ProductPublicLocation | null> {
+    const { data, error } = await supabase.rpc(
+        'get_product_locations_public',
+        {
+            p_product_ids: [Number(productId)],
+            p_limit: 1,
+            p_offset: 0,
+        }
+    );
+
+    if (error) {
+        throw error;
+    }
+
+    const location = data?.[0];
+
+    if (!location) {
+        return null;
+    }
+
+    return {
+        city: location.city,
+        postcode: location.postcode,
+        department: location.department,
+        distanceMeters: location.distance_meters,
+    };
 }

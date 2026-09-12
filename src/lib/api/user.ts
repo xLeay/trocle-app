@@ -1,5 +1,6 @@
 import { supabase } from "@/src/lib/supabase";
 import { UserProfile } from "@/src/types/user";
+import { getPublicStorageUrl } from "./helper";
 
 export async function getCheckEmailExists(email: string) {
     const { data, error } = await supabase.from('user').select('id').eq('email', email).maybeSingle();
@@ -34,7 +35,14 @@ export async function getUserProfileByUsername(username: string): Promise<UserPr
         throw error;
     }
 
-    return data as UserProfile | null;
+    // return data as UserProfile | null;
+    return data
+        ? {
+            ...data,
+            profile_picture: getPublicStorageUrl('user-images', data.profile_picture),
+            profile_header: getPublicStorageUrl('user-images', data.profile_header),
+        }
+        : null;
 }
 
 

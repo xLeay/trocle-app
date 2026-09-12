@@ -1,11 +1,11 @@
 import { Basketball, Bike, Books, Box, Circle, Controller, Dress, Electronics, Fridge, Kid, Lamp, Motorbikehelmet, Pet, Puzzle, State1, State2, State3, State4, Tshirt, Wheelbarrow } from '#/icons';
 
 // TODO: catégories et states en vif, à retirer
-export enum PRODUCT_STATE {
-    brand_new = "Comme neuf",
-    very_good = "Très bon état",
-    good = "Bon état",
-    bad = "Mauvais état",
+export const PRODUCT_STATE = {
+    'brand-new': "Comme neuf",
+    'very-good': "Très bon état",
+    'good': "Bon état",
+    'bad': "Mauvais état",
 }
 
 export const BIG_CATEGORY = {
@@ -26,15 +26,19 @@ export const BIG_CATEGORY = {
     "autres-objets": "Autres objets"
 }
 
-export const getStateIcon = (state: PRODUCT_STATE, size = 20, color?: string) => {
+export const getStateIcon = (
+    state: string | undefined,
+    size = 20,
+    color?: string
+) => {
     switch (state) {
-        case PRODUCT_STATE.brand_new:
+        case 'brand-new':
             return <State1 size={size} color={color} />;
-        case PRODUCT_STATE.very_good:
+        case 'very-good':
             return <State2 size={size} color={color} />;
-        case PRODUCT_STATE.good:
+        case 'good':
             return <State3 size={size} color={color} />;
-        case PRODUCT_STATE.bad:
+        case 'bad':
             return <State4 size={size} color={color} />;
     }
 };

@@ -22,7 +22,6 @@ import { useCheckEmailExists } from '@/src/queries/useUserQueries';
 
 export default function SignUpScreen() {
     const { activeTheme } = useTheme();
-    // const { addSnackbar } = useSnackbarStore();
     const addSnackbar = useSnackbarStore((state) => state.addSnackbar)
 
     // Config de la top app bar
@@ -41,7 +40,6 @@ export default function SignUpScreen() {
     const debouncedEmail = useDebounce(email, 500)
     const { data: checkEmailExists, isLoading: checkEmailExistsLoading } = useCheckEmailExists(debouncedEmail)
 
-    // const { signUp, loading, session } = useAuthStore()
     const signUp = useAuthStore((state) => state.signUp)
     const loading = useAuthStore((state) => state.loading)
     const session = useAuthStore((state) => state.session)
@@ -64,7 +62,7 @@ export default function SignUpScreen() {
     }, [session])
 
     async function handleSignUp() {
-        const { error } = await signUp(email.trim(), password.trim())
+        const { error } = await signUp(email.trim(), password)
         if (error) {
             addSnackbar({
                 message: getErrorMessage(error) || 'Une erreur est survenue.',

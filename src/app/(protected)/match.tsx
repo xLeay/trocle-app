@@ -1,15 +1,22 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { StyleSheet, ViewStyle } from 'react-native';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+// HOOKS
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
+// DATA
 import { getRandomIcebreaker } from '@/src/data/icebreakers';
 
+// API
+import { sendMatchMessage } from '@/src/lib/api/conversation';
+import { getPublicStorageUrl } from '@/src/lib/api/helper';
+
+// COMPOSANTS BASIQUES
 import CustomSafeAreaView from '#/CustomSafeAreaView';
 import Flex from '#/Flex';
 import Text from '#/Text';
@@ -18,6 +25,7 @@ import Button from '#/controls/Button';
 import ImageRatio from '#/display/ImageRatio';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
+// ICÔNES
 import { Close, Subscription } from '#/icons';
 
 interface MatchCardProps {
@@ -51,6 +59,7 @@ function MatchCard({
             <ImageRatio
                 source={productImage}
                 ratio='2:3'
+                touchable={false}
             />
         </Flex>
     )
@@ -66,11 +75,30 @@ export default function MatchModal() {
     };
 
     const router = useRouter();
-    const params = useLocalSearchParams();
+    const {
+        matchedUserId,
+        matchedUsername,
+        myProductImage,
+        theirProductImage,
+    } = useLocalSearchParams<{
+        matchedUserId?: string;
+        matchedUsername?: string;
+        myProductImage?: string;
+        theirProductImage?: string;
+    }>();
 
-    console.log(params)
+    const recipientUsername = matchedUsername ?? 'ce membre';
 
-    const recipientUsername = 'Shuri'
+
+    const myProductImageUrl = useMemo(
+        () => getPublicStorageUrl('product-images', myProductImage),
+        [myProductImage]
+    );
+
+    const theirProductImageUrl = useMemo(
+        () => getPublicStorageUrl('product-images', theirProductImage),
+        [theirProductImage]
+    );
 
 
     const gradientColors: [string, string] = [
@@ -79,17 +107,37 @@ export default function MatchModal() {
     ]
 
     const [message, setMessage] = useState('')
+    const [isSending, setIsSending] = useState(false);
 
     const handleGenerateText = () => {
         const icebreaker = getRandomIcebreaker(recipientUsername);
         setMessage(icebreaker);
     }
 
-    const handleOnSend = (message: string) => {
-        console.log(message)
-        // TODO: envoyer le message et rediriger vers la page de chat correspondante avec un router.replace
-        setMessage('')
-    }
+    const handleOnSend = async (content: string) => {
+        const trimmedContent = content.trim();
+
+        if (!matchedUserId || !trimmedContent || isSending) {
+            return;
+        }
+
+        try {
+            setIsSending(true);
+
+            const conversationId = await sendMatchMessage(
+                matchedUserId,
+                trimmedContent
+            );
+
+            setMessage('');
+
+            router.replace(`/(protected)/chat/${conversationId}`);
+        } catch (error) {
+            console.error('Envoi du premier message impossible :', error);
+        } finally {
+            setIsSending(false);
+        }
+    };
 
 
     // Config de la top app bar
@@ -142,7 +190,7 @@ export default function MatchModal() {
                     }}
                 >
                     <MatchCard
-                        productImage="https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=1200&q=85"
+                        productImage={myProductImageUrl ?? ''}
                         style={{
                             position: 'absolute',
                             zIndex: 1,
@@ -154,7 +202,7 @@ export default function MatchModal() {
                         }}
                     />
                     <MatchCard
-                        productImage="https://images1.vinted.net/t/06_009c7_CK8akpyqmiiHQHBJVgisdniY/f800/1781207271.webp?s=5e7a319cd598d463327e6f4dc548a5e0c925c45b"
+                        productImage={theirProductImageUrl ?? ''}
                         style={{
                             position: 'absolute',
                             zIndex: 2,
@@ -195,6 +243,7 @@ export default function MatchModal() {
                                 icon={<Subscription filled />}
                                 iconPosition='right'
                                 onPress={handleGenerateText}
+                                disabled={isSending}
                             />
                         </Flex>
                         <MessageBar
@@ -203,6 +252,7 @@ export default function MatchModal() {
                             value={message}
                             onChangeText={setMessage}
                             onSend={handleOnSend}
+                            isSending={isSending}
                         />
                     </Flex>
                 </KeyboardStickyView>

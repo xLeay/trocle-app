@@ -53,8 +53,17 @@ const TopAppBar = ({
 
 
     return (
-        <Pressable onPress={onPress} style={{ zIndex, ...(border ? { borderColor, borderWidth } : {}) }}>
-
+        <Pressable
+            onPress={onPress}
+            style={[
+                styles.pressable,
+                fullWidth && styles.fullWidth,
+                {
+                    zIndex,
+                    ...(border ? { borderColor, borderWidth } : {}),
+                },
+            ]}
+        >
             {hasSafeAreaTop ? (
                 <Flex style={{
                     paddingTop: insets.top,
@@ -131,12 +140,20 @@ const styles = StyleSheet.create({
     },
     centerExpand: {
         flex: 1,
-        paddingHorizontal: 12,
+        // paddingHorizontal: 12,
+        // J'essaye d'enlever le padding 12 pour le _search, on verra
     },
     flexExpand: {
         flex: 1,
     },
     isNull: {
-        flex: 0,
+        // flex: 0,
+        display: 'none',
+    },
+    pressable: {
+        alignSelf: 'stretch',
+    },
+    fullWidth: {
+        width: '100%',
     },
 });

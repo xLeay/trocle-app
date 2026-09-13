@@ -36,6 +36,7 @@ import Table from '#/display/Table';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
 // COMPONENTS METIERS
+import BrandPickerSheet, { BrandSelection } from '#/brand/BrandPickerSheet';
 import CategoryAttributesSheet from '#/category/CategoryAttributesSheet';
 import CategoryPickerSheet from '#/category/CategoryPickerSheet';
 import LocationAutocompleteField from '#/location/LocationAutocompleteField';
@@ -95,6 +96,11 @@ export default function CreationModal() {
     const [selectedProductState, setSelectedProductState] = useState<State | null>(null);
     const productStateSheetRef = useRef<BottomSheetRef>(null);
 
+    // La marque du produit
+    const [selectedBrand, setSelectedBrand] = useState<BrandSelection | null>(null);
+
+    const brandSheetRef = useRef<BottomSheetRef>(null);
+
 
     // Section 3
     const [selectedProductLocation, setSelectedProductLocation] = useState<LocationAddress | null>(null);
@@ -136,6 +142,7 @@ export default function CreationModal() {
             selectedCategory !== null &&
             requiredAttributesValid &&
             selectedProductState !== null &&
+            selectedBrand !== null &&
             selectedProductLocation !== null &&
             photos.length > 0 &&
             photos.length <= maxPhotos
@@ -156,7 +163,12 @@ export default function CreationModal() {
     const createProductMutation = useCreateProduct();
 
     const handleCreateArticle = async () => {
-        if (!formValid || !selectedCategory || !selectedProductState) {
+        if (
+            !formValid ||
+            !selectedCategory ||
+            !selectedProductState ||
+            !selectedBrand
+        ) {
             addSnackbar({
                 message: 'Complète tous les champs obligatoires.',
                 type: 'error',
@@ -192,6 +204,9 @@ export default function CreationModal() {
                     description: description.trim(),
                     categoryId: selectedCategory.id,
                     stateId: selectedProductState.id,
+                    ...(selectedBrand.id !== null
+                        ? { brandId: selectedBrand.id }
+                        : { newBrandName: selectedBrand.name }),
                     attributes,
                     location: {
                         city: selectedProductLocation.city,
@@ -334,7 +349,10 @@ export default function CreationModal() {
                 <Divider type='thick' />
 
                 {/* Section */}
-                <Flex gap={activeTheme.spacing._100} style={{ paddingHorizontal: activeTheme.spacing._0, width: '100%' }}>
+                <Flex
+                    gap={activeTheme.spacing._100}
+                    style={{ paddingHorizontal: activeTheme.spacing._0, width: '100%' }}
+                >
                     <Table
                         leftProps={{
                             variant: 'empty',
@@ -364,6 +382,24 @@ export default function CreationModal() {
                         }}
                         onPress={() => {
                             productStateSheetRef.current?.present()
+                        }}
+                    />
+
+                    <Divider type='thin' />
+
+                    <Table
+                        leftProps={{
+                            variant: 'empty',
+                            leftText: 'Marque',
+                        }}
+                        rightProps={{
+                            variant: 'text',
+                            rightText: selectedBrand?.name ?? '',
+                            active: selectedBrand !== null,
+
+                        }}
+                        onPress={() => {
+                            brandSheetRef.current?.present();
                         }}
                     />
 
@@ -535,6 +571,13 @@ export default function CreationModal() {
                 sheetRef={productStateSheetRef}
                 value={selectedProductState}
                 onChange={setSelectedProductState}
+            />
+
+            {/* Sheet de la sélection de la marque de l'article */}
+            <BrandPickerSheet
+                sheetRef={brandSheetRef}
+                value={selectedBrand}
+                onChange={setSelectedBrand}
             />
 
             {/* Sheets de sélection des attributs du produit */}

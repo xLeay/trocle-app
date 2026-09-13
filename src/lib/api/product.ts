@@ -142,7 +142,11 @@ export async function getProductsByUsername(
     return (data ?? []).map((product) => ({
         id: String(product.id),
         title: product.name,
-        brand: product.brand?.[0]?.name ?? 'Sans marque',
+        brand: (
+            Array.isArray(product.brand)
+                ? product.brand[0]
+                : product.brand
+        )?.name ?? 'Sans marque',
         trocValue: product.price_trocoin,
         images: (product.photos ?? [])
             .sort((a, b) => a.order_position - b.order_position)

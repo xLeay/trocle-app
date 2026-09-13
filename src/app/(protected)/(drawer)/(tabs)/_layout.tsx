@@ -32,6 +32,7 @@ const AvatarTabButton = React.memo(() => {
     const profile = useAuthStore((state) => state.profile)
     const avatarImage = profile?.profile_picture;
 
+
     const isFocused = drawerStatus === 'open';
 
     const handlePress = () => {

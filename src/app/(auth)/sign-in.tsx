@@ -61,7 +61,7 @@ export default function SignInScreen() {
     }, [session])
 
     async function handleSignIn() {
-        const { error } = await signIn(email.trim(), password.trim())
+        const { error } = await signIn(email.trim(), password)
         if (error) {
             addSnackbar({
                 message: getErrorMessage(error) || 'Une erreur est survenue.',

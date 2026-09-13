@@ -1,122 +1,228 @@
-import { useFocusEffect, useNavigation } from 'expo-router';
+import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { DrawerNavigationProp } from 'expo-router/drawer';
 import { useCallback } from 'react';
 import { StyleSheet, useWindowDimensions } from 'react-native';
 
+// HOOKS
+import { useProductDeck } from '@/src/features/home/deck/useProductDeck';
+import { useTheme } from '@/src/lib/hooks/useTheme';
+
+// STATE
+import { useAuthStore } from '@/src/state/authStore';
+
+// QUERIES
+import { useHomeDeckProducts, useHomeSwipe } from '@/src/queries/useHomeDeck';
+
+// COMPOSANTS BASIQUES
 import Flex from '#/Flex';
 import Text from '#/Text';
 import Button from '#/controls/Button';
 import ButtonTroc from '#/controls/ButtonTroc';
-import { Product } from '#/product/HomeProductCard';
 
+// COMPOSANTS METIERS
+import { Product } from '#/product/HomeProductCard';
 import DeckLayer from '@/src/features/home/deck/DeckLayer';
 import {
     CardLayer,
     SwipeAction,
 } from '@/src/features/home/deck/deck.config';
 
-import { useProductDeck } from '@/src/features/home/deck/useProductDeck';
-import { useTheme } from '@/src/lib/hooks/useTheme';
 
-
-export const MOCK_PRODUCTS: Product[] = [
-    {
-        id: 'pull-calvin-klein',
-        title: 'Pull blanc',
-        brand: 'Calvin Klein',
-        seller: 'Shuri',
-        distance: '2,3 km',
-        state: 'Bon état',
-        trocoins: 800,
-        images: [
-            'https://images1.vinted.net/t/06_009c7_CK8akpyqmiiHQHBJVgisdniY/f800/1781207271.webp?s=5e7a319cd598d463327e6f4dc548a5e0c925c45b',
-            'https://images1.vinted.net/t/06_02478_S5x1B4aq7JJTEufrGmpWnT89/f800/1781207271.webp?s=53eb7feb6b0321bfd37dedb054f839e9e4f9bd54',
-            'https://images1.vinted.net/t/05_022a2_hUVNxBLDEeSTbPM7HH9qzCFX/f800/1781207271.webp?s=856cf400488f29b9b21efd462bb0be838c744e90',
-        ],
-    },
-    {
-        id: 'veste-jean',
-        title: 'Veste en jean',
-        brand: 'Levi’s',
-        seller: 'Maya',
-        distance: '1,1 km',
-        state: 'Très bon état',
-        trocoins: 950,
-        images: [
-            'https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=1200&q=85',
-        ],
-    },
-    {
-        id: 'sac-cuir',
-        title: 'Sac en cuir',
-        brand: 'Mango',
-        seller: 'Lina',
-        distance: '4,8 km',
-        state: 'Bon état',
-        trocoins: 650,
-        images: [
-            'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=1200&q=85',
-        ],
-    },
-    {
-        id: 'baskets',
-        title: 'Baskets blanches',
-        brand: 'Nike',
-        seller: 'Noah',
-        distance: '3,2 km',
-        state: 'Comme neuf',
-        trocoins: 1200,
-        images: [
-            'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1200&q=85',
-        ],
-    },
-];
+// export const MOCK_PRODUCTS: Product[] = [
+//     {
+//         id: 'pull-calvin-klein',
+//         title: 'Pull blanc',
+//         brand: 'Calvin Klein',
+//         seller: 'Shuri',
+//         distance: '2,3 km',
+//         state: 'Bon état',
+//         trocoins: 800,
+//         images: [
+//             'https://images1.vinted.net/t/06_009c7_CK8akpyqmiiHQHBJVgisdniY/f800/1781207271.webp?s=5e7a319cd598d463327e6f4dc548a5e0c925c45b',
+//             'https://images1.vinted.net/t/06_02478_S5x1B4aq7JJTEufrGmpWnT89/f800/1781207271.webp?s=53eb7feb6b0321bfd37dedb054f839e9e4f9bd54',
+//             'https://images1.vinted.net/t/05_022a2_hUVNxBLDEeSTbPM7HH9qzCFX/f800/1781207271.webp?s=856cf400488f29b9b21efd462bb0be838c744e90',
+//         ],
+//     },
+//     {
+//         id: 'veste-jean',
+//         title: 'Veste en jean',
+//         brand: 'Levi’s',
+//         seller: 'Maya',
+//         distance: '1,1 km',
+//         state: 'Très bon état',
+//         trocoins: 950,
+//         images: [
+//             'https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=1200&q=85',
+//         ],
+//     },
+//     {
+//         id: 'sac-cuir',
+//         title: 'Sac en cuir',
+//         brand: 'Mango',
+//         seller: 'Lina',
+//         distance: '4,8 km',
+//         state: 'Bon état',
+//         trocoins: 650,
+//         images: [
+//             'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=1200&q=85',
+//         ],
+//     },
+//     {
+//         id: 'baskets',
+//         title: 'Baskets blanches',
+//         brand: 'Nike',
+//         seller: 'Noah',
+//         distance: '3,2 km',
+//         state: 'Comme neuf',
+//         trocoins: 1200,
+//         images: [
+//             'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1200&q=85',
+//         ],
+//     },
+// ];
 
 const CARD_LAYERS: CardLayer[] = ['a', 'b'];
 
 export default function Tab() {
     const { activeTheme } = useTheme();
 
+
+    const router = useRouter();
+    const currentUserId = useAuthStore((state) => state.user?.id);
+
+    const {
+        data: products = [],
+        isLoading,
+        error,
+    } = useHomeDeckProducts(currentUserId);
+
+    const swipeMutation = useHomeSwipe(currentUserId);
+
+
     const {
         width: screenWidth,
         height: screenHeight,
     } = useWindowDimensions();
 
+    // const handleAction = useCallback(
+    //     (
+    //         product: Product,
+    //         action: SwipeAction
+    //     ) => {
+    //         console.log({
+    //             productId: product.id,
+    //             action,
+    //         });
+    //     },
+    //     []
+    // );
+
     const handleAction = useCallback(
-        (
-            product: Product,
-            action: SwipeAction
-        ) => {
-            console.log({
-                productId: product.id,
-                action,
-            });
+        (product: Product, action: SwipeAction) => {
+            if (action === 'reroll') {
+                return;
+            }
 
-            // TODO: Si Y'a vraiment match, on redirect
-            // if (action === 'like') {
-            //     router.push({
-            //         pathname: '/(protected)/match',
-            //         params: {
-            //             productId: product.id,
-            //         }
-            //     });
-            // }
+            swipeMutation.mutate(
+                {
+                    productId: product.id,
+                    swipeType: action,
+                },
+                {
+                    onSuccess: (match) => {
+                        if (!match) {
 
-            // Plus tard :
-            // mutation.mutate({
-            //     productId: product.id,
-            //     action,
-            // });
+                            console.log('Aucun match trouvé');
+
+                            return;
+                        }
+
+                        router.push({
+                            pathname: '/(protected)/match',
+                            params: {
+                                matchedUserId: match.matched_user_id,
+                                matchedUsername: match.matched_username,
+                                myProductId: String(match.my_product_id),
+                                myProductImage: match.my_product_photo_url ?? '',
+                                theirProductId: String(match.their_product_id),
+                                theirProductImage: match.their_product_photo_url ?? '',
+                            },
+                        });
+                    },
+                    onError: (mutationError) => {
+                        console.error('Erreur lors du swipe :', mutationError);
+                    },
+                }
+            );
         },
-        []
+        [router, swipeMutation]
     );
 
     const deck = useProductDeck({
-        products: MOCK_PRODUCTS,
+        products,
         screenWidth,
         screenHeight,
         onAction: handleAction,
     });
+
+
+
+    const drawerNavigation = useNavigation<DrawerNavigationProp<ReactNavigation.RootParamList>>('/(protected)/(drawer)');
+
+    useFocusEffect(
+        useCallback(() => {
+            drawerNavigation.setOptions({
+                swipeEnabled: false,
+            });
+
+            return () => {
+                drawerNavigation.setOptions({
+                    swipeEnabled: true,
+                });
+            };
+        }, [drawerNavigation])
+    );
+
+
+
+    if (isLoading) {
+        return (
+            <Flex
+                alignItems='center'
+                justifyContent='center'
+                style={[
+                    styles.container,
+                    {
+                        backgroundColor: activeTheme.colors.surface.secondary,
+                    },
+                ]}
+            >
+                <Text type='secondary' variant='body_Large'>
+                    Chargement des articles…
+                </Text>
+            </Flex>
+        );
+    }
+
+    if (error) {
+        return (
+            <Flex
+                alignItems='center'
+                justifyContent='center'
+                style={[
+                    styles.container,
+                    {
+                        backgroundColor: activeTheme.colors.surface.secondary,
+                        paddingHorizontal: activeTheme.spacing._200,
+                    },
+                ]}
+            >
+                <Text type='secondary' variant='body_Large'>
+                    Impossible de charger les articles.
+                </Text>
+            </Flex>
+        );
+    }
 
     if (!deck.hasProducts) {
         return (
@@ -140,22 +246,6 @@ export default function Tab() {
             </Flex>
         )
     }
-
-    const drawerNavigation = useNavigation<DrawerNavigationProp<ReactNavigation.RootParamList>>('/(protected)/(drawer)');
-
-    useFocusEffect(
-        useCallback(() => {
-            drawerNavigation.setOptions({
-                swipeEnabled: false,
-            });
-
-            return () => {
-                drawerNavigation.setOptions({
-                    swipeEnabled: true,
-                });
-            };
-        }, [drawerNavigation])
-    );
 
     return (
         <Flex

@@ -6,7 +6,7 @@ import Flex from '#/Flex';
 import Text from '#/Text';
 import ProgressBar from '#/display/ProgressBar';
 
-import { Certification, Location, State3, Trocoin } from '#/icons';
+import { Certification, Location, State3 } from '#/icons';
 
 
 export type Product = {
@@ -85,7 +85,8 @@ function HomeProductCard({
                 <Flex gap={activeTheme.spacing._50}>
                     <InfoPill icon={<Location size={16} color="white" />} value={product.distance} activeTheme={activeTheme} />
                     <InfoPill icon={<State3 size={16} color="white" />} value={product.state} activeTheme={activeTheme} />
-                    <InfoPill icon={<Trocoin size={16} color="white" />} value={String(product.trocoins)} activeTheme={activeTheme} />
+                    {/* Feature flag : Trocoin */}
+                    {/* <InfoPill icon={<Trocoin size={16} color="white" />} value={String(product.trocoins)} activeTheme={activeTheme} /> */}
                 </Flex>
             </Flex>
 

@@ -16,7 +16,7 @@ import {
     StyleSheet,
     useWindowDimensions,
     View,
-    ViewStyle,
+    ViewStyle
 } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {

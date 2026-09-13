@@ -302,7 +302,7 @@ export default function OnboardingScreen() {
                 longitude: locationEnabled ? longitude : null,
             });
 
-            useAuthStore.getState().setHasCompletedOnboarding(true);
+            await useAuthStore.getState().fetchSession();
 
             router.replace('/(protected)/(drawer)/(tabs)');
 

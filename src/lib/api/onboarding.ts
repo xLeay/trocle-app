@@ -69,7 +69,7 @@ export async function completeOnboarding(
             : input.gender;
 
     const { error } = await supabase.rpc('complete_onboarding', {
-        p_username: input.username.trim().toLowerCase(),
+        p_username: input.username.trim(),
         p_birth_date: formatDateForDatabase(input.birthDate),
         p_gender: genderForDatabase,
         p_profile_picture: profilePictureUrl,

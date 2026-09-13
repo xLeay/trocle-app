@@ -257,7 +257,10 @@ const TextField = React.forwardRef<RNTextInput, TextFieldProps>(({
                             type={textType}
                             variant={type === 'otp' ? 'title_Large' : 'body_Large'}
                             secureTextEntry={type === 'password' && !isPasswordVisible}
-                            autoCapitalize={autoCapitalize}
+                            autoCapitalize={type === 'password' ? 'none' : autoCapitalize}
+                            autoCorrect={type === 'password' ? false : undefined}
+                            spellCheck={type === 'password' ? false : undefined}
+                            smartInsertDelete={type === 'password' ? false : undefined}
                             maxLength={maxLength}
                             numberOfLines={numberOfLines}
                             multiline={multiline}

@@ -1,9 +1,17 @@
 import { Stack, router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 
+// HOOKS
 import { useTheme } from "@/src/lib/hooks/useTheme";
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
+// UTILS
+import { CERTIFICATIONS } from '@/src/lib/utils/certification';
+
+// QUERIES
+import { useConversationContext } from '@/src/queries/useConversationMessages';
+
+// COMPOSANTS BASIQUES
 import Switch from "#/controls/Switch";
 import Avatar from "#/display/Avatar";
 import Divider from "#/display/Divider";
@@ -12,24 +20,35 @@ import TopAppBar from "#/display/TopAppBar/TopAppBar";
 import Flex from "#/Flex";
 import Text from "#/Text";
 
+// ICÔNES
 import { Arrowleft, Block, Certification, Delete, History, Notification, Profile, Report } from "#/icons";
 
 export default function ChatDetailsScreen() {
     const { activeTheme } = useTheme();
 
-    const params = useLocalSearchParams<{
-        id: string;
-        username: string;
-        profile_picture: string;
-        certified: string;
-        certificationColor: string;
-    }>();
+    const { id } = useLocalSearchParams<{ id: string }>();
 
-    const paramId = params.id;
-    const paramUsername = params.username;
-    const paramProfilePicture = params.profile_picture;
-    const paramCertified = params.certified === 'true';
-    const paramCertificationColor = params.certificationColor;
+    const { data: conversationContext } = useConversationContext(id);
+
+    const recipientName = conversationContext?.otherUsername ?? 'Utilisateur';
+    const recipientProfilePicture = conversationContext?.otherProfilePicture ?? undefined;
+    const isRecipientCertified = Boolean(conversationContext?.certificationSlug);
+
+    const getCertificationColor = (slug: string | null | undefined) => {
+        if (!slug || !(slug in CERTIFICATIONS)) {
+            return activeTheme.colors.icon.brand;
+        }
+
+        const certification = CERTIFICATIONS[slug as keyof typeof CERTIFICATIONS];
+
+        if (!certification.color) {
+            return activeTheme.colors.icon.brand;
+        }
+
+        return activeTheme.colors.icon[
+            certification.color as keyof typeof activeTheme.colors.icon
+        ];
+    };
 
 
     const canGoBack = router.canGoBack();
@@ -67,11 +86,22 @@ export default function ChatDetailsScreen() {
             <Flex style={{ flex: 1, backgroundColor: activeTheme.colors.surface.secondary }}>
 
                 <Flex fullWidth justifyContent='center' alignItems='center' gap={activeTheme.spacing._100} style={{ marginBottom: activeTheme.spacing._400 }}>
-                    <Avatar size='veryLarge' customImage={`https://api.dicebear.com/10.x/dylan/svg?seed=${paramProfilePicture}`} />
+                    <Avatar
+                        size='veryLarge'
+                        customImage={recipientProfilePicture}
+                    />
+
                     <Flex gap={activeTheme.spacing._0} justifyContent='center' alignItems='center'>
                         <Flex direction='row' alignItems='center' gap={activeTheme.spacing._0}>
-                            <Text variant='body_Large'>{paramUsername}</Text>
-                            {paramCertified && <Certification size={24} filled color={activeTheme.colors.icon[paramCertificationColor as keyof typeof activeTheme.colors.icon ?? 'brand']} />}
+                            <Text variant='body_Large'>{recipientName}</Text>
+
+                            {isRecipientCertified && (
+                                <Certification
+                                    size={24}
+                                    filled
+                                    color={getCertificationColor(conversationContext?.certificationSlug)}
+                                />
+                            )}
                         </Flex>
                     </Flex>
                 </Flex>
@@ -93,11 +123,11 @@ export default function ChatDetailsScreen() {
                         />
 
                         <Table
-                            onPress={() => console.log("Historique des Trocs avec " + paramUsername)}
+                            onPress={() => console.log("Historique des Trocs avec " + recipientName)}
                             leftProps={{
                                 variant: 'icon',
                                 icon: <History size={24} color={activeTheme.colors.icon.primary} />,
-                                leftText: `Historique des Trocs avec ${paramUsername}`,
+                                leftText: `Historique des Trocs avec ${recipientName}`,
                             }}
                         />
                     </Flex>

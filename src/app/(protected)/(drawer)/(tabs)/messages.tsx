@@ -2,16 +2,26 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+// HOOKS
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
+// STATE
+import { useAuthStore } from '@/src/state/authStore';
+
+// QUERIES
+import { useMyConversations } from '@/src/queries/useMessagesQueries';
+
+// COMPOSANTS BASIQUES
 import Flex from '#/Flex';
 import Button from '#/controls/Button';
 import SegmentedControls from '#/controls/SegmentedControls';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
+// COMPOSANTS METIER
 import PrivateMessagesList, { SearchFilterType } from '#/messages/PrivateMessagesList';
 
+// ICÔNES
 import { Notification } from '#/icons';
 
 
@@ -24,6 +34,13 @@ const FILTER_OPTIONS: { label: string; value: SearchFilterType }[] = [
 
 export default function Tab() {
     const { activeTheme } = useTheme();
+
+    const currentUserId = useAuthStore((state) => state.user?.id);
+    const {
+        data: conversations = [],
+        isLoading,
+    } = useMyConversations(currentUserId);
+
 
     const [search, setSearch] = useState('');
     const [isSearchActive, setIsSearchActive] = useState(false);
@@ -81,7 +98,12 @@ export default function Tab() {
                 </Flex>
             )}
 
-            <PrivateMessagesList search={search} filterType={currentFilter} onPressNewMessage={() => router.push('/(protected)/chat/new-chat')} />
+            <PrivateMessagesList
+                search={search}
+                filterType={currentFilter}
+                conversations={isLoading ? [] : conversations}
+                onPressNewMessage={() => router.push('/(protected)/chat/new-chat')}
+            />
 
         </View>
     );

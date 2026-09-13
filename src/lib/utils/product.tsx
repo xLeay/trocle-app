@@ -1,6 +1,6 @@
 import { Basketball, Bike, Books, Box, Circle, Controller, Dress, Electronics, Fridge, Kid, Lamp, Motorbikehelmet, Pet, Puzzle, State1, State2, State3, State4, Tshirt, Wheelbarrow } from '#/icons';
 
-// TODO: catégories et states en vif, à retirer
+
 export const PRODUCT_STATE = {
     'brand-new': "Comme neuf",
     'very-good': "Très bon état",

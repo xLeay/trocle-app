@@ -102,7 +102,7 @@ export default function BootOverlay({
 
     return (
         <Animated.View
-            pointerEvents="auto"
+            pointerEvents={exitRequested ? 'none' : 'auto'}
             style={[
                 StyleSheet.absoluteFill,
                 styles.container,

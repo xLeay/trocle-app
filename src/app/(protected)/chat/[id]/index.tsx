@@ -1,58 +1,50 @@
+import { FlashList } from '@shopify/flash-list';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { FlashList } from '@shopify/flash-list';
-
+// HOOKS
 import { useTheme } from '@/src/lib/hooks/useTheme';
 import useTopAppBar from '@/src/lib/hooks/useTopAppBar';
 
+// UTILS
+import { CERTIFICATIONS } from '@/src/lib/utils/certification';
+
+// API
+import { ConversationMessage } from '@/src/lib/api/messages';
+
+// STATE
+import { useAuthStore } from '@/src/state/authStore';
+
+// QUERIES
+import {
+    useConversationContext,
+    useConversationMessages,
+    useSendConversationMessage
+} from '@/src/queries/useConversationMessages';
+
+// COMPOSANTS BASIQUES
 import Flex from '#/Flex';
 import Text from '#/Text';
 import MessageBar from '#/bars/MessageBar';
-import PropositionMessage from '#/chat/PropositionMessage';
 import Button from '#/controls/Button';
+import PressableOverlay from '#/controls/PressableOverlay';
 import Avatar from '#/display/Avatar';
 import Divider from '#/display/Divider';
 import ImageRatio from '#/display/ImageRatio';
 import MessageBubble from '#/display/MessageBubble';
 import TopAppBar from '#/display/TopAppBar/TopAppBar';
 
+// COMPOSANTS METIER
+import PropositionMessage from '#/chat/PropositionMessage';
+
+// ICÔNES
 import { Certification, Star1, Troc } from '#/icons';
 
-import { MOCK_CONVERSATIONS } from '@/src/mock/dms.mock';
-import { User } from '@/src/types/user';
-
-
-const myUsername = 'xLeay';
-
-export interface MessageAttachment {
-    id: number;
-    created_at: string;
-    file_path: string;            // URL de l'image (Supabase Storage URL)
-    file_type: string;            // ex: 'image/jpeg'
-    file_size?: number;
-    id_message: number;
-}
-
-export interface Message {
-    id: number;           // int8 dans Supabase
-    message_type: 'text' | 'troc_proposal';
-    message_content: string;       // text dans Supabase
-    sent_at: string;              // timestamptz (ex: "2026-08-08T15:08:00Z")
-    read_at?: string | null;       // timetz / timestamptz (null si non lu)
-    has_attachment?: boolean;      // bool
-    attachments?: MessageAttachment[]; // Joindre les pièces jointes
-    reply_to_id_message?: number | null; // int8
-    id_conversation: number;       // int8
-    id_sender: string;             // uuid de l'expéditeur
-    id_troc?: number;           // int8 (optionnel, pour les messages de troc)
-}
 
 export default function ChatScreen() {
     const { activeTheme } = useTheme();
-    const { id } = useLocalSearchParams<{ id: string }>();
 
     const insets = useSafeAreaInsets();
     const offset = {
@@ -60,8 +52,44 @@ export default function ChatScreen() {
         opened: insets.bottom
     };
 
-    const conversation = MOCK_CONVERSATIONS.find((item) => item.id === id);
-    const recipientName = conversation ? conversation.name : `Utilisateur #${id}`;
+    const { id } = useLocalSearchParams<{ id: string }>();
+
+    const currentUserId = useAuthStore((state) => state.user?.id);
+    const myUsername = useAuthStore((state) => state.profile?.username);
+
+    const {
+        data: messages = [],
+        isLoading: isLoadingMessages,
+    } = useConversationMessages(id);
+
+    const sendMessage = useSendConversationMessage(id, currentUserId);
+
+
+    const { data: conversationContext } = useConversationContext(id);
+
+    const recipientName = conversationContext?.otherUsername ?? 'Utilisateur';
+    const recipientProfilePicture = conversationContext?.otherProfilePicture ?? undefined;
+    const isRecipientCertified = Boolean(conversationContext?.certificationSlug);
+
+
+
+
+
+    const getCertificationColor = (slug: string | null | undefined) => {
+        if (!slug || !(slug in CERTIFICATIONS)) {
+            return activeTheme.colors.icon.brand;
+        }
+
+        const certification = CERTIFICATIONS[slug as keyof typeof CERTIFICATIONS];
+
+        if (!certification.color) {
+            return activeTheme.colors.icon.brand;
+        }
+
+        return activeTheme.colors.icon[
+            certification.color as keyof typeof activeTheme.colors.icon
+        ];
+    };
 
 
     const canGoBack = router.canGoBack();
@@ -75,10 +103,10 @@ export default function ChatScreen() {
         tableLeft: {
             variant: 'avatar',
             avatarSize: 'medium',
-            src: `https://api.dicebear.com/10.x/dylan/svg?seed=${conversation?.avatarSeed}`,
+            src: recipientProfilePicture,
             leftText: recipientName,
-            certified: conversation?.certified ?? false,
-            certificationColor: activeTheme.colors.icon[conversation?.certificationColor as keyof typeof activeTheme.colors.icon ?? 'brand'],
+            certified: isRecipientCertified,
+            certificationColor: getCertificationColor(conversationContext?.certificationSlug),
             numberOfLines: 1,
         },
         tableRight: {
@@ -93,11 +121,11 @@ export default function ChatScreen() {
                     onPress={() => router.push({
                         pathname: `/(protected)/trocs/proposition`,
                         params: {
-                            id_conversation: conversation?.id,
-                            username: conversation?.name,
-                            profile_picture: conversation?.avatarSeed,
-                            certified: conversation?.certified ? 'true' : 'false',
-                            certificationColor: conversation?.certificationColor,
+                            id_conversation: id,
+                            username: recipientName,
+                            profile_picture: recipientProfilePicture,
+                            certified: String(isRecipientCertified),
+                            certificationColor: getCertificationColor(conversationContext?.certificationSlug),
                         }
                     })} />
             ),
@@ -105,217 +133,20 @@ export default function ChatScreen() {
         onPress: () => router.push({
             pathname: `/(protected)/chat/${id}/details`,
             params: {
-                username: conversation?.name,
-                profile_picture: conversation?.avatarSeed,
-                certified: conversation?.certified ? 'true' : 'false',
-                certificationColor: conversation?.certificationColor,
+                username: recipientName,
+                profile_picture: recipientProfilePicture,
+                certified: String(isRecipientCertified),
+                certificationColor: getCertificationColor(conversationContext?.certificationSlug),
             }
         }),
     });
 
-
-    const currentUserId = 'user_me';
-    const otherUserId = 'user_other';
-
-    const [presentation, setPresentation] = useState<User>({
-        id: otherUserId,
-        created_at: new Date().toISOString(),
+    const presentation = {
+        id: conversationContext?.otherUserId ?? '',
         username: recipientName,
-        profile_picture: `https://api.dicebear.com/10.x/dylan/svg?seed=${conversation?.avatarSeed}`,
-        trocoin_balance: 5,
-        bio: "Le goat de l'aviron"
-    })
-
-    const [messages, setMessages] = useState<Message[]>([
-        {
-            id: 1,
-            message_type: 'text',
-            message_content: 'Salut ! Ton offre de troc pour la guitare est toujours disponible ?',
-            sent_at: '2026-07-08T09:15:00Z',
-            read_at: '2026-08-08T09:16:00Z',
-            has_attachment: false,
-            reply_to_id_message: null,
-            id_conversation: 1,
-            id_sender: otherUserId,
-        },
-        {
-            id: 2,
-            message_type: 'text',
-            message_content: 'Oui tout à fait ! Tu proposais ton clavier maître en échange c\'est ça ?',
-            sent_at: '2026-08-08T09:18:00Z',
-            read_at: '2026-08-08T09:20:00Z',
-            has_attachment: false,
-            reply_to_id_message: null,
-            id_conversation: 1,
-            id_sender: currentUserId,
-        },
-        {
-            id: 3,
-            message_type: 'text',
-            message_content: 'Exactement ! Un Akai MPK Mini en parfait état.',
-            sent_at: '2026-08-08T09:22:00Z',
-            read_at: '2026-08-08T09:23:00Z',
-            has_attachment: false,
-            reply_to_id_message: null,
-            id_conversation: 1,
-            id_sender: otherUserId,
-        },
-        {
-            id: 4,
-            message_type: 'text',
-            message_content: 'Je peux t\'envoyer des photos si tu veux.',
-            sent_at: '2026-08-08T09:23:30Z',
-            read_at: '2026-08-08T09:25:00Z',
-            has_attachment: false,
-            reply_to_id_message: null,
-            id_conversation: 1,
-            id_sender: otherUserId,
-        },
-        // Pause de +30 min -> séparateur au centre
-        {
-            id: 5,
-            message_type: 'text',
-            message_content: 'Carrément, je veux bien des photos !',
-            sent_at: '2026-08-08T10:15:00Z',
-            read_at: '2026-08-08T10:16:00Z',
-            has_attachment: false,
-            reply_to_id_message: null,
-            id_conversation: 1,
-            id_sender: currentUserId,
-        },
-        {
-            id: 6,
-            message_type: 'text',
-            message_content: 'Et de mon côté la guitare est une Fender Squier, comme neuve.',
-            sent_at: '2026-08-08T10:16:30Z',
-            read_at: '2026-08-08T10:17:00Z',
-            has_attachment: false,
-            reply_to_id_message: null,
-            id_conversation: 1,
-            id_sender: currentUserId,
-        },
-        {
-            id: 7,
-            message_type: 'text',
-            message_content: 'Top ! Voilà la photo du clavier.',
-            sent_at: '2026-08-08T10:20:00Z',
-            read_at: '2026-08-08T10:22:00Z',
-            has_attachment: true,
-            attachments: [
-                {
-                    id: 101,
-                    created_at: '2026-08-08T10:20:00Z',
-                    file_path: 'https://i.imgur.com/p5NdI6n.jpeg',
-                    file_type: 'image/jpeg',
-                    file_size: 102400,
-                    id_message: 7,
-                }
-            ],
-            reply_to_id_message: null,
-            id_conversation: 1,
-            id_sender: otherUserId,
-        },
-        {
-            id: 8,
-            message_type: 'text',
-            message_content: 'Il est fourni avec la boîte d\'origine et le câble USB.',
-            sent_at: '2026-08-08T10:21:00Z',
-            read_at: '2026-08-08T10:22:00Z',
-            has_attachment: false,
-            reply_to_id_message: null,
-            id_conversation: 1,
-            id_sender: otherUserId,
-        },
-        // Autre pause de +30 min -> séparateur au centre
-        {
-            id: 9,
-            message_type: 'text',
-            message_content: 'Franchement il a l\'air en super état !',
-            sent_at: '2026-08-08T14:00:00Z',
-            read_at: '2026-08-08T14:05:00Z',
-            has_attachment: false,
-            reply_to_id_message: null,
-            id_conversation: 1,
-            id_sender: currentUserId,
-        },
-        {
-            id: 10,
-            message_type: 'text',
-            message_content: 'On peut se capter en main propre pour faire l\'échange ?',
-            sent_at: '2026-08-08T14:01:00Z',
-            read_at: '2026-08-08T14:05:00Z',
-            has_attachment: false,
-            reply_to_id_message: null,
-            id_conversation: 1,
-            id_sender: currentUserId,
-        },
-        {
-            id: 11,
-            message_type: 'text',
-            message_content: 'Carrément ! Tu es dans quel quartier ?',
-            sent_at: '2026-08-08T14:10:00Z',
-            read_at: '2026-08-08T14:12:00Z',
-            has_attachment: false,
-            reply_to_id_message: null,
-            id_conversation: 1,
-            id_sender: otherUserId,
-        },
-        {
-            id: 12,
-            message_type: 'text',
-            message_content: 'Je suis vers République, et toi ?',
-            sent_at: '2026-08-08T14:15:00Z',
-            read_at: '2026-08-08T14:16:00Z',
-            has_attachment: false,
-            reply_to_id_message: null,
-            id_conversation: 1,
-            id_sender: currentUserId,
-        },
-        {
-            id: 13,
-            message_type: 'text',
-            message_content: 'Pas loin du tout, je suis vers Bastille !',
-            sent_at: '2026-08-08T14:18:00Z',
-            read_at: '2026-08-08T14:20:00Z',
-            has_attachment: false,
-            reply_to_id_message: null,
-            id_conversation: 1,
-            id_sender: otherUserId,
-        },
-        {
-            id: 14,
-            message_type: 'text',
-            message_content: 'Super, tu serais dispo demain dans l\'après-midi ?',
-            sent_at: '2026-08-08T14:20:00Z',
-            read_at: '2026-08-08T14:22:00Z',
-            has_attachment: false,
-            reply_to_id_message: 13,
-            id_conversation: 1,
-            id_sender: currentUserId,
-        },
-        {
-            id: 15,
-            message_type: 'text',
-            message_content: 'À partir de 15h je dirais !',
-            sent_at: '2026-08-08T14:22:00Z',
-            read_at: null, // Mettre `null` si tu veux tester l'état "Sent" non lu
-            has_attachment: false,
-            reply_to_id_message: null,
-            id_conversation: 1,
-            id_sender: currentUserId,
-        },
-        {
-            id: 16,
-            message_type: 'troc_proposal',
-            message_content: 'Proposition de troc : Xbox 360 contre Clavier maître',
-            sent_at: '2026-08-09T10:00:00Z',
-            read_at: null,
-            has_attachment: false,
-            reply_to_id_message: null,
-            id_conversation: 1,
-            id_sender: currentUserId,
-        },
-    ]);
+        profile_picture: recipientProfilePicture,
+        bio: conversationContext?.otherBio ?? '',
+    };
 
     const MONTHS_FR = [
         'janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin',
@@ -344,7 +175,10 @@ export default function ChatScreen() {
         return `${dayStr} ${monthStr} ${year}`;
     };
 
-    const shouldShowHeader = (currentMsg: Message, prevMsg?: Message) => {
+    const shouldShowHeader = (
+        currentMsg: ConversationMessage,
+        prevMsg?: ConversationMessage
+    ) => {
         if (!prevMsg) return true;
         const currentTime = new Date(currentMsg.sent_at).getTime();
         const prevTime = new Date(prevMsg.sent_at).getTime();
@@ -357,26 +191,24 @@ export default function ChatScreen() {
 
     const [inputText, setInputText] = useState('');
 
-    const handleSend = () => {
-        if (!inputText.trim()) return;
+    const handleSend = (content: string) => {
+        const trimmedContent = content.trim();
 
-        const newMessage: Message = {
-            id: Date.now(),
-            message_type: 'text',
-            message_content: inputText.trim(),
-            sent_at: new Date().toISOString(),
-            read_at: null,
-            has_attachment: false,
-            reply_to_id_message: null,
-            id_conversation: 1,
-            id_sender: 'moi',
-        };
+        if (!trimmedContent || sendMessage.isPending) {
+            return;
+        }
 
-        setMessages((prev) => [...prev, newMessage]);
-        setInputText('');
+        sendMessage.mutate(trimmedContent, {
+            onSuccess: () => {
+                setInputText('');
+            },
+        });
     };
 
 
+    if (isLoadingMessages) {
+        return null;
+    }
 
     return (
         <>
@@ -405,24 +237,36 @@ export default function ChatScreen() {
                         ListFooterComponent={(
                             <Flex alignItems='center' justifyContent='center' gap={activeTheme.spacing._400}>
                                 <Flex justifyContent='center' alignItems='center' gap={activeTheme.spacing._100}>
-                                    <Flex justifyContent='center' alignItems='center' gap={activeTheme.spacing._100}>
-                                        <Avatar size='veryLarge' customImage={presentation?.profile_picture} />
-                                        <Flex gap={activeTheme.spacing._0} justifyContent='center' alignItems='center'>
-                                            <Flex direction='row' alignItems='center' gap={activeTheme.spacing._0}>
-                                                <Text variant='body_Large'>{presentation?.username}</Text>
-                                                <Certification size={24} filled color={activeTheme.colors.icon.brand} />
-                                            </Flex>
-                                            <Flex gap={activeTheme.spacing._50} direction='row' justifyContent='center' alignItems='center'>
-                                                <Flex direction='row' gap={activeTheme.spacing._0}>
-                                                    <Text variant='body_Small'>4,3</Text>
-                                                    <Star1 size={16} color={activeTheme.colors.text.primary} />
+                                    <PressableOverlay
+                                        overlayScale={1.1}
+                                        borderRadius={activeTheme.radius.card}
+                                        onPress={() => router.push(`/(protected)/user/${presentation?.username}`)}
+                                    >
+                                        <Flex justifyContent='center' alignItems='center' gap={activeTheme.spacing._100}>
+                                            <Avatar size='veryLarge' customImage={presentation?.profile_picture} touchable={false} />
+
+                                            <Flex gap={activeTheme.spacing._0} justifyContent='center' alignItems='center'>
+                                                <Flex direction='row' alignItems='center' gap={activeTheme.spacing._0}>
+                                                    <Text variant='body_Large'>{presentation?.username}</Text>
+                                                    <Certification size={24} filled color={activeTheme.colors.icon.brand} />
                                                 </Flex>
-                                                <Text variant='body_Small'>(48)</Text>
+                                                <Flex gap={activeTheme.spacing._50} direction='row' justifyContent='center' alignItems='center'>
+                                                    <Flex direction='row' gap={activeTheme.spacing._0}>
+                                                        <Text variant='body_Small'>4,3</Text>
+                                                        <Star1 size={16} color={activeTheme.colors.text.primary} />
+                                                    </Flex>
+                                                    <Text variant='body_Small'>(48)</Text>
+                                                </Flex>
                                             </Flex>
                                         </Flex>
-                                    </Flex>
+                                    </PressableOverlay>
 
-                                    <Text variant='body_Large'>{presentation?.bio}</Text>
+                                    <Text
+                                        variant='body_Large'
+                                        style={{ textAlign: 'center' }}
+                                    >
+                                        {presentation?.bio}
+                                    </Text>
 
                                     <Flex direction='row' justifyContent='center' alignItems='center' gap={activeTheme.spacing._50}>
                                         <Text variant='body_Medium' type='secondary'>18 abonnés</Text>
@@ -576,7 +420,7 @@ export default function ChatScreen() {
                             }}
                             onSend={(text) => {
                                 console.log('Message envoyé :', text);
-                                handleSend()
+                                handleSend(text)
                             }}
                         />
                     </Flex>

@@ -1,4 +1,14 @@
-export type CreateProductInput = {
+type ProductBrandInput =
+    | {
+        brandId: number;
+        newBrandName?: never;
+    }
+    | {
+        brandId?: never;
+        newBrandName: string;
+    };
+
+export type CreateProductInput = ProductBrandInput & {
     title: string;
     description: string;
     categoryId: number;

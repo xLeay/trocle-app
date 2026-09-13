@@ -49,7 +49,7 @@ export interface PropositionMessageProps {
     latest?: boolean;
     label?: string;
     messageLabelType?: MessageLabelType;
-    myUsername: string;
+    myUsername?: string;
     otherUsername: string;
     onPress?: () => void;
     onLongPress?: () => void;

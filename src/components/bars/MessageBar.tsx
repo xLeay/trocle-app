@@ -15,9 +15,10 @@ type MessageBarVariant = 'default' | 'match';
 interface MessageBarProps {
     variant?: MessageBarVariant;
     value?: string;
-    onChangeText: (text: string) => void;
     placeholder?: string;
     disabled?: boolean;
+    isSending?: boolean;
+    onChangeText: (text: string) => void;
     onFocus?: () => void;
     onBlur?: () => void;
     onImagePress?: () => void;
@@ -30,6 +31,7 @@ const MessageBar = ({
     value = '',
     placeholder = 'Écris ton message',
     disabled = false,
+    isSending = false,
     onFocus,
     onBlur,
     onImagePress,
@@ -93,7 +95,8 @@ const MessageBar = ({
             variant={isMatch ? 'secondary' : 'primary'}
             size="large"
             onPress={handleSend}
-            disabled={!canSend}
+            disabled={!canSend || isSending}
+            loading={isSending}
         />
     ) : null;
 
@@ -114,6 +117,7 @@ const MessageBar = ({
         };
     }, [onBlur]);
 
+    // TODO : on peut pas taper sur une position dans l'input et le curseur s'y déplace, à voir sur les autres bars aussi (Searchbar, etc)
     return (
         <Pressable
             onPress={() => {

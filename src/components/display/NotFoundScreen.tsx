@@ -10,6 +10,7 @@ type NotFoundScreenProps = {
     title?: string;
     description?: string;
     actionLabel?: string;
+    actionIcon?: React.ReactElement;
     onAction?: () => void;
 };
 
@@ -17,6 +18,7 @@ export default function NotFoundScreen({
     title = 'Contenu introuvable',
     description = "L'élément que vous recherchez n'existe pas ou a été supprimé.",
     actionLabel = 'Retour',
+    actionIcon,
     onAction,
 }: NotFoundScreenProps) {
     const { activeTheme } = useTheme();
@@ -49,12 +51,16 @@ export default function NotFoundScreen({
                     </Text>
                 </Flex>
 
-                <Button
-                    label={actionLabel}
-                    variant="secondary"
-                    size="large"
-                    onPress={handleAction}
-                />
+                {actionIcon && (
+                    <Button
+                        label={actionLabel}
+                        variant="secondary"
+                        size="large"
+                        onPress={handleAction}
+                        icon={actionIcon}
+                        iconPosition="right"
+                    />
+                )}
             </Flex>
         </CustomSafeAreaView>
     );
